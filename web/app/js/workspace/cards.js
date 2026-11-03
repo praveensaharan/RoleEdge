@@ -79,7 +79,8 @@ function studioCard(item) {
   if (p.error) html += `<div class="error">${esc(p.error)}</div>`;
   if (p.plan && p.stage === "planned") html += formatsBlock(item); // pick, then make
   const made = p.outputs && (p.stage === "ready" || p.adding?.length);
-  if (made) html += outputsBlock(item) + reviewBlock(item) + gateBlock(item) + decideBlock(item) + engagementBlock(item) + formatsBlock(item);
+  if (made) html += outputsBlock(item) + pendingBlock(item) + reviewBlock(item) + gateBlock(item) + (p.adding?.length ? "" : decideBlock(item))
+    + engagementBlock(item) + (p.pending ? "" : formatsBlock(item));
   if (p.outputs && !Object.keys(p.outputs).some((f) => f in FORMAT_TEXT)) html += `<div class="note-box">Made with the earlier formats. Share it again for the new moments.</div>`;
   return `${html}${footer(item)}</article>`;
 }
@@ -90,7 +91,7 @@ const PREPARING = "We're preparing something special for you and {name}. This ma
 function progressBlock(item) {
   const { done, total, now } = agentProgress(item);
   const pct = Math.max(6, Math.round((done / Math.max(total, 1)) * 100));
-  const adding = item.payload.adding?.length ? `Adding ${item.payload.adding.map((f) => formatText(f, recipientOf(item))[0]).join(", ")}. ` : "";
+  const adding = item.payload.adding?.length ? `Adding ${item.payload.adding.map((f) => THE_MOMENT[f] || f).join(" and ")}. ` : "";
   return `<div class="progress-box"><div class="pg-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><b style="width:${pct}%"></b></div>
     <p class="pg-msg">${esc(adding)}${esc(PREPARING.replace("{name}", who(item)))}</p>
     <div class="pg-row"><span class="pg-now">${esc(now)}</span><span class="grow"></span>
@@ -107,6 +108,13 @@ function agentProgress(item) {
   const done = [...states.values()].filter((e) => settled(e)).length;
   const working = [...states.values()].reverse().find((e) => e.state === "working");
   const now = working ? `${working.label}…` : p.stage === "making" ? "Making it…" : "Reading what you shared…";
+  if (p.adding?.length) { // adding to a ready pack: only the new moment's makers, then the verifier (earlier runs don't count)
+    const makers = p.adding.map((f) => `maker_${f}`);
+    const after = [...(p.adding.includes("picture") ? ["illustrator"] : []), "verifier"];
+    const made = makers.every((a) => settled(states.get(a)));
+    const finished = makers.filter((a) => settled(states.get(a))).length + (made ? after.filter((a) => settled(states.get(a))).length : 0);
+    return { done: finished, total: makers.length + after.length, now };
+  }
   return { done: Math.min(done, Math.max(expected, done)), total: Math.max(expected, done), now };
 }
 
@@ -171,7 +179,7 @@ function researchChecks(item) {
   const researchSteps = shown.flatMap(([, rows]) => rows);
   const blocks = shown.map(([stage, rows]) => stageBlock(stage, rows.map(([a, t, s]) => row(a, t, s))));
   // Make: one maker per moment (and the picture drawn), once she has picked them
-  const picked = p.formats && ["making", "ready"].includes(p.stage) ? p.formats : [];
+  const picked = ["making", "ready"].includes(p.stage) ? [...new Set([...(p.formats || []), ...(p.adding || []), ...Object.keys(p.pending?.outputs || {})])] : [];
   const makeRows = picked.map((f) => row(`maker_${f}`, formatText(f, recipientOf(item))[0], `Its own maker · ${formatText(f, recipientOf(item))[1]}`));
   if (states.has("illustrator")) makeRows.push(row("illustrator", "Drew the picture", "Muse Image"));
   if (makeRows.length) blocks.push(stageBlock("Make", makeRows));
@@ -208,6 +216,10 @@ function planBlock(item) {
     <div class="starter" lang="${langOf(item)}"><small class="st-l">To talk about</small>${esc(plan.conversation_starter)}${translated ? `<small lang="en">${esc(plan.conversation_starter_en)}</small>` : ""}</div></div>`;
 }
 
+// A moment's name on a button ("Make the slides", "Add the quiz"): the format names read wrong after "the"
+const THE_MOMENT = { note: "the note", steps: "the slides", card: "the fridge card", askme: "the quiz", map: "the mind map",
+  video: "the video", picture: "the picture", story: "the picture story", quiz: "the quiz game", relay: "the questions" };
+
 function formatsBlock(item) {
   const { plan, stage, outputs } = item.payload;
   const person = recipientOf(item);
@@ -227,14 +239,14 @@ function formatsBlock(item) {
       <span class="fi ${f}">${icon(FORMAT_INFO[f].icon, 17)}</span><span><b>${esc(name)}</b><small>${esc(reason)}</small></span>
       <span class="hint${f === lead ? " best" : ""}">${tag}</span></button>`;
   }).join("");
-  const names = picks.map((f) => formatText(f, person)[0]);
-  const label = picks.length === 1 ? `Make the ${names[0].toLowerCase()}` : `Make ${plural(picks.length, "moment")}`;
+  const one = picks.length === 1 ? THE_MOMENT[picks[0]] || "it" : "";
+  const label = one ? `Make ${one}` : `Make ${plural(picks.length, "moment")}`;
   let action = "";
   if (stage === "planned") {
     action = `<div class="decide inline"><button class="btn primary" data-make="${item.id}" ${picks.length ? "" : "disabled"}>${icon("activity", 16)}${esc(label)}</button>
       <button class="btn outline" data-act="discard" data-id="${item.id}">Discard</button><span class="note">The best fit is picked. Only what you pick is made; you can add more afterwards.</span></div>`;
   } else if (stage === "ready" && picks.length) {
-    action = `<div class="decide inline"><button class="btn outline" data-make="${item.id}">${icon("activity", 16)}${esc(picks.length === 1 ? `Add the ${names[0].toLowerCase()}` : `Add ${plural(picks.length, "moment")}`)}</button>
+    action = `<div class="decide inline"><button class="btn outline" data-make="${item.id}">${icon("activity", 16)}${esc(one ? `Add ${one}` : `Add ${plural(picks.length, "moment")}`)}</button>
       <span class="note">Made on its own, checked, then added to this pack.</span></div>`;
   }
   const heading = stage === "planned" ? `Best for ${esc(who(item))}` : `Add another moment for ${esc(who(item))}`;
@@ -266,6 +278,20 @@ function outputsBlock(item) {
   const extras = [...(research.products || []).map((p) => `<span class="x-chip">${p.image ? `<img src="${esc(p.image)}" alt="">` : icon("cart", 14)}${esc(p.name)}</span>`),
     ...(research.links || []).map((l) => `<span class="x-chip">${icon("link", 14)}${esc(l.host)}</span>`)].join("");
   return outs ? `<div class="label pad">What ${esc(who(item))} gets</div><div class="outs">${outs}</div>${extras ? `<div class="x-chips"><small>Added by the app, from the research:</small>${extras}</div>` : ""}<div class="preview-slot" id="slot-${item.id}" data-keep hidden></div>` : "";
+}
+
+/** A moment added to a pack she already has: it passed the checks on its own and waits for you. */
+function pendingBlock(item) {
+  const pending = item.payload.pending;
+  if (!pending) return "";
+  const person = recipientOf(item);
+  const outs = Object.entries(pending.outputs).filter(([f]) => f in FORMAT_TEXT).map(([f, o]) => `
+    <button type="button" class="out ${f}" data-view="${item.id}" data-format="${f}">
+      <span class="out-kind">${icon(FORMAT_INFO[f].icon, 14)}${esc(formatText(f, person)[0])}</span>${outThumb(f, o, item)}
+      <b lang="${langOf(item)}">${esc(o.title || o.root || "")}</b><p>${esc(o.summary_en || "")}</p><span class="of">${esc(describe(f, o))} · preview</span></button>`).join("");
+  return `<div class="pending"><div class="label pad">New for ${esc(who(item))}, waiting for you</div><div class="outs">${outs}</div>
+    <div class="decide"><button class="btn primary" data-act="approve" data-id="${item.id}">${icon("send", 16)}Approve and add it to ${esc(who(item))}'s pack</button>
+      <button class="btn outline" data-pending-discard="${item.id}">Leave it out</button><span class="note">It passed the checks on its own. ${esc(who(item))} keeps what she has either way.</span></div></div>`;
 }
 
 /** A glance at the moment itself: the picture, the mind map's parts, the video's first scene. */

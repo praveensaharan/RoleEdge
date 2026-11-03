@@ -68,7 +68,7 @@ function onLive(event) {
   if (event.type === "resync") { resync(); return; }
   if (event.type === "agent") {
     const item = state.items.find((i) => i.id === event.event.item_id);
-    if (item) { (item.payload.agents ||= []).push(event.event); state.scenes.id = item.id; patch(item); }
+    if (item) { (item.payload.agents ||= []).push(event.event); if (!state.scenes.pinned) state.scenes.id = item.id; patch(item); }
     return;
   }
   if (event.type !== "item") return;
@@ -95,7 +95,8 @@ async function resync() {
 }
 
 function onShared(item) {
-  if (item.kind === "studio" && !state.scenes.closed) state.scenes = { id: item.id, open: true, closed: false };
+  // a new share opens behind the scenes where it has a column of its own; on a narrow screen it would cover the share
+  if (item.kind === "studio") state.scenes = { id: item.id, open: !state.scenes.closed && innerWidth >= 1280, closed: state.scenes.closed, pinned: false };
   upsert(item);
   showTab("stream");
 }
@@ -124,7 +125,9 @@ function render() {
 function patch(item) {
   const el = document.querySelector(`[data-card="${item.id}"]`);
   if (!el || item.payload.discarded) { render(); return; }
-  keepOpenPreviews(() => morphElement(el, card(item)));
+  const html = card(item);
+  if (!html) { el.remove(); return; }
+  keepOpenPreviews(() => morphElement(el, html));
   if (item.kind === "studio" && (state.scenes.id === item.id || !state.scenes.id)) renderScenes();
 }
 
@@ -134,7 +137,8 @@ function renderScenes() {
   const studio = state.items.filter((i) => i.kind === "studio" && !i.payload.discarded);
   const dock = $("scenes");
   if (!studio.length) { dock.hidden = true; document.body.classList.remove("scenes-open"); return; }
-  const item = itemById(state.scenes.id) || studio[studio.length - 1];
+  const chosen = itemById(state.scenes.id);
+  const item = chosen && chosen.kind === "studio" && !chosen.payload.discarded ? chosen : studio[studio.length - 1];
   state.scenes.id = item.id;
   const working = ["researching", "making"].includes(item.payload.stage);
   const title = item.payload.plan?.key_message_en || item.payload.request || "Your share";
@@ -151,7 +155,7 @@ function renderScenes() {
 }
 
 function openScenes(itemId) {
-  state.scenes = { id: itemId, open: true, closed: false };
+  state.scenes = { id: itemId, open: true, closed: false, pinned: true }; // you picked this one: it stays until a new share
   renderScenes();
 }
 
@@ -192,7 +196,16 @@ $("tab-stream").onclick = async (e) => {
   if (make) {
     const id = make.dataset.make;
     const item = await run(make, () => api(`/api/items/${id}/studio/make`, { method: "POST", body: { formats: picksFor(id) } }));
-    if (item) { delete state.picks[id]; upsert(item); }
+    if (!item) return;
+    delete state.picks[id];
+    const now = itemById(id); // the live update may have come first, with the agents' first steps: keep that one
+    if (!now || now.payload.stage !== "making") upsert(item); else patch(now);
+    return;
+  }
+  const leaveOut = e.target.closest("[data-pending-discard]");
+  if (leaveOut) {
+    const item = await run(leaveOut, () => api(`/api/items/${leaveOut.dataset.pendingDiscard}/studio/pending/discard`, { method: "POST" }));
+    if (item) upsert(item);
     return;
   }
   const own = e.target.closest("button[data-own-voice]");
@@ -280,7 +293,8 @@ function togglePreview(itemId, format) {
   slot.dataset.format = format;
   const item = itemById(itemId), person = recipientOf(item);
   slot.innerHTML = `<div class="label">Preview · ${esc(formatText(format, person)[0])} · as ${esc(person.call_name)} sees it</div><div class="pv" lang="${person.language}"></div>`;
-  state.viewers[itemId] = mountViewer(slot.querySelector(".pv"), format, item.payload.outputs[format], {
+  const output = item.payload.outputs?.[format] || item.payload.pending?.outputs?.[format];
+  state.viewers[itemId] = mountViewer(slot.querySelector(".pv"), format, output, {
     lang: person.language, names: namesFor(person), printable: true, picture: item.payload.outputs.picture?.image || "",
     gender: genderOf(state.circle.caregiver.relation),
   });

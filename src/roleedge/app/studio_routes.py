@@ -347,19 +347,33 @@ class StudioRuns:
         if back.get("guardian") and extra.get("guardian"):  # the same for a child's pack: safe only if both parts are
             extra["guardian"] = {"safe_for_child": back["guardian"]["safe_for_child"] and extra["guardian"]["safe_for_child"],
                                  "concerns_en": [*back["guardian"]["concerns_en"], *extra["guardian"]["concerns_en"]]}
-        outputs = {**back.get("outputs", {}), **outputs}
         await asyncio.sleep(0)
+        latest = self.store.item(item.id) or item  # she may have opened the pack meanwhile ("played")
+        made = list(dict.fromkeys([*(latest.payload.get("formats") or []), *formats])) if earlier else formats
+        if earlier and latest.status in ("sent", "played"):
+            # A pack she already has keeps what was approved (a "send anyway" included); the gate reads only the new
+            # moment, with its own review. If it passes, it waits for your approval like any share, unless you send
+            # without approval.
+            gate = self.gate(item, outputs, guardian=extra.get("guardian"), review=review.model_dump())
+            check = TraceStep(step="Checked the new moment and ran the final send gate: "
+                              + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")
+            if not gate.passed:
+                await self.save(item.id, {**back, "adding": [], "agents": events,
+                                          "error": "The new moment was held, so it wasn't added: " + "; ".join(gate.reasons)},
+                                trace=[*swarm.trace, check])
+                return
+            if circle.send_immediately:
+                await self.save(item.id, {"stage": "ready", "outputs": {**back.get("outputs", {}), **outputs}, "agents": events,
+                                          "formats": made, "adding": [], "error": "", **extra}, trace=[*swarm.trace, check])
+            else:
+                await self.save(item.id, {**back, "adding": [], "agents": events, "error": "", "review": extra["review"],
+                                          "pending": {"outputs": outputs, "formats": formats}}, trace=[*swarm.trace, check])
+            return
+        outputs = {**back.get("outputs", {}), **outputs}
         gate = self.gate(item, outputs, guardian=extra.get("guardian"), review=extra["review"])
         check = TraceStep(step="Checked dates against the source and ran the final send gate: "
                           + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")
-        already_hers = bool(earlier) and item.status in ("sent", "played")
-        if already_hers and not gate.passed:  # she keeps what she has; the new moment isn't added
-            await self.save(item.id, {**back, "adding": [], "agents": events,
-                                      "error": "The new moment was held, so it wasn't added: " + "; ".join(gate.reasons)},
-                            trace=[*swarm.trace, check])
-            return
-        status = "held" if not gate.passed else item.status if already_hers else "sent" if circle.send_immediately else "draft"
-        made = list(dict.fromkeys([*(item.payload.get("formats") or []), *formats])) if earlier else formats
+        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
         await self.save(item.id, {"stage": "ready", "outputs": outputs, "agents": events, "formats": made, "adding": [],
                                   "error": "", **extra}, trace=[*swarm.trace, check], gate=gate, status=status)
 
@@ -498,10 +512,21 @@ def add_studio_routes(app: FastAPI, *, llm: LLM, store: Store, hub: Hub, media: 
         # a ready pack keeps its moments (and her copy) while the new ones are made
         earlier = ({k: item.payload.get(k) for k in ("outputs", "review", "guardian", "stage") if item.payload.get(k) is not None}
                    if stage == "ready" else None)
-        item.payload.update(stage="making", adding=formats if earlier else [], **({} if earlier else {"formats": formats}))
+        if item.payload.get("pending"):
+            raise HTTPException(409, "Approve or discard the new moment first.")
+        item.payload.update(stage="making", adding=formats if earlier else [], error="", **({} if earlier else {"formats": formats}))
         await publish(item)
         runs.background(runs.make(circle, item, formats, earlier))
         return item.model_dump()
+
+    @app.post("/api/items/{item_id}/studio/pending/discard")
+    async def discard_pending(item_id: str) -> dict:
+        """Leave out a new moment waiting for approval; her pack stays as it is."""
+        item = item_or_404(item_id)
+        if item.kind != "studio" or not item.payload.pop("pending", None):
+            raise HTTPException(409, "There is no new moment waiting.")
+        item.trace.append(TraceStep(step="Left out the new moment", engine="you"))
+        return (await publish(item)).model_dump()
 
     @app.post("/api/items/{item_id}/engagement")
     async def engagement(item_id: str, event: StudioEngagement) -> dict:

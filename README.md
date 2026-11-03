@@ -107,7 +107,8 @@ py -3.12 -m venv .venv
 .venv\Scripts\roleedge serve --port 8100
 ```
 
-Port 8100 already in use? Run `PORT=8200 bash run.sh` (macOS, Linux) or `$env:PORT=8200; .\run.ps1` (Windows).
+Port 8100 already in use? Run `PORT=8200 bash run.sh` (macOS, Linux) or
+`$env:PORT=8200; powershell -ExecutionPolicy Bypass -File run.ps1` (Windows).
 
 ## What to open
 
@@ -127,7 +128,8 @@ Put the caregiver's screen and the parent's phone side by side. The phone update
    Instagram, YouTube or TikTok link, or use **Photo or video** to upload a short one. Press **Research and plan**.
    The agents watch it, check it and pick the best moment for her. Press **Make**, read it, then **Approve and
    send**; it arrives on `/phone/chen`. Under the card you can **add another moment** (a quiz, a mind map, a video),
-   made on its own. If a link won't download (some sites block it), upload the video file instead.
+   made and checked on its own; if she already has the pack, it waits for your approval before it joins her pack.
+   If a link won't download (some sites block it), upload the video file instead.
 2. **Send typed news.** Type "tell mom I'll call after my meeting at 6" and send it. It is recognised as a message to
    pass on and takes the fast way. On the card, **Record** lets you say it in your own voice, and Mom hears you
    instead of the device voice.
@@ -157,7 +159,7 @@ but not for real ones, so the app only uses it when you also set `ALLOW_CONTRIBU
 ## Good to know
 
 - **Voice.** Edge's "Natural" voices sound best. Browsers only speak after a first tap on the page. The Studio's copy
-  of her screen stays silent, so only her phone speaks.
+  of her screen never speaks on its own, so you hear only her phone.
 - **Gmail, Calendar and Notion.** Without your own Google OAuth client or Notion token in `.env`, the prefilled demo
   accounts answer.
 - **The lab page** shows the results of our tuning rounds. The reels themselves, their stills and the product photos

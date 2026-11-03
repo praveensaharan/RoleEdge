@@ -168,7 +168,7 @@ function render() {
   const visible = items.filter(shown);
   morph($("feed"), visible.length ? visible.map((i) => card(i).replace(/^(\s*)<div /, `$1<div data-card="${i.id}" `)).join("") :
     `<p class="empty">${esc(words.empty.replace("{name}", callName()))}</p>`);
-  if (visible.length !== drawn) $("feed").scrollTop = $("feed").scrollHeight;
+  if (visible.length > drawn) $("feed").scrollTop = $("feed").scrollHeight; // something new: show it
   drawn = visible.length;
 }
 
@@ -449,6 +449,7 @@ function showStage(progress = 0) {
   const text = stageText();
   $("caption").innerHTML = `<span class="said">${esc(text.slice(0, progress))}</span>${esc(text.slice(progress))}` +
     (subs && stage.index < 0 && m.english_gloss && text === m.spoken_text ? `<div class="gloss">${esc(m.english_gloss)}</div>` : "");
+  followCaption(progress);
   const n = m.steps.length;
   $("stage-step").textContent = stage.index >= 0 ? words.step.replace("{i}", stage.index + 1).replace("{n}", n) : "";
   $("stage-back").textContent = words.back;
@@ -456,6 +457,16 @@ function showStage(progress = 0) {
   $("stage-next").textContent = stage.index < n - 1 ? words.next : words.done;
   $("stage-play").innerHTML = head?.speaking ? ICON.stop : ICON.play;
   $("stage-play").classList.toggle("playing", Boolean(head?.speaking));
+}
+
+/** The caption is a few lines tall: keep the words being said in view (and start at the top). */
+function followCaption(progress) {
+  const box = $("caption");
+  if (!progress) { box.scrollTop = 0; return; }
+  const rects = box.querySelector(".said")?.getClientRects();
+  if (!rects?.length) return;
+  const bottom = rects[rects.length - 1].bottom - box.getBoundingClientRect().top + box.scrollTop;
+  if (bottom > box.scrollTop + box.clientHeight) box.scrollTop = bottom - box.clientHeight + 4;
 }
 
 async function playStage() {

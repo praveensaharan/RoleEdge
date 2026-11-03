@@ -147,8 +147,14 @@ def test_the_studio_api_from_share_to_her_engagement(tmp_path):
         adding = client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["video"]}).json()
         assert adding["payload"]["stage"] == "making" and set(adding["payload"]["outputs"]) == {"note", "askme"}
         added = wait_for(started["id"], "ready")
-        assert set(added["payload"]["outputs"]) == {"note", "askme", "video"} and added["status"] == "played"
-        assert added["payload"]["formats"] == ["note", "askme", "video"] and added["payload"]["engagement"]
+        # it passed the checks on its own and waits for you; her pack is unchanged until you approve it
+        assert set(added["payload"]["outputs"]) == {"note", "askme"} and added["status"] == "played"
+        assert set(added["payload"]["pending"]["outputs"]) == {"video"}
+        assert client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["picture"]}).status_code == 409
+        approved = client.post(f"/api/items/{started['id']}/approve", json={}).json()
+        assert set(approved["payload"]["outputs"]) == {"note", "askme", "video"} and approved["status"] == "played"
+        assert approved["payload"]["formats"] == ["note", "askme", "video"] and "pending" not in approved["payload"]
+        assert approved["payload"]["engagement"]
         assert "meta_left_usd" in client.get("/api/spend").json()
 
 

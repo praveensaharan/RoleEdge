@@ -93,7 +93,7 @@ The user asked for the whole task to be finished overnight without questions; wh
 default taken and why.
 
 - **Spending limit:** $50 for the whole lab, new calls stop at $45 (`lab/budget.py`); raised by the user to $55
-  for rounds 6-7 and Leo's round 4. Counted as the Meta spend in
+  for rounds 6-7 and Leo's round 4, then to $70 (2026-11-04). Counted as the Meta spend in
   `output/usage.jsonl` (every lab ledger is appended to it once, so nothing is counted twice) plus Muse Voice
   Transcribe at $0.18 an audio hour. The usage ledger also holds the app's own calls from before the lab, so the
   figure errs high.
@@ -205,7 +205,7 @@ default taken and why.
 - Reports: [reel-lab/REPORT.md](reel-lab/REPORT.md), [REELS.md](reel-lab/REELS.md), [OUTPUTS.md](reel-lab/OUTPUTS.md),
   [INTEGRATIONS.md](reel-lab/INTEGRATIONS.md), and the `/lab` page (linked from the home page). 66 approved moments are
   exported as fine-tuning pairs (117: Linda's and Leo's; `output/reel-lab/style-dataset.jsonl`, `python -m roleedge.lab dataset`).
-- Spend: $54.14 of the $55 limit the user set (the lab's ledgers, Muse Voice Transcribe and Muse Image). Nothing
+- Spend: $54.43 of the $70 limit the user set (it was $55 until 2026-11-04) (the lab's ledgers, Muse Voice Transcribe and Muse Image). Nothing
   committed.
 
 **Not done, or not reached**

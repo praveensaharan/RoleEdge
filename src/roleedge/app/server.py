@@ -177,6 +177,13 @@ def create_app(llm: LLM | None = None, store: Store | None = None, insights: Ins
     @app.post("/api/items/{item_id}/approve")
     async def approve(item_id: str, req: ApproveRequest) -> dict:
         item = item_or_404(item_id)
+        if item.kind == "studio" and (pending := item.payload.get("pending")) and item.status in ("sent", "played"):
+            # a moment added to a pack she already has: it passed the gate on its own; now you approved it too
+            item.payload.pop("pending")
+            item.payload["outputs"] = {**(item.payload.get("outputs") or {}), **pending["outputs"]}
+            item.payload["formats"] = list(dict.fromkeys([*(item.payload.get("formats") or []), *pending["formats"]]))
+            item.trace.append(TraceStep(step="Approved by you: the new moment is added to her pack", engine="you"))
+            return (await publish(item)).model_dump()
         if item.status not in ("draft", "held"):
             raise HTTPException(409, f"This item is already {item.status}.")
         if item.kind == "studio":
@@ -197,6 +204,8 @@ def create_app(llm: LLM | None = None, store: Store | None = None, insights: Ins
             raise HTTPException(422, {"message": "This can't be sent from the app: " + "; ".join(gate.reasons),
                                       "item": (await publish(item)).model_dump()})
         item.status = "sent"
+        if item.kind == "studio":
+            item.payload["error"] = ""  # an earlier note (a restart, a moment that couldn't be made) is behind us
         item.trace.append(TraceStep(step="Approved by you" + (" (sent anyway)" if req.allow_soft else ""),
                                     engine="you"))
         return (await publish(item)).model_dump()

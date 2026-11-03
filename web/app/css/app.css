@@ -297,10 +297,10 @@ a { color: var(--accent-ink); text-decoration: none; }
 /* a quiet notice instead of the browser's alert box */
 .notice { position: fixed; left: 50%; bottom: 24px; z-index: 50; transform: translateX(-50%); display: flex; align-items: center; gap: 12px;
   max-width: min(560px, calc(100vw - 32px)); padding: 10px 10px 10px 16px; border: 1px solid var(--hairline); border-radius: var(--r-lg);
-  background: var(--canvas); box-shadow: var(--shadow-lg), var(--shadow-md); font-size: 14px; color: var(--ink); animation: rise .3s var(--ease); }
+  background: var(--canvas); box-shadow: var(--shadow-lg), var(--shadow-md); font-size: 14px; color: var(--ink); animation: rise-centered .3s var(--ease); }
 .notice.error { border-color: var(--urgent); }
 .notice.error::before { content: ""; width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--urgent); }
-@keyframes rise { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translateX(-50%); } }
+@keyframes rise-centered { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translateX(-50%); } } /* its own name: sharing "rise" pushed every card half its width to the left as it appeared */
 .error { margin: 0 18px 16px; padding: 12px 14px; border-radius: var(--r-md); background: var(--urgent-soft); color: var(--urgent-ink); font-size: 13.5px; }
 
 /* quick message, reply, summary, alert */
@@ -519,3 +519,4 @@ body { background-color: var(--page); background-image: radial-gradient(circle, 
   .scenes.open { top: 76px; bottom: 20px; left: 20px; }
   .scenes.open .sc-panel { width: 400px; height: 100%; max-height: none; box-shadow: 0 1px 0 rgba(0, 0, 0, .02); }
 }
+.pending { border-top: 1px solid var(--hairline-soft); padding-top: 14px; }

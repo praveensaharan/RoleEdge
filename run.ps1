@@ -1,4 +1,4 @@
-# Start RoleEdge on http://localhost:8100 (another port: $env:PORT=8200; .\run.ps1).
+# Start RoleEdge on http://localhost:8100 (another port: $env:PORT=8200; powershell -ExecutionPolicy Bypass -File run.ps1).
 # Run it with: powershell -ExecutionPolicy Bypass -File run.ps1
 # The first run makes a Python environment in .venv and installs the app (a few minutes).
 $ErrorActionPreference = "Stop"

@@ -177,7 +177,8 @@ body.mirror .screen { width: 100%; height: 100%; }
 .stage { padding: 10px 14px 12px; }
 .portrait { aspect-ratio: 2 / 1; border-radius: var(--r-2xl); }
 .stage.idle .portrait { aspect-ratio: 3 / 1; }
-.caption { margin-top: 10px; font-size: 18px; line-height: 1.4; min-height: 0; max-height: 4.3em; }
+.portrait img { object-position: 50% 40%; } /* a strip of the face: keep the mouth in view, it moves with the words */
+.caption { margin-top: 10px; font-size: 18px; line-height: 1.4; min-height: 0; max-height: 5.7em; scroll-behavior: smooth; }
 .stage.idle .caption { margin-top: 8px; font-size: 15px; max-height: 2.8em; }
 .stage-step { margin-top: 4px; font-size: 13px; min-height: 0; }
 .stage-controls { margin-top: 8px; gap: 10px; }
