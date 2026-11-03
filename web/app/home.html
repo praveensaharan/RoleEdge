@@ -313,7 +313,6 @@
           <span class="mchip"><code>muse-voice-transcribe-1.0</code>her voice</span>
           <span class="mchip"><code>muse-image-1.0</code>pictures</span>
           <span class="mchip"><code>sam-3.1</code>avatars</span>
-          <span class="mchip"><code>llama-guard-3-1b + LoRA</code>child model, in training</span>
           <span class="mchip code"><code>code</code>dates, gates, limits, trends</span>
         </div>
       </div>
@@ -326,20 +325,31 @@
         <div class="sec-head" data-reveal>
           <span class="eyebrow"><span class="ey-n">02</span>For children</span>
           <h2>A model trained for children. <span class="soft">Not just a filter.</span></h2>
-          <p class="sub">We are fine-tuning a dedicated child-safety model on our own policy, so everything made for a grandchild is read line by line by a model that learned what a parent would not want them to see.</p>
+          <p class="sub">We fine-tuned a small child-safety model on our own policy and published it: it learned what a parent would not want a grandchild to see. In the app, Muse Spark reads every line made for a child before the parent approves it.</p>
         </div>
         <div class="kids">
           <article class="kmodel spot" data-reveal>
-            <div class="km-top"><span class="km-label">Dedicated child model</span><span class="tag next">In training</span></div>
-            <code class="km-id">llama-guard-3-1b + LoRA</code>
+            <div class="km-top"><span class="km-label">Dedicated child model</span><span class="tag">Trained, not run here</span></div>
+            <a class="km-id km-link" href="https://huggingface.co/pra40109/Llama-Garvit-1.0" target="_blank" rel="noopener noreferrer"><code>Llama-Garvit-1.0</code><small>on Hugging Face</small></a>
             <ul class="km-facts">
-              <li>Fine-tuned on RoleEdge's own child policy, in English and Japanese</li>
-              <li>Data, training and evaluation run on Modal, compared with the base model</li>
-              <li>Until it is deployed, Muse Spark reviews every line, and anything doubtful waits for the parent</li>
+              <li>A LoRA on Llama Guard 3 1B for children aged 4 to 12: <code>safe</code>, or <code>unsafe</code> with our categories C1 to C10</li>
+              <li>2,552 lines from four public sources, one pass, rank 16, trained on Modal in about 6.5 minutes (about $0.09)</li>
+            </ul>
+            <div class="km-results" role="table" aria-label="727 held-out lines, before and after training">
+              <div class="kr-row kr-head" role="row"><span role="columnheader">727 held-out lines</span><span role="columnheader">Untrained</span><span role="columnheader">Trained</span></div>
+              <div class="kr-row" role="row"><span role="cell">Unsafe lines caught</span><span role="cell">52%</span><b role="cell">99.6%</b></div>
+              <div class="kr-row" role="row"><span role="cell">Flags that were right</span><span role="cell">92%</span><b role="cell">98.7%</b></div>
+              <div class="kr-row" role="row"><span role="cell">Safe lines flagged</span><span role="cell">2.0%</span><b role="cell">0.6%</b></div>
+              <div class="kr-row" role="row"><span role="cell">Right category codes</span><span role="cell">0%</span><b role="cell">82%</b></div>
+            </div>
+            <ul class="km-facts">
+              <li>A prompt alone changed nothing: untrained, it answered with its own adult category every time. Training moved it to the child policy; mild insults went from 18% caught to 100%.</li>
+              <li>Fair warning: the test lines come from the same sources as the training lines. The real test, new lines written the way a children's app writes, and unsafe Japanese lines, is next.</li>
+              <li>Not run in this build: the organisers ruled that Llama doesn't count as a Meta model at runtime, so Muse Spark checks every child's pack, and anything doubtful waits for the parent.</li>
             </ul>
             <div class="km-cats"><span>Frightening or violent</span><span>Dating</span><span>Alcohol, drugs, gambling</span><span>Money, buying, sign-ups</span><span>Secrets or contact</span><span>Medical advice</span></div>
             <div class="tester">
-              <div class="ts-head"><b>Try it</b><small>Tap a line to see what the child model does with it</small></div>
+              <div class="ts-head"><b>Try it</b><small>Tap a line to see what the child check does with it</small></div>
               <div class="ts-picks" id="ts-picks">
                 <button type="button" data-line="つきは いつも まるいよ" data-en="The moon is always round." data-verdict="pass">The moon is always round</button>
                 <button type="button" data-line="アプリを ダウンロードして しらべよう" data-en="Download an app to find out more." data-verdict="Sign-ups">Download an app to find out</button>

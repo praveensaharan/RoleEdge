@@ -146,7 +146,7 @@ function hint() {
   const person = recipient(), name = person.call_name;
   $("compose-hint").textContent = state.mode === "quick" ? `Quick: rewritten for ${name} ${voice}, no research.`
     : isChild(person) ? `Research first, then a child-safety review: a minute or two, a few cents. Nothing reaches ${name} until you approve.`
-    : `Research first: a minute or two, a few cents. Nothing reaches ${name} until you approve.`;
+    : `Research first: typed news or a question goes the quick way; anything to explain is checked and gets its best moment. Nothing reaches ${name} until you approve.`;
   // a reel's caption often names what the video only shows (a film's title, the sites in a list); a saved video loses it
   if (state.mode !== "quick" && state.files.some((f) => f.type.startsWith("video/"))) $("compose-hint").textContent += " Paste the reel's caption too, if it has one.";
 }
@@ -401,6 +401,7 @@ async function share(onShared) {
       form.append("ref", state.ref?.ref || "");
       form.append("ref_title", state.ref?.title || "");
       form.append("ref_thumb", state.ref?.thumb || "");
+      form.append("voice", state.voice); // typed news to pass on is said in this voice (the fast way)
       for (const f of state.files) form.append("files", f, f.name);
       const res = await fetch(`/api/circles/${state.circle.id}/studio`, { method: "POST", body: form });
       item = await res.json().catch(() => ({}));
