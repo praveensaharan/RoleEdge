@@ -21,7 +21,7 @@ fi
 
 if [ ! -x .venv/bin/roleedge ]; then
   echo "First run: installing RoleEdge into .venv ..."
-  "$PY" -m venv .venv
+  "$PY" -m venv .venv || { echo "Could not make a Python environment. On Ubuntu: sudo apt install python3-venv"; rm -rf .venv; exit 1; }
   .venv/bin/python -m pip install --quiet --upgrade pip
   .venv/bin/python -m pip install --quiet -e .
 fi

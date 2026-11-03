@@ -6,13 +6,14 @@
 // (?mirror=1) follows it (F8, "see what they see").
 import { loadAvatar, TalkingHead } from "./avatar.js";
 import { loadAvatar3D } from "./avatar3d.js";
-import { genderOf } from "./voice.js";
-import { api, esc, ICON, live } from "./common.js";
+import { genderOf, mute } from "./voice.js";
+import { api, esc, ICON, live, morph } from "./common.js";
 import { FORMAT_INFO, formatName, icon, loadIcons, mountViewer, speak, stopSpeech } from "./studio-view.js";
 
 const circleId = location.pathname.split("/").pop();
 const params = new URLSearchParams(location.search);
 const mirror = params.get("mirror") === "1";
+if (mirror) mute(); // the caregiver's copy of her screen stays quiet: only her phone speaks
 const memberId = params.get("member") || ""; // a child's screen; empty = the parent's
 const subs = params.get("subs") === "1";
 const me = Math.random().toString(36).slice(2, 10); // tells this screen's own reports from the real phone's
@@ -152,6 +153,7 @@ function tell() {
 function follow(screen) {
   if ((screen.member || circle.parent.id) !== person.id) return; // another device in the family
   if (screen.view === "sheet") {
+    if (sheet && sheet.item.id === screen.item && sheet.format === screen.format) return; // already showing it: don't restart it
     const item = items.find((i) => i.id === screen.item);
     if (item) { openSheet(item, screen.format, false); return; }
   }
@@ -160,11 +162,14 @@ function follow(screen) {
 
 // ---------------------------------------------------------------- feed
 
+let drawn = -1; // how many cards the feed showed last time
+/** Redraw the feed in place (pictures don't flash, the scroll stays), and go to the newest only when one arrived. */
 function render() {
   const visible = items.filter(shown);
-  $("feed").innerHTML = visible.length ? visible.map(card).join("") :
-    `<p class="empty">${esc(words.empty.replace("{name}", callName()))}</p>`;
-  $("feed").scrollTop = $("feed").scrollHeight;
+  morph($("feed"), visible.length ? visible.map((i) => card(i).replace(/^(\s*)<div /, `$1<div data-card="${i.id}" `)).join("") :
+    `<p class="empty">${esc(words.empty.replace("{name}", callName()))}</p>`);
+  if (visible.length !== drawn) $("feed").scrollTop = $("feed").scrollHeight;
+  drawn = visible.length;
 }
 
 function fromTag(item, extra = "") {

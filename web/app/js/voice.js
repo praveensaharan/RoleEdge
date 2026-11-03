@@ -100,6 +100,9 @@ export function phrases(text) {
 }
 
 let run = 0;
+let muted = false; // the caregiver's mirror of her screen: it shows everything, but only her phone speaks
+/** Show speech without sound (the mirror): timing, captions and the avatar's mouth still follow the words. */
+export function mute(on = true) { muted = on; }
 let failing = new Set(); // voices that failed this session (a network voice offline): the default voice speaks instead
 const alive = new Set(); // Chrome drops an utterance it can't see referenced, and then its "end" never comes
 
@@ -121,12 +124,25 @@ export function hush() {
  * whose end never comes is moved past after a generous time, so the rest is still said.
  */
 export function speakNaturally(text, { lang = "en-US", rate = 0.92, gender = "", pick = 0, onState = () => {}, onBoundary = () => {} } = {}) {
-  if (!("speechSynthesis" in window) || !text?.trim()) return Promise.resolve(false);
+  if (!text?.trim()) return Promise.resolve(false);
+  if (muted || !("speechSynthesis" in window)) return silently(text, { lang, rate, onState });
   const wasBusy = speechSynthesis.speaking || speechSynthesis.pending;
   hush();
   const token = ++run;
-  const parts = phrases(text);
+  const first = bestVoice(lang, gender, pick);
+  let parts = phrases(text);
   const ja = lang.startsWith("ja");
+  if (first && !first.localService) {
+    // An online voice fetches each phrase, which adds its own gap: keep "Mom," with its sentence (the voice pauses
+    // at the comma) and shorten our pauses by that much.
+    const merged = [];
+    for (let k = 0; k < parts.length; k++) {
+      const p = parts[k], q = parts[k + 1];
+      if (p.kind === "address" && q) { merged.push({ ...q, text: text.slice(p.start, q.start + q.text.length), start: p.start }); k++; }
+      else merged.push(p);
+    }
+    parts = merged.map((p) => ({ ...p, pause: p.pause ? Math.max(80, p.pause - 200) : 0 }));
+  }
   return new Promise((resolve) => {
     const say = (k, voice) => {
       if (token !== run) return resolve(false);
@@ -169,6 +185,25 @@ export function speakNaturally(text, { lang = "en-US", rate = 0.92, gender = "",
       speechSynthesis.speak(utter);
     };
     // Chrome drops a speak() that comes right after cancel(): wait a moment when something was being said
-    setTimeout(() => say(0, bestVoice(lang, gender, pick)), wasBusy ? 120 : 0);
+    setTimeout(() => say(0, first), wasBusy ? 120 : 0);
+  });
+}
+
+/** The same rhythm with no sound: each phrase "said" at a reading pace, then its pause. */
+function silently(text, { lang, rate, onState }) {
+  hush();
+  const token = ++run;
+  const parts = phrases(text);
+  const cps = (lang.startsWith("ja") ? 7.5 : 14) * rate;
+  return new Promise((resolve) => {
+    const next = (k) => {
+      if (token !== run) return resolve(false);
+      if (k >= parts.length) { onState({ index: text.length, talking: false }); return resolve(true); }
+      const p = parts[k];
+      onState({ index: p.start, phraseStart: p.start, phraseLength: p.text.length, startedAt: performance.now(), rate, talking: true });
+      setTimeout(() => { if (token !== run) return resolve(false); onState({ index: p.start + p.text.length, talking: false }); setTimeout(() => next(k + 1), p.pause); },
+        (p.text.length / cps) * 1000);
+    };
+    next(0);
   });
 }

@@ -68,3 +68,60 @@ export function live(circleId, onEvent) {
     send(message) { if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(message)); },
   };
 }
+
+// ---------------------------------------------------------------- live redraws without flashing
+
+const keyOf = (node) => (node.nodeType === 1 ? node.getAttribute("data-card") || node.getAttribute("data-key") || node.id || null : null);
+
+/** Make the element ``el`` match ``html`` by changing only what differs. Live updates arrive many times a second
+ *  while agents work; replacing the markup each time re-created every picture and video (they flashed or restarted)
+ *  and lost the scroll position. Unchanged nodes, and so pictures, videos, audio and focus, stay as they are.
+ *  Children with data-card, data-key or id are matched by that key; an element with data-keep is left alone (a
+ *  mounted viewer lives there). */
+export function morph(el, html) {
+  const next = document.createElement("template");
+  next.innerHTML = html;
+  morphChildren(el, next.content);
+}
+
+/** The same for the element itself: ``html`` is its new outer markup (one element). */
+export function morphElement(el, html) {
+  const next = document.createElement("template");
+  next.innerHTML = html.trim();
+  if (next.content.firstElementChild) morphNode(el, next.content.firstElementChild);
+}
+
+function morphNode(from, to) {
+  if (from.nodeType !== to.nodeType || from.nodeName !== to.nodeName) { from.replaceWith(to); return; }
+  if (from.nodeType !== 1) { if (from.nodeValue !== to.nodeValue) from.nodeValue = to.nodeValue; return; }
+  if (from.hasAttribute("data-keep")) return;
+  for (const { name } of [...from.attributes]) if (!to.hasAttribute(name)) from.removeAttribute(name);
+  for (const { name, value } of [...to.attributes]) if (from.getAttribute(name) !== value) from.setAttribute(name, value);
+  if (from.nodeName === "INPUT" || from.nodeName === "TEXTAREA") return; // keep what someone is typing or picked
+  morphChildren(from, to);
+}
+
+function morphChildren(from, to) {
+  const keyed = new Map();
+  for (const child of from.childNodes) { const k = keyOf(child); if (k) keyed.set(k, child); }
+  const wanted = new Set([...to.childNodes].map(keyOf).filter(Boolean));
+  let cursor = from.firstChild;
+  const skipGone = () => { // a keyed node that is no longer wanted goes, so the nodes after it can still be matched
+    while (cursor && keyOf(cursor) && !wanted.has(keyOf(cursor))) { const after = cursor.nextSibling; cursor.remove(); cursor = after; }
+  };
+  for (const want of [...to.childNodes]) {
+    skipGone();
+    const k = keyOf(want);
+    let match = null;
+    if (k) match = keyed.get(k) || null;
+    else if (cursor && !keyOf(cursor) && cursor.nodeType === want.nodeType && cursor.nodeName === want.nodeName) match = cursor;
+    if (match) {
+      if (k) keyed.delete(k);
+      if (match === cursor) cursor = cursor.nextSibling; else from.insertBefore(match, cursor);
+      morphNode(match, want);
+    } else {
+      from.insertBefore(want, cursor);
+    }
+  }
+  while (cursor) { const after = cursor.nextSibling; cursor.remove(); cursor = after; }
+}

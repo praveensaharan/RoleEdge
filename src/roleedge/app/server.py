@@ -150,23 +150,29 @@ def create_app(llm: LLM | None = None, store: Store | None = None, insights: Ins
         store.save_circle(circle)
         return circle.model_dump()
 
+    async def quick_message(circle: Circle, text: str, voice: VoiceChoice, first: list[TraceStep] | None = None) -> ThreadItem:
+        """One rewrite in her words, then the send gate: the fast way (also what a typed message to pass on takes
+        from the Studio, after ``read_intent``)."""
+        message, step = await run_in_threadpool(compose, llm, circle, text, voice)
+        gate = gate_message(message)
+        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
+        trace = [*(first or []), step,
+                 TraceStep(step="Final send gate: " + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")]
+        item = ThreadItem(id=new_id("it"), circle_id=circle.id, at=now_iso(), kind="message", to="parent",
+                          speaker="person" if voice == "mine" else "assistant", status=status, voice=voice,
+                          payload={"source_text": text, "message": message.model_dump(),
+                                   "language": circle.parent.language}, gate=gate, trace=trace)
+        return await publish(item)
+
+    app.state.quick_message = quick_message
+
     @app.post("/api/circles/{circle_id}/compose")
     async def compose_message(circle_id: str, req: ComposeRequest) -> dict:
         circle = circle_or_404(circle_id)
         if not req.text.strip():
             raise HTTPException(400, "Write something first.")
         quick.take()
-        voice = req.voice or circle.voice
-        message, step = await run_in_threadpool(compose, llm, circle, req.text, voice)
-        gate = gate_message(message)
-        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
-        trace = [step, TraceStep(step="Final send gate: " + ("passed" if gate.passed else "; ".join(gate.reasons)),
-                                 engine="code")]
-        item = ThreadItem(id=new_id("it"), circle_id=circle_id, at=now_iso(), kind="message", to="parent",
-                          speaker="person" if voice == "mine" else "assistant", status=status, voice=voice,
-                          payload={"source_text": req.text, "message": message.model_dump(),
-                                   "language": circle.parent.language}, gate=gate, trace=trace)
-        return (await publish(item)).model_dump()
+        return (await quick_message(circle, req.text, req.voice or circle.voice)).model_dump()
 
     @app.post("/api/items/{item_id}/approve")
     async def approve(item_id: str, req: ApproveRequest) -> dict:

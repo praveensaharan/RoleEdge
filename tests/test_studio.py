@@ -131,7 +131,8 @@ def test_the_studio_api_from_share_to_her_engagement(tmp_path):
         started = client.post("/api/circles/sato/studio", data={"text": "健康診査の予約は11月20日午後5時まで"}).json()
         assert started["kind"] == "studio" and started["payload"]["stage"] == "researching"
         planned = wait_for(started["id"], "planned")
-        assert planned["payload"]["formats"] == ["note", "map", "steps", "askme", "video", "picture"]  # the full set
+        assert planned["payload"]["formats"] == ["note"]  # only the best moment is made unless more are picked
+        assert [f["format"] for f in planned["payload"]["plan"]["formats"] if f["recommended"]] == ["note", "map", "steps", "askme", "video", "picture"]
         assert {"reader", "web_search", "planner"} <= {a["agent"] for a in planned["payload"]["agents"]}
         assert client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["story"]}).status_code == 400  # not hers
         client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["note", "askme"]})
@@ -141,6 +142,13 @@ def test_the_studio_api_from_share_to_her_engagement(tmp_path):
         seen = client.post(f"/api/items/{started['id']}/engagement", json={"format": "askme", "event": "answer_right",
                                                                             "value": 0}).json()
         assert seen["status"] == "played" and seen["payload"]["engagement"][0]["event"] == "answer_right"
+        # another moment, made on its own afterwards: the pack she has stays hers while it is made
+        assert client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["askme"]}).status_code == 400  # made
+        adding = client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["video"]}).json()
+        assert adding["payload"]["stage"] == "making" and set(adding["payload"]["outputs"]) == {"note", "askme"}
+        added = wait_for(started["id"], "ready")
+        assert set(added["payload"]["outputs"]) == {"note", "askme", "video"} and added["status"] == "played"
+        assert added["payload"]["formats"] == ["note", "askme", "video"] and added["payload"]["engagement"]
         assert "meta_left_usd" in client.get("/api/spend").json()
 
 
@@ -590,3 +598,38 @@ def test_a_moment_that_sounds_like_a_report_is_written_again_in_the_familys_voic
     retry = str([m for name, m in model.calls if name == "maker_note"][-1])
     assert "introduces the sender" in retry and "talks about the reel" in retry and "a disclaimer she doesn" in retry
     assert robotic(["この動画では、顔の運動を紹介しています。"])  # Japanese too
+
+
+def test_a_typed_message_to_pass_on_takes_the_fast_way(tmp_path):
+    """Words only: the intent is read first. A message to pass on is one rewrite (no research, no moments); something
+    to explain goes to the research."""
+    from fastapi.testclient import TestClient
+
+    from roleedge.app.server import create_app
+    from roleedge.store import Store
+
+    from .conftest import FakeProvider
+
+    class IntentModel(FakeProvider):
+        def __init__(self, kind):
+            super().__init__()
+            self.kind = kind
+
+        def complete_json(self, messages, schema, schema_name, *, effort="low", model=None):
+            self.calls.append((schema_name, messages))
+            if schema_name == "share_intent":
+                return {"kind": self.kind, "reason_en": "news from her day"}, Usage(40, 0, 8, 0)
+            if schema_name == "parent_message":
+                return {"spoken_text": "I'll call you after my meeting at six.", "screen_title": "A call tonight", "steps": [],
+                        "quick_replies": ["Okay"], "english_gloss": ""}, Usage(80, 0, 30, 0)
+            return StudioModel().complete_json(messages, schema, schema_name, effort=effort, model=model)
+
+    model = IntentModel("message")
+    llm = LLM(model, cache_dir=tmp_path / "c", ledger_file=tmp_path / "u.jsonl")
+    with TestClient(create_app(llm=llm, store=Store(tmp_path / "db.sqlite"), media=None)) as client:
+        item = client.post("/api/circles/chen/studio", data={"text": "tell mom I'll call after my meeting at 6", "voice": "mine"}).json()
+        assert item["kind"] == "message" and item["speaker"] == "person" and item["status"] == "draft"
+        assert [name for name, _ in model.calls] == ["share_intent", "parent_message"]  # two quick calls, nothing else
+        assert item["trace"][0]["step"].startswith("Read what you meant: a message to pass on")
+        # a photo, a link or a long text never asks; a child's share never takes the fast way
+        assert client.post("/api/circles/chen/studio", data={"text": "x", "to": "leo"}).json()["kind"] == "studio"
