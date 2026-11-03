@@ -1,0 +1,25 @@
+/* Design tokens (docs/design.md): one red accent, ink, greys; Inter; pills for actions, 6px cards. */
+:root {
+  --primary: #e60000;
+  --primary-deep: #a30000;
+  --primary-soft: #ffe5e5;
+  --ink: #25282b;
+  --ink-2: #2f3236;
+  --ink-3: #3a3e43;
+  --canvas: #ffffff;
+  --canvas-soft: #f2f2f2;
+  --body: #7e7e7e;
+  --mute: #bebebe;
+  --on-dark: #ffffff;
+  --hairline: rgba(37, 40, 43, 0.12);
+  --hairline-dark: rgba(255, 255, 255, 0.14);
+
+  --pill-md: 32px;
+  --pill-lg: 60px;
+  --card: 6px;
+  --full: 9999px;
+
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --sidebar-w: 300px;
+}

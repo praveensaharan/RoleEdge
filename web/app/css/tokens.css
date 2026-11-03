@@ -1,0 +1,47 @@
+/* roleEdge design tokens. One type family (Geist, with Noto Sans JP for Japanese and Geist Mono only for
+   identifiers), neutral greys, black for the brand and every action, and colour for status only: green for passed,
+   amber for "needs you", red for held or urgent. Nothing is colour-coded by content type. */
+:root {
+  --ink: #0a0a0a;
+  --ink-soft: #262626;
+  --body: #3f3f46;
+  --muted: #71717a;
+  --muted-soft: #a1a1aa;
+  --canvas: #ffffff;
+  --page: #fafafa;
+  --surface: #fafafa;
+  --surface-card: #f4f4f5;
+  --surface-strong: #e4e4e7;
+  --hairline: #e4e4e7;
+  --hairline-soft: #f0f0f1;
+  --line-strong: #d4d4d8;  /* inputs, outlined buttons, choices */
+
+  /* brand: black. The top bar, the mark, primary buttons, selection and progress */
+  --brand: #0a0a0a;
+  --brand-raised: #1c1c1e;
+  --brand-line: #2e2e30;
+  --on-brand: #ffffff;
+  --on-brand-soft: #a1a1aa;
+  --accent: #0a0a0a;
+  --accent-hover: #2b2b2b;
+  --accent-soft: #f4f4f5;
+  --accent-ink: #0a0a0a;
+
+  /* status only */
+  --ok: #079455;    --ok-soft: #ecfdf3;    --ok-ink: #067647;
+  --watch: #dc6803; --watch-soft: #fffaeb; --watch-ink: #b54708;
+  --urgent: #d92d20; --urgent-soft: #fef3f2; --urgent-ink: #b42318;
+  --star: #f79009;
+
+  --font: "Geist", "Noto Sans JP", ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Hiragino Sans", sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --display: "Doto", var(--font);  /* dot-matrix accent: the wordmark and big numbers in the Studio only, never body text */
+
+  --r-xs: 4px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 10px; --r-2xl: 14px; --r-pill: 9999px;
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px;
+  --shadow-sm: 0 1px 2px rgba(10, 10, 10, .05);
+  --shadow-md: 0 4px 8px -2px rgba(10, 10, 10, .08), 0 2px 4px -2px rgba(10, 10, 10, .04);
+  --shadow-lg: 0 12px 16px -4px rgba(10, 10, 10, .08), 0 4px 6px -2px rgba(10, 10, 10, .03);
+  --ring: 0 0 0 4px rgba(10, 10, 10, .08);
+  --ease: cubic-bezier(.2, .7, .2, 1);
+}

@@ -1,0 +1,14 @@
+/* Animations (all disabled under prefers-reduced-motion). */
+@keyframes bob { 50% { transform: translateY(-4%); } }
+@keyframes twinkle { 0%, 100% { transform: scale(.6); opacity: .5; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes spin { to { transform: rotate(90deg); } }
+@keyframes hop { 50% { transform: translateY(-4px); } }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 0, 0, .45); } 100% { box-shadow: 0 0 0 12px rgba(230, 0, 0, 0); } }
+@keyframes blink { 0%, 91%, 100% { opacity: 1; } 93%, 97% { opacity: 0; } }
+.px-eyes { animation: blink 4.5s infinite; }
+.perch-cat .px-eyes { animation-duration: 6s; animation-delay: 1.3s; }
+.msg .px-eyes { animation-duration: 5s; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

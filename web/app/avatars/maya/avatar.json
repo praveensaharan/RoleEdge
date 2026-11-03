@@ -1,0 +1,72 @@
+{
+ "person": "maya",
+ "frames": [
+  "base",
+  "open",
+  "half",
+  "blink"
+ ],
+ "size": 640,
+ "mouth": [
+  276,
+  376,
+  369,
+  403
+ ],
+ "eyes": [
+  228,
+  258,
+  412,
+  298
+ ],
+ "style": "character",
+ "prompt": "stylized 3D animated character portrait, soft rounded features, large warm expressive eyes, smooth clean shading, friendly and calm, high-quality 3D character render, head and shoulders, facing the camera directly, plain soft light-grey background, a little space above the head: a friendly Chinese-American woman in her late thirties with shoulder-length dark hair and a sage-green blouse, gentle smile with lips closed",
+ "steps": [
+  {
+   "step": "Drew the portrait",
+   "engine": "meta/muse-image-1.0",
+   "s": 11.0
+  },
+  {
+   "step": "Found the mouth",
+   "engine": "meta/sam-3.1",
+   "s": 3.4
+  },
+  {
+   "step": "Found the eye",
+   "engine": "meta/sam-3.1",
+   "s": 5.9
+  },
+  {
+   "step": "Made the 'open' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 11.4
+  },
+  {
+   "step": "Found the mouth in the 'open' frame",
+   "engine": "meta/sam-3.1",
+   "s": 1.8
+  },
+  {
+   "step": "Made the 'half' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 20.1
+  },
+  {
+   "step": "Found the mouth in the 'half' frame",
+   "engine": "meta/sam-3.1",
+   "s": 1.9
+  },
+  {
+   "step": "Made the 'blink' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 14.8
+  },
+  {
+   "step": "Found the eye in the 'blink' frame",
+   "engine": "meta/sam-3.1",
+   "s": 2.3
+  }
+ ],
+ "note": "Drawn by Muse Image (synthetic person); frames aligned with SAM 3.1 boxes and composited in code."
+}

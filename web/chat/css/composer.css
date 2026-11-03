@@ -1,0 +1,40 @@
+/* Message composer, attachments, send/mic buttons, toast. */
+/* composer */
+.composer { padding: 8px 24px 14px; background: var(--canvas); }
+.composer-box {
+  max-width: 860px; margin: 0 auto; border: 1px solid var(--ink); border-radius: var(--card);
+  padding: 10px 10px 8px 14px; background: var(--canvas); transition: box-shadow .15s;
+}
+.composer-box:focus-within { box-shadow: 0 0 0 3px rgba(37, 40, 43, .08); }
+.composer.drag .composer-box { border-style: dashed; border-color: var(--primary); background: var(--primary-soft); }
+.thumbs { display: flex; gap: 8px; flex-wrap: wrap; }
+.thumbs:not(:empty) { margin: 2px 0 10px; }
+.thumb { position: relative; }
+.thumb img { width: 64px; height: 64px; object-fit: cover; border-radius: var(--card); display: block; }
+.thumb button {
+  position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff;
+  background: var(--ink); color: #fff; font-size: 12px; line-height: 16px; padding: 0;
+}
+#input {
+  width: 100%; resize: none; border: none; outline: none; background: transparent; padding: 4px 0 8px;
+  font-size: 16px; line-height: 24px; max-height: 220px;
+}
+#input::placeholder { color: var(--mute); }
+.composer-row { display: flex; align-items: center; gap: 2px; margin-left: -6px; }
+.hint { margin-left: 8px; font-size: 12px; color: var(--mute); flex: 1; }
+.send {
+  width: 40px; height: 40px; border-radius: var(--full); border: none; background: var(--primary);
+  display: grid; place-items: center; transition: background .15s, transform .1s; margin-left: auto; flex-shrink: 0;
+}
+.send .px { width: 18px; height: 18px; }
+.send:hover { background: var(--primary-deep); }
+.send:active { transform: scale(.94); }
+.send:disabled { background: var(--mute); cursor: wait; }
+#mic.on { background: var(--primary-soft); border-color: var(--primary); animation: pulse 1.2s ease-out infinite; }
+.fineprint { max-width: 860px; margin: 8px auto 0; text-align: center; font-size: 12px; color: var(--mute); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 110px; transform: translateX(-50%); z-index: 50;
+  background: var(--ink); color: #fff; padding: 10px 18px; border-radius: var(--pill-lg); font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+}

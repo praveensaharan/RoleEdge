@@ -1,0 +1,72 @@
+{
+ "person": "kenji",
+ "frames": [
+  "base",
+  "open",
+  "half",
+  "blink"
+ ],
+ "size": 640,
+ "mouth": [
+  272,
+  389,
+  366,
+  409
+ ],
+ "eyes": [
+  232,
+  273,
+  405,
+  308
+ ],
+ "style": "character",
+ "prompt": "stylized 3D animated character portrait, soft rounded features, large warm expressive eyes, smooth clean shading, friendly and calm, high-quality 3D character render, head and shoulders, facing the camera directly, plain soft light-grey background, a little space above the head: a friendly Japanese man in his early forties with short black hair and a navy crew-neck sweater, gentle smile with lips closed",
+ "steps": [
+  {
+   "step": "Drew the portrait",
+   "engine": "meta/muse-image-1.0",
+   "s": 24.9
+  },
+  {
+   "step": "Found the mouth",
+   "engine": "meta/sam-3.1",
+   "s": 4.6
+  },
+  {
+   "step": "Found the eye",
+   "engine": "meta/sam-3.1",
+   "s": 4.0
+  },
+  {
+   "step": "Made the 'open' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 11.9
+  },
+  {
+   "step": "Found the mouth in the 'open' frame",
+   "engine": "meta/sam-3.1",
+   "s": 2.7
+  },
+  {
+   "step": "Made the 'half' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 20.4
+  },
+  {
+   "step": "Found the mouth in the 'half' frame",
+   "engine": "meta/sam-3.1",
+   "s": 1.9
+  },
+  {
+   "step": "Made the 'blink' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 13.8
+  },
+  {
+   "step": "Found the eye in the 'blink' frame",
+   "engine": "meta/sam-3.1",
+   "s": 3.8
+  }
+ ],
+ "note": "Drawn by Muse Image (synthetic person); frames aligned with SAM 3.1 boxes and composited in code."
+}

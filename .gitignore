@@ -1,0 +1,27 @@
+# secrets
+.env
+
+# environments and caches
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# generated: model-call cache and pipeline outputs (re-create with `carecircle all`)
+.cache/
+output/
+
+# private working notes (raw ideas, channel digest) - not part of the submission
+hello.md
+what-people.md
+
+# local tool settings
+.claude/
+
+# personal recordings (face, voice) never go in the repository (rule S7)
+private/
+*.mov
+
+# the zip for the organisers (dist/roleedge-demo.zip), built from the working tree
+dist/

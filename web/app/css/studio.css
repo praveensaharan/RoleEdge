@@ -1,0 +1,142 @@
+/* The Studio moments (note, slides, mind map, quiz, video, picture, fridge card; picture story, quiz game, ask Grandma), shared
+   by the phones and the caregiver's panel. Big type and big targets: made for an older reader or a child first. */
+.viewer { display: flex; flex-direction: column; gap: var(--s-4); color: var(--ink); }
+.v-title { font-size: 22px; font-weight: 600; letter-spacing: -.01em; line-height: 1.3; }
+.v-hint, .v-count { font-size: 14px; color: var(--muted); text-align: center; }
+.v-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.v-nav.center { justify-content: center; }
+.v-btn { min-height: 52px; padding: 0 20px; border-radius: var(--r-xl); border: 1px solid var(--line-strong); background: var(--canvas);
+  font: 600 17px var(--font); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.v-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.v-btn:disabled { opacity: .35; }
+.viewer button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.dots { display: flex; gap: 6px; } .dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--surface-strong); transition: background .2s, width .2s; }
+.dots i.on { background: var(--accent); width: 20px; border-radius: 4px; }
+.big-play { align-self: center; width: 72px; height: 72px; border-radius: 50%; border: 0; background: var(--accent); color: #fff; display: grid; place-items: center; cursor: pointer; }
+
+/* note: the caregiver's words, a line at a time */
+.note-head { display: flex; align-items: center; gap: 12px; }
+.note-head .av { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent-ink); font-size: 22px; font-weight: 600; }
+.note-head b { display: block; font-size: 20px; line-height: 1.3; } .note-head small { color: var(--muted); font-size: 14px; }
+.note-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.note-lines li { font-size: 20px; line-height: 1.55; color: var(--body); padding: 6px 10px; border-radius: var(--r-md); transition: background .25s, color .25s; }
+.note-lines li.now { background: var(--accent-soft); color: var(--ink); }
+.note-q { display: flex; gap: 10px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r-lg); background: var(--surface); font-size: 19px; line-height: 1.5; }
+.note-q svg { color: var(--accent); flex: none; margin-top: 3px; } .note-q.now { background: var(--accent-soft); }
+
+/* steps and story: one page at a time */
+.v-page-track { touch-action: pan-y; }
+.v-page { min-height: 330px; padding: 26px 22px; border-radius: var(--r-xl); background: var(--surface); display: flex; flex-direction: column; gap: 12px;
+  animation: v-page-in .35s var(--ease); }
+.v-page .step-no { font-size: 13px; font-weight: 500; color: var(--muted); }
+.v-page .pic { color: var(--ink); }
+.v-page h3 { margin: 0; font-size: 26px; line-height: 1.25; letter-spacing: -.01em; }
+.v-page p { margin: 0; font-size: 20px; line-height: 1.55; color: var(--body); }
+.v-page .read { align-self: flex-start; margin-top: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: var(--r-lg);
+  border: 1px solid var(--line-strong); background: var(--canvas); font: 500 16px var(--font); color: var(--ink); cursor: pointer; }
+.v-page.story { align-items: center; text-align: center; background: var(--surface-card); }
+.v-page.story .pic { width: 120px; height: 120px; border-radius: 50%; background: var(--canvas); display: grid; place-items: center; }
+.v-page.story .read { align-self: center; }
+.the-end { font: 600 15px var(--font); color: var(--accent-ink); letter-spacing: .3px; }
+@keyframes v-page-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+
+/* card: the fridge card */
+.fridge { padding: 26px 24px; border-radius: var(--r-lg); border: 1px solid var(--line-strong); border-top: 4px solid var(--ink); background: var(--canvas); }
+.fridge h3 { margin: 0 0 14px; font-size: 26px; line-height: 1.25; letter-spacing: -.01em; }
+.fridge ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+.fridge li { display: flex; gap: 12px; align-items: flex-start; font-size: 20px; line-height: 1.45; }
+.fridge li svg { color: var(--accent-ink); flex: none; margin-top: 2px; }
+.remember { margin-top: 18px; padding: 14px 16px; border-radius: var(--r-lg); background: var(--accent-soft); }
+.remember small { display: block; font-size: 13px; color: var(--accent-ink); font-weight: 600; } .remember b { font-size: 24px; }
+.ask-who { margin: 16px 0 0; font-size: 17px; color: var(--muted); }
+
+/* askme and quiz */
+.quiz-stage { display: flex; flex-direction: column; gap: 14px; }
+.quiz-stage .q { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.quiz-stage .q svg { color: var(--accent-ink); } .quiz-stage .q h3 { margin: 0; font-size: 23px; line-height: 1.35; }
+.choices { display: flex; flex-direction: column; gap: 10px; }
+.choice { min-height: 58px; padding: 10px 18px; border-radius: var(--r-xl); border: 1.5px solid var(--line-strong); background: var(--canvas);
+  font: 500 19px var(--font); color: var(--ink); text-align: left; cursor: pointer; transition: background .2s, border-color .2s, opacity .2s; }
+.choice.right { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-ink); }
+.choice.faded { opacity: .35; }
+.choice:disabled { cursor: default; }
+.explain { padding: 14px 16px; border-radius: var(--r-lg); background: var(--surface); font-size: 18px; line-height: 1.5; display: flex; flex-direction: column; gap: 12px; }
+.explain b { color: var(--ok-ink); } .explain .v-btn { align-self: flex-end; }
+.stars { display: flex; justify-content: center; gap: 6px; } .stars i { color: var(--surface-strong); display: grid; }
+.stars i.on { color: var(--star); } .stars i.on svg { fill: currentColor; }
+.quiz-done { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 30px 10px; text-align: center; font-size: 20px; }
+.quiz-done > svg { color: var(--ok); }
+
+/* relay: questions to ask a grandparent */
+.relay-intro { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding: 18px; border-radius: var(--r-xl); background: var(--surface-card); }
+.relay-intro svg { color: var(--accent-ink); } .relay-intro h3 { margin: 0; font-size: 22px; } .relay-intro p { margin: 0; font-size: 18px; line-height: 1.5; color: var(--body); }
+.relay-qs { display: flex; flex-direction: column; gap: 10px; }
+.relay-q { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; padding: 12px 18px; border-radius: var(--r-xl);
+  border: 1.5px solid var(--line-strong); background: var(--canvas); font: 500 18px var(--font); color: var(--ink); text-align: left; cursor: pointer; }
+.relay-q svg { color: var(--accent); flex: none; } .relay-q small { color: var(--ok-ink); font-weight: 600; flex: none; }
+.relay-q.sent { border-color: var(--ok); background: var(--ok-soft); }
+.relay-q:disabled:not(.sent) { cursor: default; }
+
+/* map: a mind map, the key idea in the middle and its parts around it (the list below repeats it, leaves and all) */
+.mm { position: relative; aspect-ratio: 400 / 330; margin: 4px 0 2px; container-type: inline-size; }
+.mm-lines { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--line-strong); stroke-width: 1.6; overflow: visible; }
+.mm-lines path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: mm-draw .7s var(--ease) forwards; }
+.mm-root { position: absolute; transform: translate(-50%, -50%); width: max-content; max-width: 34%; padding: 10px 12px; border-radius: var(--r-xl); background: var(--brand); color: #fff;
+  font: 600 15px/1.25 var(--font); text-align: center; box-shadow: 0 0 0 6px var(--canvas), 0 0 0 7px var(--hairline); }
+.mm-node { position: absolute; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 6px; width: max-content; max-width: 37%; padding: 8px 11px;
+  border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--canvas); color: var(--ink); font: 600 14px/1.25 var(--font);
+  cursor: pointer; box-shadow: var(--shadow-sm); animation: mm-pop .4s var(--ease) both; text-align: left; }
+.mm-node svg { flex: none; color: var(--ink); }
+.mm-node.on, .mm-node:hover { border-color: var(--ink); box-shadow: 0 0 0 3px rgba(10, 10, 10, .08); }
+.mm-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mm-list li { padding: 10px 12px; border-radius: var(--r-lg); border: 1px solid var(--hairline); background: var(--canvas); transition: border-color .2s, background .2s; }
+.mm-list li.on { border-color: var(--ink); background: var(--surface); }
+.mm-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 0; border: 0; background: none; font: 600 17px var(--font); color: var(--ink); cursor: pointer; text-align: left; }
+.mm-leaves { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0 26px; }
+.mm-leaves span { padding: 5px 10px; border-radius: var(--r-pill); background: var(--surface-card); font-size: 15px; line-height: 1.35; color: var(--body); }
+@container (max-width: 380px) { .mm-root { font-size: 13px; padding: 8px 9px; } .mm-node { font-size: 12.5px; padding: 6px 8px; gap: 4px; } .mm-node svg { width: 14px; height: 14px; } }
+@keyframes mm-draw { to { stroke-dashoffset: 0; } }
+@keyframes mm-pop { from { opacity: 0; transform: translate(-50%, -50%) scale(.85); } to { opacity: 1; transform: translate(-50%, -50%); } }
+
+/* video: scenes that play by themselves, narrated by the device voice */
+.vid { position: relative; aspect-ratio: 4 / 5; border-radius: var(--r-xl); overflow: hidden; background: #0a0a0a; color: #fff; isolation: isolate; cursor: pointer; }
+.vid.has-pic::before { content: ""; position: absolute; inset: 0; z-index: -2; background: var(--pic) center / cover; animation: vid-pan 24s ease-in-out infinite alternate; }
+.vid.has-pic::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10, 10, 10, .35), rgba(10, 10, 10, .55) 45%, rgba(10, 10, 10, .88)); }
+.vid.has-pic .vid-scene { align-items: end; padding-bottom: 104px; }
+.vid.has-pic .vid-pic { width: 64px; height: 64px; background: rgba(10, 10, 10, .4); backdrop-filter: blur(6px); }
+.vid.has-pic .vid-pic svg { width: 34px; height: 34px; }
+.vid-frame { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.vid-frame.in { animation: vid-frame 6s ease-out both; }
+.vid.has-frame .vid-scene::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10, 10, 10, .1) 30%, rgba(10, 10, 10, .9)); }
+.vid.has-frame .vid-scene { align-items: end; padding-bottom: 104px; isolation: isolate; }
+.vid.has-frame .vid-pic { display: none; }
+.vid-focus { position: absolute; z-index: 0; border: 3px solid #fff; border-radius: 18px; box-shadow: 0 0 0 4px rgba(255, 255, 255, .22), 0 0 30px rgba(255, 255, 255, .35);
+  animation: vid-focus 1.8s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes vid-focus { from { opacity: .55; transform: scale(.98); } to { opacity: 1; transform: scale(1.02); } }
+@keyframes vid-frame { from { transform: scale(1.06); opacity: .4; } to { transform: scale(1); opacity: 1; } }
+.vid-bars { position: absolute; left: 14px; right: 14px; top: 14px; display: flex; gap: 4px; z-index: 2; }
+.vid-bars i { flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .25); overflow: hidden; }
+.vid-bars i b { display: block; height: 100%; width: 100%; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+.vid-bars i.done b { transform: scaleX(1); } .vid-bars i.now b { animation: vid-bar 6s linear forwards; }
+.vid-scene { position: absolute; inset: 0; display: grid; place-items: center; padding: 40px 24px 28px; }
+.vid-card { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.vid-card.in .vid-pic { animation: vid-zoom 6s var(--ease) both; } .vid-card.in h3, .vid-card.in p { animation: vid-up .7s var(--ease) both; } .vid-card.in p { animation-delay: .15s; }
+.vid-pic { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); }
+.vid-card h3 { margin: 0; font-size: 26px; line-height: 1.2; letter-spacing: -.015em; }
+.vid-card p { margin: 0; font-size: 18px; line-height: 1.5; color: #d4d4d8; max-width: 30ch; }
+.vid-play { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: 64px; height: 64px; border-radius: 50%; border: 0; background: #fff; color: var(--ink);
+  display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 0, 0, .4); z-index: 3; }
+.vid.playing .vid-scene { cursor: pause; }
+@keyframes vid-bar { to { transform: scaleX(1); } }
+@keyframes vid-pan { from { transform: scale(1.02); } to { transform: scale(1.12) translate(-2%, -1%); } }
+@keyframes vid-zoom { from { transform: scale(.82); opacity: 0; } 20% { opacity: 1; } to { transform: scale(1.06); } }
+@keyframes vid-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* picture: one illustration and its caption */
+.pic-frame { margin: 0; border-radius: var(--r-xl); overflow: hidden; border: 1px solid var(--hairline); background: var(--canvas); }
+.pic-frame img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--surface-card); }
+.pic-none { display: grid; place-items: center; aspect-ratio: 4 / 3; background: var(--surface-card); color: var(--muted); }
+.pic-frame figcaption { padding: 14px 16px 16px; font-size: 19px; line-height: 1.5; color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) { .v-page, .mm-node, .vid-card *, .vid-frame, .vid-focus, .vid-bars i b, .vid.has-pic::before { animation: none !important; } .mm-lines path { animation: none; stroke-dashoffset: 0; } }
+@media print { .v-nav { display: none; } }
