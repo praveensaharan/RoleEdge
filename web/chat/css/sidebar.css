@@ -1,0 +1,66 @@
+/* Dark sidebar: brand, token usage panel, settings, the perched cat. */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0; height: 100%; overflow-y: auto; overflow-x: hidden;
+  background: var(--ink); color: var(--on-dark);
+  display: flex; flex-direction: column; gap: 20px; padding: 20px 20px 0;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.orb {
+  width: 40px; height: 40px; border-radius: var(--card); background: var(--primary);
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.orb .px { width: 27px; height: 21px; }
+.wordmark { font-weight: 800; font-size: 24px; letter-spacing: -.5px; text-transform: uppercase; }
+.brand-tag {
+  font-size: 12px; font-weight: 600; letter-spacing: .57px; text-transform: uppercase;
+  color: var(--mute); border: 1px solid var(--hairline-dark); border-radius: var(--pill-md); padding: 1px 8px;
+}
+.panel { border-top: 1px solid var(--hairline-dark); padding-top: 18px; }
+.hero-stat { display: flex; flex-direction: column; }
+.hero-stat .k, .tile .k, .meter-head .k { font-size: 13px; color: var(--mute); }
+.hero-stat .v { font-size: 40px; font-weight: 700; line-height: 1.1; letter-spacing: -.5px; }
+.hero-stat .unit { font-size: 12px; color: var(--mute); }
+.meter-block { margin-top: 16px; }
+.meter-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.meter-head .v { font-weight: 700; font-size: 18px; }
+.meter { height: 8px; border-radius: 4px; background: rgba(230, 0, 0, .22); overflow: hidden; }
+.meter span { display: block; height: 100%; width: 0; background: var(--primary); border-radius: 4px; transition: width .5s ease; }
+.meter-block .caption { margin-top: 6px; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 16px; background: var(--hairline-dark);
+         border: 1px solid var(--hairline-dark); border-radius: var(--card); overflow: hidden; }
+.tile { background: var(--ink); padding: 10px 12px; display: flex; flex-direction: column; }
+.tile .v { font-size: 20px; font-weight: 700; line-height: 1.2; }
+.caption.last { margin-top: 10px; }
+
+.switch { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; user-select: none; }
+.switch input { position: absolute; opacity: 0; pointer-events: none; }
+.switch .track {
+  width: 38px; height: 22px; border-radius: var(--full); background: var(--ink-3); position: relative; transition: background .2s;
+  flex-shrink: 0;
+}
+.switch .knob {
+  position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform .2s;
+}
+.switch input:checked + .track { background: var(--primary); }
+.switch input:checked + .track .knob { transform: translateX(16px); }
+.switch input:focus-visible + .track { outline: 2px solid #fff; outline-offset: 2px; }
+
+.system { margin-top: 14px; font-size: 14px; }
+.system summary { cursor: pointer; color: var(--mute); list-style: none; }
+.system summary::before { content: "▸ "; }
+.system[open] summary::before { content: "▾ "; }
+.system textarea {
+  width: 100%; margin-top: 8px; padding: 10px 12px; border-radius: var(--card); resize: vertical;
+  background: var(--ink-2); border: 1px solid var(--hairline-dark); color: var(--on-dark); font-size: 14px;
+}
+.system textarea::placeholder { color: var(--body); }
+
+/* the cat sits on Mistral-style stripe bands, in the brand's red ramp */
+.perch { margin-top: auto; margin-left: -20px; margin-right: -20px; position: relative; padding-top: 24px; }
+.perch-cat { width: 64px; height: 60px; margin-left: 28px; position: relative; z-index: 1; margin-bottom: -2px; }
+.stripes span { display: block; height: 10px; }
+.stripes span:nth-child(1) { background: #ff8a80; }
+.stripes span:nth-child(2) { background: #ff4d40; }
+.stripes span:nth-child(3) { background: var(--primary); }
+.stripes span:nth-child(4) { background: var(--primary-deep); height: 14px; }

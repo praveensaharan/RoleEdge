@@ -1,0 +1,22 @@
+/* Breakpoints: 2-up suggestions, off-canvas sidebar, phone layout. */
+@media (max-width: 1080px) {
+  .suggestions { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .sidebar { position: fixed; z-index: 40; left: 0; top: 0; transform: translateX(-100%); transition: transform .25s; }
+  body.sidebar-open .sidebar { transform: none; }
+  .scrim { position: fixed; inset: 0; background: rgba(0, 0, 0, .35); z-index: 30; display: none; }
+  body.sidebar-open .scrim { display: block; }
+  .menu { display: inline-grid; }
+  .topbar { padding: 10px 14px; }
+  .picker { flex: 1; min-width: 0; }
+  .picker select { flex: 1; min-width: 0; width: 100%; text-overflow: ellipsis; }
+  .effort { margin-left: 0; }
+  .log { padding: 24px 14px 8px; }
+  .composer { padding: 8px 14px 12px; }
+  .hint { display: none; }
+}
+@media (max-width: 560px) {
+  .suggestions { grid-template-columns: 1fr; }
+  .effort::before { display: none; }
+}

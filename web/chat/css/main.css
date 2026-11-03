@@ -1,0 +1,61 @@
+/* Light main column: top bar, welcome screen, suggestion cards. */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100%; }
+.topbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 24px; min-height: 60px;
+  border-bottom: 1px solid var(--hairline); background: var(--canvas);
+}
+.menu { display: none; font-size: 18px; }
+.picker {
+  display: flex; align-items: center; gap: 4px; padding: 3px 4px 3px 4px;
+  border: 1px solid var(--ink); border-radius: var(--pill-lg);
+}
+.picker .provider { background: var(--ink); color: #fff; text-transform: uppercase; letter-spacing: .57px; }
+.picker .provider.azure { background: var(--canvas-soft); color: var(--ink); }
+.picker select {
+  appearance: none; border: none; background: transparent; padding: 4px 30px 4px 6px; font-weight: 600; font-size: 15px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 52%, calc(100% - 10px) 52%; background-size: 5px 5px; background-repeat: no-repeat;
+  cursor: pointer; outline: none;
+}
+.effort { display: flex; gap: 4px; flex-wrap: wrap; margin-left: auto; align-items: center; }
+.effort::before { content: "Reasoning"; font-size: 12px; font-weight: 600; letter-spacing: .57px; text-transform: uppercase; color: var(--body); margin-right: 6px; }
+.effort button {
+  border: 1px solid transparent; background: var(--canvas-soft); border-radius: var(--pill-md);
+  padding: 4px 12px; font-size: 13px; font-weight: 600; line-height: 18px;
+}
+.effort button:hover { border-color: var(--ink); }
+.effort button[aria-checked="true"] { background: var(--ink); color: #fff; }
+
+.log { flex: 1; overflow-y: auto; padding: 32px 24px 12px; scroll-behavior: smooth; }
+
+/* welcome / empty state, on a faint Mistral-style hairline grid */
+.welcome {
+  max-width: 860px; margin: 0 auto; padding: 8px 0 24px; position: relative; isolation: isolate;
+}
+.welcome::before {
+  content: ""; position: absolute; inset: -32px -24px auto; height: 420px; z-index: -1; pointer-events: none;
+  background-image: linear-gradient(var(--hairline) 1px, transparent 1px), linear-gradient(90deg, var(--hairline) 1px, transparent 1px);
+  background-size: 48px 48px; background-position: center top;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 70%);
+}
+.stage { position: relative; width: 240px; height: 176px; margin-bottom: 18px; }
+.hero-cat { position: absolute; left: 40px; bottom: 0; width: 160px; height: 150px; animation: bob 2.6s steps(2) infinite; }
+.spark { position: absolute; width: 21px; height: 21px; animation: twinkle 2.4s ease-in-out infinite; }
+.spark.s1 { left: 6px; top: 10px; }
+.spark.s2 { left: 210px; top: 30px; width: 14px; height: 14px; animation-delay: .8s; }
+.spark.s3 { left: 218px; top: 150px; width: 14px; height: 14px; animation-delay: 1.6s; }
+.gem { position: absolute; width: 14px; height: 14px; animation: float 3.2s ease-in-out infinite; }
+.gem.g1 { left: 0; top: 118px; }
+.gem.g2 { left: 228px; top: 84px; width: 21px; height: 21px; animation-delay: 1.1s; }
+
+.suggestions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 32px; }
+.card {
+  text-align: left; display: flex; flex-direction: column; gap: 6px; padding: 16px;
+  background: var(--canvas-soft); border: 1px solid transparent; border-radius: var(--card);
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.card:hover { border-color: var(--ink); background: var(--canvas); transform: translateY(-2px); }
+.card .px { width: 36px; height: 36px; margin-bottom: 8px; }
+.card-title { font-weight: 700; font-size: 16px; line-height: 22px; }
+.card-caption { font-size: 14px; line-height: 18px; color: var(--body); }

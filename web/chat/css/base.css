@@ -1,0 +1,47 @@
+/* Reset, type, buttons and chips shared by every screen. */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex; background: var(--canvas); color: var(--ink);
+  font: 400 16px/1.55 var(--font); -webkit-font-smoothing: antialiased;
+}
+button, select, textarea, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.px { display: block; }
+
+.eyebrow {
+  font-size: 12px; font-weight: 600; line-height: 16px; letter-spacing: .57px;
+  text-transform: uppercase; color: var(--mute); margin-bottom: 12px;
+}
+.eyebrow.dark { color: var(--body); margin-bottom: 8px; }
+.display {
+  margin: 0; font-weight: 800; text-transform: uppercase; letter-spacing: -1px;
+  font-size: clamp(40px, 6.2vw, 84px); line-height: .92;
+}
+.sub-display {
+  margin: 14px 0 0; font-weight: 300; font-size: clamp(20px, 2.2vw, 28px); line-height: 1.25; color: var(--ink);
+}
+.caption { font-size: 12px; line-height: 16px; color: var(--mute); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 22px; border-radius: var(--pill-lg); border: 1px solid transparent;
+  font-size: 16px; font-weight: 600; line-height: 24px; transition: background .15s, transform .1s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-deep); border-color: var(--primary-deep); }
+.btn-block { width: 100%; }
+.plus { font-size: 20px; line-height: 1; font-weight: 400; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: var(--full); border: 1px solid transparent;
+  background: none; display: inline-grid; place-items: center; transition: background .15s, border-color .15s;
+}
+.icon-btn:hover { background: var(--canvas-soft); }
+.icon-btn .px { width: 24px; height: 24px; }
+.icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: var(--pill-md);
+  background: var(--canvas-soft); color: var(--ink); font-size: 12px; font-weight: 700; line-height: 16px;
+  white-space: nowrap;
+}

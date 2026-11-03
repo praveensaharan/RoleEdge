@@ -1,0 +1,71 @@
+{
+ "person": "maya",
+ "frames": [
+  "base",
+  "open",
+  "half",
+  "blink"
+ ],
+ "size": 640,
+ "mouth": [
+  277,
+  356,
+  371,
+  387
+ ],
+ "eyes": [
+  242,
+  239,
+  394,
+  262
+ ],
+ "prompt": "Photorealistic head-and-shoulders portrait of a friendly Chinese-American woman in her late thirties, shoulder-length dark hair, plain light grey studio background, facing the camera directly, soft even daylight, calm natural smile with lips closed, simple sage-green blouse, sharp focus, centered, a little space above the head",
+ "steps": [
+  {
+   "step": "Drew the portrait",
+   "engine": "meta/muse-image-1.0",
+   "s": 11.2
+  },
+  {
+   "step": "Found the mouth",
+   "engine": "meta/sam-3.1",
+   "s": 8.0
+  },
+  {
+   "step": "Found the eye",
+   "engine": "meta/sam-3.1",
+   "s": 4.3
+  },
+  {
+   "step": "Made the 'open' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 26.7
+  },
+  {
+   "step": "Found the mouth in the 'open' frame",
+   "engine": "meta/sam-3.1",
+   "s": 2.1
+  },
+  {
+   "step": "Made the 'half' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 18.2
+  },
+  {
+   "step": "Found the mouth in the 'half' frame",
+   "engine": "meta/sam-3.1",
+   "s": 2.4
+  },
+  {
+   "step": "Made the 'blink' frame",
+   "engine": "meta/muse-image-1.0",
+   "s": 11.4
+  },
+  {
+   "step": "Found the eye in the 'blink' frame",
+   "engine": "meta/sam-3.1",
+   "s": 2.2
+  }
+ ],
+ "note": "Synthetic person drawn by Muse Image; frames aligned with SAM 3.1 boxes and composited in code."
+}

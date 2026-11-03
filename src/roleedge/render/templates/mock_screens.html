@@ -1,0 +1,87 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="{{ font_link }}">
+<style>
+:root { --brand:{{ colors.primary }}; --ink:{{ colors.ink }}; --soft:{{ colors.canvas_soft }}; --line:{{ colors.line }};
+        --body:{{ colors.body }}; --danger:{{ colors.danger }}; --ok:{{ colors.ok }}; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--soft); font-family:{{ font_stack }}; color:var(--ink);
+       display:flex; gap:64px; justify-content:center; align-items:flex-start; padding:40px; width:1440px; }
+svg { flex:none; }
+.col { display:flex; flex-direction:column; align-items:center; gap:14px; }
+.label { font-size:13px; font-weight:600; letter-spacing:.4px; color:var(--body); display:flex; align-items:center; gap:8px; }
+.live { color:var(--danger); display:inline-flex; align-items:center; gap:6px; }
+.live i { width:8px; height:8px; border-radius:50%; background:var(--danger); }
+.phone { width:410px; height:860px; background:#fff; border-radius:46px; border:9px solid var(--ink); overflow:hidden;
+          display:flex; flex-direction:column; box-shadow:0 24px 60px rgba(43,42,51,.16); }
+.top { background:var(--ink); color:#fff; padding:16px 18px; display:flex; align-items:center; gap:12px; }
+.av { width:40px; height:40px; border-radius:20px; background:rgba(255,255,255,.12); display:grid; place-items:center; font-weight:600; }
+.top .n { font-weight:600; } .top .s { font-size:12px; opacity:.7; }
+.top .icons { margin-left:auto; display:flex; gap:16px; opacity:.85; }
+.feed { flex:1; overflow:hidden; padding:14px; display:flex; flex-direction:column; gap:10px; background:#fbfaf9; }
+.b { max-width:85%; padding:10px 12px; border-radius:12px; font-size:14px; line-height:1.4; }
+.me { align-self:flex-end; background:var(--ink); color:#fff; border-bottom-right-radius:4px; }
+.reel { display:flex; gap:10px; align-items:center; }
+.thumb { width:48px; height:64px; border-radius:8px; background:rgba(255,255,255,.12); display:grid; place-items:center; }
+.card { align-self:stretch; border:1px solid var(--line); border-radius:12px; background:#fff; padding:12px 14px; font-size:13px; line-height:1.45; }
+.card .h { display:flex; align-items:center; gap:8px; font-weight:600; font-size:12px; letter-spacing:.3px; color:var(--brand); margin-bottom:6px; }
+.card.alert { border-color:var(--danger); } .card.alert .h { color:var(--danger); }
+.mini { display:flex; gap:8px; margin:8px 0; } .mini img { width:96px; border-radius:8px; border:1px solid var(--line); }
+.meta { display:flex; gap:14px; color:var(--body); font-size:12px; } .meta span { display:inline-flex; align-items:center; gap:5px; }
+.btns { display:flex; gap:8px; margin-top:10px; }
+.pill { border-radius:60px; padding:7px 14px; font-weight:600; font-size:12px; border:1px solid var(--line); background:#fff; color:var(--ink); }
+.pill.p { background:var(--brand); border-color:var(--brand); color:#fff; }
+.status { align-self:stretch; border-radius:12px; background:var(--ink); color:#fff; padding:12px 14px; font-size:13px; line-height:1.45; }
+.status .h { display:flex; align-items:center; gap:8px; font-weight:600; margin-bottom:4px; }
+.dot { width:10px; height:10px; border-radius:5px; background:{{ status_color }}; }
+.status .pill:not(.p) { background:none; color:#fff; border-color:rgba(255,255,255,.5); }
+/* parent side: big type, few elements */
+.big .feed { gap:14px; }
+.vid { position:relative; border-radius:12px; overflow:hidden; }
+.vid img { width:100%; height:200px; object-fit:cover; display:block; }
+.play { position:absolute; inset:0; display:grid; place-items:end start; padding:14px; }
+.play span { width:52px; height:52px; border-radius:26px; background:rgba(43,42,51,.85); color:#fff; display:grid; place-items:center; }
+.voice { display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line); border-radius:60px; padding:10px 16px;
+          font-size:19px; font-weight:600; }
+.voice .w { flex:1; height:6px; border-radius:3px; background:linear-gradient(90deg,var(--brand) 30%,var(--line) 30%); }
+.voice small { font-size:14px; font-weight:400; color:var(--body); }
+.cal { display:flex; gap:12px; border:1px solid var(--line); background:#fff; border-radius:12px; padding:12px 14px; font-size:19px; font-weight:600; }
+.cal small, .warn small { display:block; font-size:15px; font-weight:400; color:var(--body); margin-top:4px; }
+.warn { display:flex; gap:12px; background:#fff; border:2px solid var(--danger); color:var(--ink); border-radius:12px; padding:14px; font-size:18px; font-weight:600; }
+.warn svg { color:var(--danger); }
+.qrs { display:flex; flex-direction:column; gap:8px; padding:12px 14px; border-top:1px solid var(--line); }
+.qr { font-family:inherit; font-size:17px; font-weight:600; border-radius:60px; border:1px solid var(--ink); background:#fff; padding:10px; color:var(--ink); }
+.callbar { display:flex; gap:10px; padding:0 14px 16px; }
+.callbar div { flex:1; display:flex; align-items:center; justify-content:center; gap:8px; border-radius:60px; padding:12px;
+               font-size:16px; font-weight:600; color:#fff; background:var(--ink); }
+.callbar div:first-child { background:var(--ok); }
+</style></head><body>
+<div class="col"><div class="label">Rohit's phone · chat with Mummy</div>
+<div class="phone"><div class="top"><div class="av">M</div><div><div class="n">Mummy</div><div class="s">Saathi is helping in this chat</div></div>
+  <div class="icons">{{ "phone" | icon(20) }}{{ "video" | icon(20) }}{{ "eye" | icon(20) }}</div></div>
+  <div class="feed">
+    <div class="status"><div class="h"><span class="dot"></span>Today's check-in · {{ report.status | capitalize }}</div>{{ report.headline | plain | truncate(150) }}
+      <div class="btns"><span class="pill p">Call Mummy now</span><span class="pill">Full report</span></div></div>
+    <div class="b me"><div class="reel"><div class="thumb">{{ "play" | icon(18) }}</div><div><b>Instagram reel</b><br>Pensioners alert: don't let your pension stop</div></div></div>
+    <div class="card"><div class="h">{{ "eye" | icon(16) }}Saathi · preview of what Mummy will see</div>
+      {{ pension.one_line | plain }}
+      <div class="mini"><img src="../content/pension_reel/card.png"><img src="../content/pension_reel/frames/scene1.png"></div>
+      <div class="meta"><span>{{ "volume" | icon(14) }}Hindi voice note</span><span>{{ "video" | icon(14) }}Explainer</span><span>{{ "calendar" | icon(14) }}Reminder {{ due.due_date }}</span></div>
+      <div class="btns"><span class="pill p">Approve and send</span><span class="pill">Edit</span><span class="pill">Text only</span></div></div>
+    <div class="b me">Forwarded: "Sarkar de rahi hai ₹5000 FREE…"</div>
+    <div class="card alert"><div class="h">{{ "shield-alert" | icon(16) }}Saathi · held back</div>
+      Looks like a scam (asks for OTP and Aadhaar). Saathi will send Mummy a short safety note instead of the reel.
+      <div class="btns"><span class="pill p">Send safety note</span><span class="pill">Discard</span></div></div>
+  </div></div></div>
+
+<div class="col"><div class="label">Mummy's phone <span class="live"><i></i>Live mirror</span></div>
+<div class="phone big"><div class="top"><div class="av">R</div><div><div class="n" style="font-size:20px">रोहित</div><div class="s">Saathi आपकी मदद कर रही है</div></div></div>
+  <div class="feed">
+    <div class="vid"><img src="../content/pension_reel/frames/scene0.png"><div class="play"><span>{{ "play" | icon(28) }}</span></div></div>
+    <div class="voice">{{ "volume" | icon(22) }}सुनिए <div class="w"></div><small>0:25</small></div>
+    <div class="cal">{{ "calendar" | icon(26) }}<div>{{ due.title_local | plain }}<small>{{ due_phrase }} · याद दिलाऊँगी: {{ reminder_phrase }}</small></div></div>
+    <div class="warn">{{ "warning" | icon(26) }}<div>{{ scam.illustration.headline | plain }}<small>{{ scam.trust.advice_local | plain | truncate(110) }}</small></div></div>
+  </div>
+  <div class="qrs">{% for r in pension.reply_suggestions[:3] %}<button class="qr">{{ r | plain }}</button>{% endfor %}</div>
+  <div class="callbar"><div>{{ "phone" | icon(18) }}कॉल</div><div>{{ "video" | icon(18) }}वीडियो</div></div>
+</div></div>
+</body></html>

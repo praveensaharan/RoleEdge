@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="{{ font_link }}">
+<style>
+  body { margin: 0; width: 720px; height: 1280px; background: {{ bg }}; color: {{ fg }}; font-family: {{ font_stack }};
+         display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .progress { position: absolute; top: 36px; left: 36px; right: 36px; display: flex; gap: 8px; }
+  .progress span { flex: 1; height: 6px; border-radius: 3px; background: {{ fg }}; }
+  .pic { width: 280px; height: 280px; border-radius: 72px; display: grid; place-items: center;
+         border: 3px solid {{ fg }}; opacity: .95; }
+  .big { font-size: 72px; font-weight: 700; line-height: 1.12; margin: 56px 50px 0; letter-spacing: -1px; }
+  .caption { font-size: 38px; line-height: 1.38; margin: 26px 60px 0; opacity: .85; }
+  .brand { position: absolute; bottom: 48px; display: flex; align-items: center; gap: 12px; font-size: 24px;
+           font-weight: 600; letter-spacing: .5px; opacity: .7; }
+</style>
+</head>
+<body>
+  <div class="progress">{% for k in range(total) %}<span style="opacity: {{ 1 if k <= index else 0.3 }}"></span>{% endfor %}</div>
+  <div class="pic">{{ scene.icon | icon(150, 1.4) }}</div>
+  <div class="big">{{ scene.big_text | plain }}</div>
+  <div class="caption">{{ scene.caption | plain }}</div>
+  <div class="brand"><svg width="32" height="24" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="12" r="8"/><circle cx="21" cy="12" r="8"/></svg>CareCircle</div>
+</body>
+</html>

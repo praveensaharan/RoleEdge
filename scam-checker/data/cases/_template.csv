@@ -1,0 +1,4 @@
+﻿text,scam,type,red_flags,advice,channel,sender,split,note
+お母さん、俺だけど携帯なくしてこれ新しい番号。今日中に50万必要で、会社の人が取りに行くから用意しておいて。,yes,family_impersonation,これ新しい番号|今日中に50万必要|会社の人が取りに行く,電話を切って、いつもの番号で息子さんに確認してください。,line,,,example: red flags separated by |
+【ヤマト運輸】お荷物のお届けにあがりましたが不在のため持ち帰りました。下記より再配達をご依頼ください。http://yamato-saihaitatu.top/r,yes,phishing,http://yamato-saihaitatu.top/r,リンクは開かず、公式アプリで確認しましょう。,sms,+81 80 1234 5678,test,example: split=test keeps it out of training
+〇〇市役所です。高額療養費の支給決定通知書を本日郵送しました。ご指定の口座へ自動で振り込みます。ATMでの手続きは不要です。,no,,,,sms,,,"example: a genuine look-alike (leave type, red_flags and advice empty)"

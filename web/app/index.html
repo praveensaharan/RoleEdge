@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoleEdge · Studio</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body>
+  <!-- The caregiver's Studio. Words live in workspace.js; icons come from /api/icons (the set the cards use). -->
+  <header class="topbar">
+    <a class="logo" href="/" aria-label="RoleEdge"><span id="mark"></span><span class="wordmark">Role<b>Edge</b></span></a>
+    <nav class="circles" id="circles" aria-label="Family circle"></nav>
+    <div class="grow"></div>
+    <div class="usage" id="usage" title="Estimated from token counts; the Meta dashboard has the real figure"></div>
+    <button class="btn ghost sm" id="reset" type="button" title="Reload the demo circles and their six-week history"></button>
+  </header>
+
+  <main class="page">
+    <section class="work">
+      <div class="intro">
+        <div class="eyebrow" id="eyebrow"></div>
+        <h1 id="headline"></h1>
+        <p class="lead" id="lead"></p>
+      </div>
+
+      <form class="composer" id="composer">
+        <div class="for-row"><span class="for-label">Explain it to</span><div class="seg small" id="for" role="group" aria-label="Who it's for"></div></div>
+        <textarea id="text" rows="3"></textarea>
+        <div class="attachments" id="attachments" hidden></div>
+        <div class="link-row" id="link-row" hidden><span id="link-icon"></span><input id="link" type="url" placeholder="Paste a link: a reel, an article, a notice"><button type="button" class="icon-btn" id="link-close" aria-label="Remove link"></button></div>
+        <div class="composer-bar">
+          <div class="attach-row">
+            <button type="button" class="btn outline sm" data-attach="media"></button>
+            <button type="button" class="btn outline sm" data-attach="link"></button>
+            <button type="button" class="btn outline sm" data-attach="voice"></button>
+            <button type="button" class="btn outline sm" data-attach="app" aria-expanded="false" aria-controls="apps"></button>
+            <input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif,video/*,audio/*" multiple hidden>
+          </div>
+          <div class="send-group">
+            <div class="seg" id="mode" role="group" aria-label="How to send"></div>
+            <button type="submit" class="btn primary" id="send"></button>
+          </div>
+        </div>
+        <div class="apps" id="apps" hidden></div>
+        <div class="composer-foot"><span id="compose-hint"></span><span class="grow"></span><div class="seg small" id="voice" role="group" aria-label="Whose voice she hears"></div><label class="switch"><input type="checkbox" id="immediate"><i></i><span>Send without approval</span></label></div>
+      </form>
+
+      <nav class="tabs" id="tabs" role="tablist">
+        <button role="tab" data-tab="stream" aria-selected="true">Shares</button>
+        <button role="tab" data-tab="trends">How she's doing</button>
+        <button role="tab" data-tab="activity">Activity</button>
+      </nav>
+      <div id="tab-stream" class="stream" aria-live="polite"></div>
+      <div id="tab-trends" hidden></div>
+      <div id="tab-activity" hidden></div>
+    </section>
+
+    <aside class="her" aria-label="Their screen">
+      <div class="her-head"><span class="live"><i></i>Live</span><span class="her-title" id="her-title"></span>
+        <label class="switch small" id="subs-toggle"><input type="checkbox" id="subs" checked><i></i><span>English subtitles</span></label></div>
+      <div class="device" id="device"><iframe id="phone" title="Their screen"></iframe></div>
+      <p class="her-note" id="her-note"></p>
+    </aside>
+  </main>
+  <script type="module" src="/assets/js/workspace.js"></script>
+</body>
+</html>

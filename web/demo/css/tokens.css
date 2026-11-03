@@ -1,0 +1,30 @@
+/* Design tokens: "refined red". A deep brand red used sparingly (primary actions, the mark), warm neutrals, and
+   status colours kept separate so red only ever means "urgent". Same values as src/carecircle/render/theme.py. */
+:root {
+  --brand: #b4232c;
+  --brand-deep: #8f1a22;
+  --brand-soft: #f6e3e4;
+  --ink: #2b2a33;
+  --ink-2: #3a3942;
+  --ink-3: #4a4952;
+  --canvas: #ffffff;
+  --canvas-soft: #f7f6f4;
+  --canvas-2: #efedea;
+  --line: #e7e4e0;
+  --line-dark: rgba(255, 255, 255, .14);
+  --body: #6e6a66;
+  --mute: #a8a39e;
+  --on-dark: #ffffff;
+
+  --ok: #1e7b4b;  --ok-soft: #e7f4ec;
+  --warn: #9a5b00; --warn-soft: #fbf0dc;
+  --danger: #b42318; --danger-soft: #fbe7e5;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --pill: 999px;
+  --shadow: 0 1px 2px rgba(43, 42, 51, .06), 0 10px 30px rgba(43, 42, 51, .08);
+
+  --font: "Inter", "Noto Sans Devanagari", "Noto Sans JP", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}

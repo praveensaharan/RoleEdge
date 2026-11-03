@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoleEdge · Reel Lab</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="/assets/css/lab.css">
+</head>
+<body>
+  <!-- The Reel Lab: every reel the lab ran (docs/REEL_LAB.md), its rounds, and the moments made, in the phone's viewers. -->
+  <header class="topbar">
+    <a class="logo" href="/" aria-label="RoleEdge"><span id="mark"></span><span class="wordmark">Role<b>Edge</b></span></a>
+    <span class="lab-crumb">Reel Lab</span>
+    <div class="grow"></div>
+    <a class="btn ghost sm" href="/studio">Studio</a>
+  </header>
+  <main class="lab">
+    <section class="lab-intro">
+      <div class="eyebrow">Evaluation · real Instagram reels</div>
+      <h1>Every reel is a test case.</h1>
+      <p class="lead">The Studio's own agents turned each reel into a full set of moments for Linda (79), and a children's set for Leo (9), round after round. A Muse Wonder judge scored every moment on five criteria; every weakness was traced to its cause, fixed, and run again.</p>
+      <div class="lab-stats" id="stats"></div>
+      <nav class="lab-jump" aria-label="On this page"><a href="#tune">How we tuned the agents</a><a href="#changes">Every change</a><a href="#reels">Every reel</a></nav>
+    </section>
+    <section class="tune" id="tune" aria-labelledby="tune-h"></section>
+    <h2 class="lab-h2" id="reels">Every reel, every round</h2>
+    <div class="lab-body">
+      <aside class="lab-list" aria-label="Reels"><div class="lab-filter" id="filter"></div><ol id="reels"></ol></aside>
+      <section class="lab-detail" id="detail" aria-live="polite"><p class="app-note">Pick a reel.</p></section>
+    </div>
+  </main>
+  <script type="module" src="/assets/js/lab.js"></script>
+</body>
+</html>

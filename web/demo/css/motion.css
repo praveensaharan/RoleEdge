@@ -1,0 +1,38 @@
+/* All motion in the demo. It is restrained on purpose: things enter, travel, fill and confirm; nothing bounces.
+   One-off moves (an item travelling between phones) use the Web Animations API in js/dom.js. */
+
+.reveal { animation: fade-up .6s var(--ease) both; }
+.reveal.d1 { animation-delay: .08s; } .reveal.d2 { animation-delay: .16s; } .reveal.d3 { animation-delay: .24s; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* step indicator: a spinning ring while active, a drawn tick when done */
+.steps li.active .ind { animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.steps li.done .ind svg path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw .35s var(--ease) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+/* voice note waveform while it plays */
+.voice.playing .wave i { animation: wave .9s ease-in-out infinite; }
+@keyframes wave { 0%, 100% { height: 25%; } 50% { height: 90%; } }
+
+/* incoming call: a soft ring pulse until it is answered */
+.call .ring::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .5); animation: halo 1.8s ease-out infinite; }
+.call.answered .ring::after { animation: none; opacity: 0; }
+@keyframes halo { from { transform: scale(1); opacity: .8; } to { transform: scale(1.45); opacity: 0; } }
+
+/* typing caret while a line is being written */
+.typing::after { content: ""; display: inline-block; width: 1.5px; height: 1em; margin-left: 2px; vertical-align: -2px; background: currentColor; animation: caret .9s steps(1) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+
+/* live status dots */
+.state.working::before, .col-label .live::before { animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+
+/* the reminder rings once: a short, small swing of the bell */
+.cal.ringing .bell { animation: swing .5s ease-in-out 3; transform-origin: 50% 10%; }
+@keyframes swing { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(12deg); } 75% { transform: rotate(-12deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  html { scroll-behavior: auto; }
+}

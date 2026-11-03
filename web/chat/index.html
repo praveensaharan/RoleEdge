@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Muse — chat playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap">
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="orb"><i data-px="logo" data-palette="onRed"></i></span>
+      <span class="wordmark">Muse</span>
+      <span class="brand-tag">chat</span>
+    </div>
+
+    <button id="newChat" class="btn btn-primary btn-block"><span class="plus">+</span> New chat</button>
+
+    <section class="panel">
+      <div class="eyebrow">Token usage · this chat</div>
+      <div class="hero-stat">
+        <span class="k">Sent to the model</span>
+        <span class="v" id="sIn" title="0">0</span>
+        <span class="unit">input tokens</span>
+      </div>
+      <div class="meter-block">
+        <div class="meter-head"><span class="k">Cache hit</span><span class="v" id="sHit">–</span></div>
+        <div class="meter" role="meter" aria-label="Cache hit rate" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="sHitMeter">
+          <span id="sHitBar"></span>
+        </div>
+        <div class="caption" id="sCachedLine">No cached tokens yet</div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><span class="k">Output</span><span class="v" id="sOut">0</span></div>
+        <div class="tile"><span class="k">Reasoning</span><span class="v" id="sReason">0</span></div>
+        <div class="tile"><span class="k">Cached</span><span class="v" id="sCached">0</span></div>
+        <div class="tile"><span class="k">Requests</span><span class="v" id="sReq">0</span></div>
+      </div>
+      <div class="caption last" id="sLast">Last turn: –</div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">Settings</div>
+      <label class="switch">
+        <input type="checkbox" id="speak">
+        <span class="track"><span class="knob"></span></span>
+        <span>Read replies aloud</span>
+      </label>
+      <details class="system">
+        <summary>System prompt</summary>
+        <textarea id="system" rows="4" placeholder="Optional instructions sent with every turn"></textarea>
+      </details>
+    </section>
+
+    <div class="perch" aria-hidden="true">
+      <i data-px="cat" data-palette="light" data-cls="perch-cat"></i>
+      <div class="stripes"><span></span><span></span><span></span><span></span></div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu" id="menu" aria-label="Open sidebar">☰</button>
+      <div class="picker">
+        <span class="chip provider" id="providerChip">Meta AI</span>
+        <select id="model" aria-label="Model"></select>
+      </div>
+      <div class="effort" id="effort" role="radiogroup" aria-label="Reasoning effort"></div>
+    </header>
+
+    <main id="log" class="log">
+      <section class="welcome" id="empty">
+        <div class="stage" aria-hidden="true">
+          <i data-px="sparkle" data-cls="spark s1"></i>
+          <i data-px="sparkle" data-cls="spark s2"></i>
+          <i data-px="sparkle" data-cls="spark s3"></i>
+          <i data-px="diamond" data-cls="gem g1"></i>
+          <i data-px="diamond" data-cls="gem g2"></i>
+          <i data-px="cat" data-palette="dark" data-cls="hero-cat"></i>
+        </div>
+        <div class="eyebrow dark">Muse · Meta AI × Azure OpenAI</div>
+        <h1 class="display" id="greeting">Hello.</h1>
+        <p class="sub-display">What should we work on? Chat, drop in an image, or just talk.</p>
+        <div class="suggestions">
+          <button class="card" data-prompt="Explain how prompt caching works and why it saves tokens, in five short bullet points.">
+            <i data-px="bulb"></i>
+            <span class="card-title">Explain a concept</span>
+            <span class="card-caption">How does prompt caching save tokens?</span>
+          </button>
+          <button class="card" data-action="attach">
+            <i data-px="image"></i>
+            <span class="card-title">Describe an image</span>
+            <span class="card-caption">Upload, paste, or drop a picture</span>
+          </button>
+          <button class="card" data-action="mic">
+            <i data-px="mic"></i>
+            <span class="card-title">Talk instead of type</span>
+            <span class="card-caption">Dictate your message with the mic</span>
+          </button>
+          <button class="card" data-prompt="I'll paste some CSV data next. Tell me what columns you'd expect in a typical sales export and what analysis you'd run first.">
+            <i data-px="chart"></i>
+            <span class="card-title">Analyze some data</span>
+            <span class="card-caption">Plan an analysis of a CSV export</span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="composer" id="composer">
+      <div class="composer-box">
+        <div class="thumbs" id="thumbs"></div>
+        <textarea id="input" rows="1" placeholder="Message Muse…"></textarea>
+        <div class="composer-row">
+          <button id="attach" class="icon-btn" title="Attach image"><i data-px="image"></i></button>
+          <input type="file" id="file" accept="image/*" multiple hidden>
+          <button id="mic" class="icon-btn" title="Dictate (speech to text)"><i data-px="mic"></i></button>
+          <span class="hint" id="hint">Enter to send · Shift+Enter for a new line</span>
+          <button id="send" class="send" title="Send" aria-label="Send"><i data-px="arrow" data-palette="onRed"></i></button>
+        </div>
+      </div>
+      <div class="fineprint">Muse can make mistakes. Token counts are reported by each provider.</div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

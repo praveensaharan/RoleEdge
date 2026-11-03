@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CareCircle — stay close to family</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="/demo-static/css/tokens.css">
+  <link rel="stylesheet" href="/demo-static/css/layout.css">
+  <link rel="stylesheet" href="/demo-static/css/phone.css">
+  <link rel="stylesheet" href="/demo-static/css/panel.css">
+  <link rel="stylesheet" href="/demo-static/css/motion.css">
+</head>
+<body>
+  <!-- Skeleton only: every word comes from js/copy.js, every icon from /api/demo/icons. -->
+  <header class="nav">
+    <a class="logo" href="#top" id="logo"></a>
+    <nav class="links" id="navLinks"></nav>
+    <a class="btn btn-primary btn-sm" href="#demo" id="navCta"></a>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow reveal" id="eyebrow"></div>
+        <h1 class="reveal d1" id="headline"></h1>
+        <p class="lead reveal d2" id="lead"></p>
+        <div class="cta reveal d3"><a class="btn btn-primary" href="#demo" id="ctaWatch"></a><a class="btn btn-ghost-dark" href="#safety" id="ctaSafety"></a></div>
+        <dl class="metrics reveal d3" id="metrics"></dl>
+      </div>
+      <div class="glance reveal d2" id="glance"></div>
+    </div>
+  </section>
+
+  <main>
+    <section id="demo">
+      <div class="section-head"><div class="eyebrow dark" id="demoEyebrow"></div><h2 id="demoTitle"></h2><p id="demoLead"></p></div>
+      <div class="toolbar"><div class="segmented" id="familySwitch" role="tablist" aria-label="Family"></div><nav class="tabs" id="flowTabs" aria-label="Flows"></nav></div>
+      <div class="stage" id="stage">
+        <div><div class="col-label" id="caregiverLabel"></div><div class="phone"><div class="screen" id="caregiverPhone"></div></div></div>
+        <aside class="panel" id="panel" aria-live="polite"></aside>
+        <div><div class="col-label" id="parentLabel"></div><div class="phone"><div class="screen" id="parentPhone"></div></div></div>
+      </div>
+      <div class="controls">
+        <button class="btn btn-primary" id="play"></button>
+        <button class="btn btn-ghost" id="replay"></button>
+        <div class="progress"><span id="progressBar"></span></div>
+        <span class="step-count" id="stepCount"></span>
+      </div>
+      <p class="step-caption" id="caption"></p>
+      <p class="note" id="note"></p>
+    </section>
+
+    <section id="safety">
+      <div class="section-head"><div class="eyebrow dark" id="safetyEyebrow"></div><h2 id="safetyTitle"></h2><p id="safetyLead"></p></div>
+      <div class="cards" id="safetyCards"></div>
+    </section>
+  </main>
+
+  <footer class="foot"><span class="logo" id="footLogo"></span><span id="footNote"></span></footer>
+
+  <script type="module" src="/demo-static/js/main.js"></script>
+</body>
+</html>

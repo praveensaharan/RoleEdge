@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoleEdge · avatar comparison</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/assets/css/app.css">
+  <script type="importmap">
+    { "imports": { "three": "/assets/vendor/three/three.module.js",
+                   "three/addons/": "/assets/vendor/three/addons/",
+                   "@pixiv/three-vrm": "/assets/vendor/three-vrm/three-vrm.module.min.js" } }
+  </script>
+  <style>
+    .wrap { max-width: 1200px; margin: 0 auto; padding: var(--s-5); }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-5); margin-top: var(--s-5); }
+    .cell { background: var(--canvas); border: 1px solid var(--hairline); border-radius: var(--r-lg); padding: var(--s-4); }
+    .cell h2 { font-size: 15px; margin-bottom: 4px; }
+    .media { aspect-ratio: 1; border-radius: var(--r-md); overflow: hidden; background: var(--surface-card); margin: var(--s-3) 0; }
+    .media img, .media video, .media canvas { width: 100%; height: 100%; object-fit: cover; display: block; }
+    dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13px; margin: 0; }
+    dt { color: var(--muted); }
+    dd { margin: 0; color: var(--ink); }
+    .rule-ok { color: #047857; font-weight: 600; }
+    .rule-no { color: #b91c1c; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="brand"><span id="mark"></span>RoleEdge</div><span class="hint">Avatar comparison (build-time only)</span>
+    <div class="spacer"></div><button class="primary" id="play-all">Play all three</button></header>
+  <main class="wrap">
+    <p class="hint" id="line"></p>
+    <div class="grid">
+      <section class="cell"><h2>MuseTalk lip-sync on a photo</h2><div class="hint">Open profile (other hackathon)</div>
+        <div class="media"><video id="v-musetalk" playsinline></video></div>
+        <dl><dt>Made by</dt><dd>MuseTalk 1.5 on a Modal A10G, voice from Qwen3-TTS</dd>
+          <dt>Meta rules</dt><dd class="rule-no">Not allowed at runtime</dd><dt>Render time</dt><dd id="t-musetalk">–</dd></dl></section>
+      <section class="cell"><h2>Picture avatar</h2><div class="hint">Strict profile (Meta hackathon)</div>
+        <div class="media"><img id="v-2d" alt=""></div>
+        <dl><dt>Made by</dt><dd>Muse Image frames, SAM 3.1 alignment, code animation</dd>
+          <dt>Meta rules</dt><dd class="rule-ok">Allowed</dd><dt>Render time</dt><dd>none (live)</dd></dl></section>
+      <section class="cell"><h2>3D avatar</h2><div class="hint">Strict profile (Meta hackathon)</div>
+        <div class="media"><canvas id="v-3d"></canvas></div>
+        <dl><dt>Made by</dt><dd>VRM model in three.js, mouth moved by code</dd>
+          <dt>Meta rules</dt><dd class="rule-ok">Allowed (no model call)</dd><dt>Render time</dt><dd>none (live)</dd></dl></section>
+    </div>
+    <p class="footnote">All three speak the same audio file so the comparison is fair. In the Meta build the voice will be Meta's MMS-TTS fine-tuned on your recordings, or the browser voice.</p>
+  </main>
+  <script type="module">
+    import { ICON } from "/assets/js/common.js";
+    import { loadAvatar, TalkingHead } from "/assets/js/avatar.js";
+    import { loadAvatar3D } from "/assets/js/avatar3d.js";
+    document.getElementById("mark").innerHTML = ICON.mark;
+    const info = await (await fetch("/compare-media/info.json")).json().catch(() => ({}));
+    document.getElementById("line").textContent = info.text ? `Line: “${info.text}”` : "Run the MuseTalk comparison first (see modal_apps/).";
+    document.getElementById("t-musetalk").textContent = info.musetalk_seconds ? `${info.musetalk_seconds.toFixed(0)} s on the GPU for this clip` : "–";
+    const video = document.getElementById("v-musetalk");
+    video.src = "/compare-media/musetalk_kenji.mp4";
+    const head2d = new TalkingHead(document.getElementById("v-2d"), await loadAvatar("kenji-photo"));
+    const head3d = await loadAvatar3D(document.getElementById("v-3d"), "/assets/avatars/vrm/kenji.vrm");
+    document.getElementById("play-all").onclick = () => {
+      video.currentTime = 0; video.play();
+      head2d.speakAudio("/compare-media/kenji_line.wav");
+      head3d?.speakAudio("/compare-media/kenji_line.wav");
+    };
+  </script>
+</body>
+</html>

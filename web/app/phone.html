@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>RoleEdge</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/assets/css/phone.css">
+  <script type="importmap">
+    { "imports": { "three": "/assets/vendor/three/three.module.js",
+                   "three/addons/": "/assets/vendor/three/addons/",
+                   "@pixiv/three-vrm": "/assets/vendor/three-vrm/three-vrm.module.min.js" } }
+  </script>
+</head>
+<body>
+  <!-- Her screen: one calm app, big type and big targets. Standalone it is drawn in a device frame; in the caregiver's
+       Studio (?mirror=1) it fills the frame the Studio draws. Words come from phone.js (English or Japanese). -->
+  <div class="frame" id="frame">
+    <div class="screen" id="screen">
+      <div class="sbar"><span id="clock"></span><span class="sbar-r"><i class="sig"><b></b><b></b><b></b><b></b></i><i class="bat"><b></b></i></span></div>
+
+      <header class="top">
+        <div class="face" id="face"></div>
+        <div class="who"><div class="name" id="who"></div><div class="sub"><i></i><span id="who-sub"></span></div></div>
+        <span class="brand" id="brand"></span>
+      </header>
+
+      <section class="stage" id="stage" hidden aria-live="polite">
+        <div class="portrait">
+          <img id="stage-img" alt="">
+          <canvas id="stage-3d" hidden></canvas>
+          <span class="stage-badge" id="stage-badge"></span>
+          <button class="stage-close" id="stage-close" type="button" aria-label="Close"></button>
+        </div>
+        <div class="caption" id="caption"></div>
+        <div class="stage-step" id="stage-step"></div>
+        <div class="stage-controls">
+          <button type="button" id="stage-back" class="soft"></button>
+          <button type="button" id="stage-play" class="round" aria-label="Play"></button>
+          <button type="button" id="stage-next" class="soft"></button>
+        </div>
+      </section>
+
+      <div class="feed" id="feed"></div>
+
+      <div class="relay-chip" id="relay-chip" hidden></div>
+      <form class="talk" id="talk">
+        <button type="button" id="mic" aria-label="Hold to talk"></button>
+        <textarea id="reply" rows="1"></textarea>
+        <button type="submit" id="reply-send" aria-label="Send"></button>
+      </form>
+
+      <button class="banner" id="banner" type="button" hidden aria-live="polite"></button>
+
+      <section class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+        <header class="sheet-head"><button type="button" class="sheet-close" id="sheet-done"></button><div class="sheet-title" id="sheet-title"></div></header>
+        <nav class="sheet-tabs" id="sheet-tabs"></nav>
+        <div class="sheet-body"><div id="viewer"></div><div class="sheet-extras" id="sheet-extras"></div></div>
+      </section>
+    </div>
+  </div>
+  <script type="module" src="/assets/js/phone.js"></script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RoleEdge · Be there for your parents, even from far away</title>
+  <meta name="description" content="RoleEdge turns anything you share into simple moments for your parent and your children, answers their questions while you're busy, and notices when her everyday life starts to change.">
+  <meta name="theme-color" content="#0a0a0a">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;600&display=swap">
+  <script>
+    document.documentElement.classList.add("js");
+    setTimeout(() => { if (!document.documentElement.classList.contains("ready")) document.documentElement.classList.remove("js"); }, 3000);
+  </script>
+  <link rel="stylesheet" href="/assets/css/home.css">
+  <script type="module" src="/assets/js/home.js"></script>
+</head>
+<body>
+  <!-- The public home page. "Live" works in the Studio today; "Demo account", "Simulated", "In training" and "Coming
+       next" are labelled wherever they appear. Sections carry data-theme so the header matches what is under it. -->
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav-in">
+      <a class="logo" href="/" aria-label="RoleEdge home"><span class="mark" data-mark></span><span class="wordmark">Role<b>Edge</b></span></a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#demo">See it in action</a>
+        <a href="#kids">Children</a>
+        <a href="#trends">Trends</a>
+        <a href="#apps">Apps</a>
+        <a href="#compare">Compare</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="/lab">Lab</a>
+      </nav>
+      <a class="btn nav-cta sm" href="/studio" data-magnetic>Open the Studio<i data-i="send"></i></a>
+    </div>
+    <div class="nav-progress" aria-hidden="true"><b id="progress"></b></div>
+  </header>
+
+  <main id="main">
+    <!-- ============================================================ hero -->
+    <section class="hero dark" id="top" data-theme="dark">
+      <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="wrap hero-in">
+        <a class="pill" href="/studio" data-reveal><span class="dot live"></span>Live demo in English and 日本語<span class="pill-sep"></span><span class="pill-b">Built on Meta models</span><i data-i="send"></i></a>
+        <h1 class="display" data-split aria-label="Be there for Mom, Dad, your kids, Grandma and Grandpa. Even from far away.">Be there for <span class="rot" data-words="Mom.|Dad.|your kids.|Grandma.|Grandpa.">Mom.</span> <span class="soft">Even from far away.</span></h1>
+        <p class="lead" data-reveal style="--d:.35s">RoleEdge turns anything you share into something your parent can follow and your children will love.
+          It answers her questions while you're busy, and over the weeks it notices what's changing in her everyday life,
+          as observations, never a diagnosis.</p>
+        <div class="cta-row" data-reveal style="--d:.5s">
+          <a class="btn light lg" href="/studio" data-magnetic>Open the live Studio<i data-i="send"></i></a>
+          <a class="btn ghost-dark lg" href="#demo"><i data-i="play"></i>See it in action</a>
+        </div>
+      </div>
+
+      <!-- the product, in motion: the caregiver's Studio and her phone -->
+      <div class="wrap stage-wrap" data-reveal style="--d:.7s">
+        <div class="stage" data-tilt>
+          <div class="glow" aria-hidden="true"></div>
+          <div class="win" id="hero-studio" role="img" aria-label="The Studio: Kenji shares a reel, Okaasan's parcel question is answered from verified mail, and a cardigan is ordered on Rakuten after Kenji approves">
+            <div class="win-bar"><i></i><i></i><i></i><span class="win-url">roleedge.app/studio</span></div>
+            <div class="win-top"><span class="mark sm" data-mark></span><span class="wordmark sm">Role<b>Edge</b></span><span class="chip on">Kenji and Okaasan</span><span class="chip">Maya and Mom</span><span class="grow"></span><span class="meter"><span class="dot live"></span>Meta <b class="ey-n">$0.07</b> / $100</span></div>
+            <div class="win-main">
+              <div class="hscene on" data-scene="share">
+              <div class="h-eyebrow">Studio · Kenji and Okaasan</div>
+              <div class="h-title">Share anything with Okaasan. <span>We'll find the best way to explain it.</span></div>
+              <div class="composer-mock">
+                <div class="for"><span>Explain it to</span><b class="seg-on">Okaasan 81</b><b>Hana 8</b></div>
+                <div class="typed"><span id="hero-type"></span><i class="caret"></i></div>
+                <div class="att" id="hero-att"><i data-i="video"></i>reel-tax-refund.mp4 <small>38 s</small></div>
+                <div class="bar"><span class="o">Photo or video</span><span class="o">Link</span><span class="o">Voice note</span><span class="o">Apps</span><span class="grow"></span><span class="p" id="hero-send"><i data-i="activity"></i>Research and plan</span></div>
+              </div>
+              <div class="agents" id="hero-agents">
+                <div class="agent"><span class="spin"></span><b>Reader</b><small>what the reel says, frame by frame</small></div>
+                <div class="agent"><span class="spin"></span><b>Fact checker</b><small>scam signs, sources</small></div>
+                <div class="agent"><span class="spin"></span><b>Wonder verifier</b><small>reads the whole pack</small></div>
+                <div class="agent"><span class="spin"></span><b>Send gate</b><small>no links, codes or money requests</small></div>
+              </div>
+              </div>
+
+              <div class="hscene" data-scene="parcel" aria-hidden="true">
+                <div class="h-eyebrow">Studio · Kenji and Okaasan · Kenji is in a meeting until 4</div>
+                <div class="h-title">Okaasan asked about a parcel. <span>Answered from verified mail.</span></div>
+                <div class="ask-mock" id="pc-ask"><span class="ask-av">お</span><div><small>Okaasan · voice · 14:02</small><b lang="ja">「新しい荷物は いつ届くの？」</b><em>"When will the new parcel arrive?"</em></div><span class="ask-wv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+                <div class="agents two" id="pc-agents">
+                  <div class="agent"><span class="spin"></span><b>Errand router</b><small>a delivery question</small></div>
+                  <div class="agent"><span class="spin"></span><b>Reading your Gmail</b><small>allowed always · verified senders only</small></div>
+                </div>
+                <div class="mails" id="pc-mails">
+                  <div class="mail-mock ok"><span class="m-ic"><i data-i="mail"></i></span><div><b lang="ja">ヤマト運輸 · お届け予定のお知らせ</b><small lang="ja">お米 5kg · 11月7日(土) 14時〜16時</small></div><span class="chk ok">Sender verified</span></div>
+                  <div class="mail-mock bad"><span class="m-ic"><i data-i="mail"></i></span><div><b lang="ja">佐川急便 · お荷物のお届けについて</b><small>sagawa-redelivery.top</small></div><span class="chk bad">Blocked: fake sender</span></div>
+                </div>
+              </div>
+
+              <div class="hscene" data-scene="order" aria-hidden="true">
+                <div class="h-eyebrow">Studio · Kenji and Okaasan · the shopper</div>
+                <div class="h-title">Okaasan wants a warm cardigan. <span>Found on Rakuten, within your limit.</span></div>
+                <div class="ask-mock" id="od-ask"><span class="ask-av">お</span><div><small>Okaasan · voice · 16:20</small><b lang="ja">「冬用の あったかい カーディガンが ほしいわ」</b><em>"I'd like a warm cardigan for the winter."</em></div><span class="ask-wv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+                <div class="shop" id="od-shop">
+                  <div class="shop-head"><span class="rk-mark" data-brand="rakuten"></span><b>楽天市場</b><small>Rakuten Ichiba · "カーディガン レディース M" · 3 results · your limit ¥3,000 an order</small></div>
+                  <div class="prod best"><span class="pimg"><img src="/assets/demo/shop/cardigan-navy.jpg" alt="" loading="lazy"></span><div><b lang="ja">ウール混 カーディガン ネイビー M</b><small lang="ja">送料無料 · 3日でお届け · ★4.5</small></div><em>¥2,980</em><span class="chk ok">Best match</span></div>
+                  <div class="prod"><span class="pimg"><img src="/assets/demo/shop/cardigan-beige.jpg" alt="" loading="lazy"></span><div><b lang="ja">フリース カーディガン ベージュ M</b><small lang="ja">送料 ¥550 · ★3.9</small></div><em>¥2,580</em></div>
+                  <div class="prod over"><span class="pimg"><img src="/assets/demo/shop/cardigan-grey.jpg" alt="" loading="lazy"></span><div><b lang="ja">カシミヤタッチ カーディガン グレー M</b><small lang="ja">送料無料 · ★4.7</small></div><em>¥3,480</em><span class="chk">Over your limit</span></div>
+                </div>
+                <div class="confirm" id="od-confirm"><div><small>Final confirmation for Kenji</small><b>Order the navy wool-blend cardigan, size M, for ¥2,980?</b><span>Size M like her last order · arrives Friday · simulated checkout, one-time card</span></div><span class="p" id="od-approve"><i data-i="cart"></i>Approve order</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- her phone: the screen is a grid (status bar, header, feed, talk bar, home indicator), so nothing overlaps -->
+          <div class="iphone hero-phone" role="img" aria-label="Okaasan's phone: Kenji's warning arrives in his voice">
+            <div class="ip-screen">
+              <span class="ip-island" aria-hidden="true"></span>
+              <div class="ip-status"><b>10:24</b><span class="ip-icons"><span class="ip-sig"><i></i><i></i><i></i><i></i></span><span class="ip-bat"><i></i></span></span></div>
+              <div class="ip-head"><img src="/assets/avatars/kenji/base.jpg" alt=""><div><b>ケンジ</b><small><i></i>息子 · オンライン</small></div><span class="mark xs" data-mark></span></div>
+              <div class="ip-feed">
+                <div class="ip-old"><small>きのう · はなちゃんから</small><b>おばあちゃんが ちいさいころの おみせ</b></div>
+                <div class="ip-slot" id="hero-card"><div class="ip-card">
+                  <div class="ip-from"><span class="ip-tag">ケンジ</span><span>今</span></div>
+                  <div class="ip-title">「還付金があります」は詐欺です</div>
+                  <div class="ip-text">お母さん、税務署はメッセージでリンクを送りません。押さずに、ぼくに電話してね。</div>
+                  <div class="ip-gloss">"Tax offices never send links by text. Don't tap it, call me."</div>
+                  <div class="ip-listen"><span class="pb"><i data-i="play"></i></span><span class="wv"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><b>聞く</b></div>
+                </div></div>
+                <div class="ip-slot" id="pc-me"><div class="ip-me" lang="ja">新しい荷物は いつ届くの？</div></div>
+                <div class="ip-slot" id="pc-card"><div class="ip-card deliv">
+                  <div class="ip-from"><span class="ip-tag asst">ケンジのアシスタント</span><span>今</span></div>
+                  <div class="dl-head"><span class="dl-ic"><svg class="truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></span><div><small lang="ja">お届け予定</small><b lang="ja">11月7日(土) 14時〜16時</b></div></div>
+                  <div class="dl-route"><span class="dl-track"><i class="dl-fill"></i><span class="dl-truck"><svg class="truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17.5" cy="17.5" r="1.8"/></svg></span></span><span class="dl-steps" lang="ja"><span>発送</span><span>輸送中</span><span>お届け</span></span></div>
+                  <div class="dl-src"><i data-i="mail"></i><span lang="ja">ヤマト運輸のメールから · 確認済み</span></div>
+                </div></div>
+                <div class="ip-slot" id="od-me"><div class="ip-me" lang="ja">冬用の あったかい カーディガンが ほしいわ</div></div>
+                <div class="ip-slot" id="od-card"><div class="ip-card order">
+                  <div class="ip-from"><span class="ip-tag asst">ケンジのアシスタント</span><span>今</span></div>
+                  <div class="od-row"><span class="pimg"><img src="/assets/demo/shop/cardigan-navy.jpg" alt="" loading="lazy"></span><div><b lang="ja">カーディガンを 注文しました</b><small lang="ja">ネイビー M · 金曜日に届きます</small></div></div>
+                  <div class="od-steps" lang="ja"><span class="on">注文</span><span>発送</span><span>お届け</span></div>
+                  <div class="dl-src"><i data-i="check"></i><span lang="ja">ケンジが 確認しました</span></div>
+                </div></div>
+              </div>
+              <div class="ip-banner" id="hero-banner"><span class="mark xs" data-mark></span><div><b>ケンジからのお話</b><small>「税金の還付」のメッセージについて</small></div></div>
+              <div class="ip-talk"><span class="ip-mic"><i data-i="mic"></i></span><span class="ip-field">返事を入力</span></div>
+              <span class="ip-home" aria-hidden="true"></span>
+            </div>
+          </div>
+
+          <div class="float f1" id="hero-f1"><span class="dot ok"></span><div><b>Muse Wonder: verified</b><small>every claim matches the research</small></div></div>
+          <div class="float f2" id="hero-f2"><i data-i="eye"></i><div><b>Okaasan listened to all of it</b><small>and asked: "What should I do with the text?"</small></div></div>
+        </div>
+        <div class="scenes-nav" role="tablist" aria-label="Scenes">
+          <button type="button" role="tab" data-go="share" aria-selected="true"><i></i>Share a reel</button>
+          <button type="button" role="tab" data-go="parcel" aria-selected="false"><i></i>"When does my parcel come?"</button>
+          <button type="button" role="tab" data-go="order" aria-selected="false"><i></i>Order a cardigan, with your OK</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ the numbers -->
+    <section class="strip" id="why" data-theme="light">
+      <div class="wrap stats" data-stagger>
+        <div class="stat" data-reveal><b><span data-count="29.6" data-dec="1">29.6</span>%</b><span>of people in Japan are 65 or older</span><a href="https://www.stat.go.jp/data/topics/pdf/topics149.pdf" target="_blank" rel="noopener">Statistics Bureau, Sept 2026</a></div>
+        <div class="stat" data-reveal><b><span data-count="9.3" data-dec="1">9.3</span>M</b><span>older people in Japan live alone</span><a href="https://www8.cao.go.jp/kourei/whitepaper/w-2026/html/zenbun/s1_1_3.html" target="_blank" rel="noopener">MHLW 2025 · Cabinet Office 2026</a></div>
+        <div class="stat" data-reveal><b><span data-count="106" data-dec="0">106</span>k</b><span>people a year leave work to give care</span><a href="https://www8.cao.go.jp/kourei/whitepaper/w-2026/html/zenbun/s1_2_2.html" target="_blank" rel="noopener">Cabinet Office White Paper 2026</a></div>
+        <div class="stat" data-reveal><b>¥<span data-count="142" data-dec="0">142</span>bn</b><span>lost to phone and text fraud in 2025</span><a href="https://www.npa.go.jp/bureau/safetylife/sos47/new-topics/260605/01.html" target="_blank" rel="noopener">National Police Agency, 2025</a></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ see it in action: one reel, start to finish -->
+    <section class="sec" id="demo" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal>
+          <span class="eyebrow"><span class="ey-n">01</span>See it in action</span>
+          <h2>Share a reel. <span class="soft">Get a conversation.</span></h2>
+          <p class="sub">Maya saw a reel about fake prize texts and shared it with one line. Here is everything the agents did with it, what her mom got, and what came back.</p>
+        </div>
+
+        <div class="demo">
+          <!-- the caregiver's side: the share, then the agents in stages; then one chapter per moment, and scrolling
+               through the chapters turns the panel on the right to that moment -->
+          <div class="demo-left">
+          <article class="share spot" data-reveal>
+            <header class="share-head"><img src="/assets/avatars/maya/base.jpg" alt=""><div><b>Maya</b><small>shared a reel · 09:12</small></div><span class="tag live">Live</span></header>
+            <div class="share-body">
+              <div class="reel" role="img" aria-label="A 42-second reel about fake prize texts">
+                <span class="reel-kicker">Prize text scam</span>
+                <span class="reel-sms"><small>Text message · now</small>You won a $500 gift card! Pay $4.99 shipping by tonight: walmrt-prize.top</span>
+                <span class="reel-play"><i data-i="play"></i></span>
+                <span class="reel-time">0:42</span>
+              </div>
+              <div class="share-text">
+                <p>Mom got one of these yesterday. Explain kindly why it's a scam.</p>
+                <div class="share-meta"><span><i data-i="video"></i>reel-prize-scam.mp4</span><span>for Mom, 79</span></div>
+              </div>
+            </div>
+
+            <ol class="stages" id="stages" aria-label="What the agents did">
+              <li class="stage-row" data-stage="0"><span class="st-dot"></span><div class="st-body"><b>Read<span class="st-eng">Muse Spark 1.3</span></b><span class="chips"><em>Reader · 8 frames and the speech</em><em>Web search</em></span></div></li>
+              <li class="stage-row" data-stage="1"><span class="st-dot"></span><div class="st-body"><b>Understand<span class="st-eng">Muse Spark 1.3</span></b><span class="chips"><em class="bad"><span class="dot urgent"></span>Fact checker: likely a scam</em><em>Audience: Linda, 79</em><em>Context: her text on Tuesday</em></span></div></li>
+              <li class="stage-row" data-stage="2"><span class="st-dot"></span><div class="st-body"><b>Plan<span class="st-eng">Muse Spark 1.3</span></b><span class="st-line">One thing to remember: real prizes never ask you to pay.</span></div></li>
+              <li class="stage-row" data-stage="3"><span class="st-dot"></span><div class="st-body"><b>Make<span class="st-eng">Spark · Image</span></b><span class="chips"><em>Mind map</em><em>Slides</em><em>Quiz</em><em>Animated video</em><em>Picture</em></span><span class="st-line soft">One maker per moment, in parallel</span></div></li>
+              <li class="stage-row" data-stage="4"><span class="st-dot"></span><div class="st-body"><b>Verify<span class="st-eng">Wonder · code</span></b><span class="st-line"><span class="wonder">Muse Wonder</span> read the whole pack against the research: every claim matches, nothing invented, right for her reading level.</span>
+                <span class="gate-ex"><span class="ge ok"><span class="dot ok"></span><span>"Real prizes are free. Please don't tap the link."</span><small>passed</small></span><span class="ge held"><span class="dot urgent"></span><span>"Pay the $4.99 at walmrt-prize.top"</span><small>held: a link and a payment</small></span></span></div></li>
+              <li class="stage-row" data-stage="5"><span class="st-dot"></span><div class="st-body"><b>You approve<span class="st-eng">you</span></b><span class="st-line">Nothing reaches Mom until Maya taps <span class="kbd">Approve and send</span>. Sent at 09:14.</span></div></li>
+            </ol>
+          </article>
+
+          <!-- what she gets: each moment, clickable -->
+          <div class="chapters" aria-label="What Mom gets, one moment at a time">
+            <section class="chapter" data-chapter="map"><span class="ch-n">01<small>/06</small></span><h3>Mind map</h3><p>The key idea in the middle, its parts around it. Mom taps a part and hears it read aloud.</p></section>
+            <section class="chapter" data-chapter="slides"><span class="ch-n">02<small>/06</small></span><h3>Slides</h3><p>One step per slide, at her own pace, each with a big Read it to me button.</p></section>
+            <section class="chapter" data-chapter="quiz"><span class="ch-n">03<small>/06</small></span><h3>Quiz</h3><p>Two gentle questions. A different answer just shows the right one, warmly, and what she got comes back to Maya.</p></section>
+            <section class="chapter" data-chapter="video"><span class="ch-n">04<small>/06</small></span><h3>Animated video</h3><p>Short narrated scenes that play by themselves, drawn and voiced on her phone, with no rendering wait.</p></section>
+            <section class="chapter" data-chapter="picture"><span class="ch-n">05<small>/06</small></span><h3>Picture</h3><p>One calm illustration of the key idea, drawn by Muse Image only after the checks pass.</p></section>
+            <section class="chapter" data-chapter="phone"><span class="ch-n">06<small>/06</small></span><h3>On Mom's phone</h3><p>It arrives as a gentle notification in Maya's voice and face, and what she does comes back to the share.</p></section>
+          </div>
+          </div>
+          <article class="outs-panel" data-reveal style="--d:.1s">
+            <div class="vtabs" role="tablist" aria-label="What Mom gets">
+              <button role="tab" aria-selected="true" data-out="map"><i data-i="map"></i>Mind map</button>
+              <button role="tab" aria-selected="false" data-out="slides"><i data-i="checklist"></i>Slides</button>
+              <button role="tab" aria-selected="false" data-out="quiz"><i data-i="question"></i>Quiz</button>
+              <button role="tab" aria-selected="false" data-out="video"><i data-i="video"></i>Animated video</button>
+              <button role="tab" aria-selected="false" data-out="picture"><i data-i="eye"></i>Picture</button>
+              <button role="tab" aria-selected="false" data-out="phone"><i data-i="mobile"></i>On Mom's phone</button>
+            </div>
+            <div class="vstage">
+              <div class="vpanel" data-panel="map">
+                <div class="vp-head"><b>The gift card text</b><small>Mind map · tap a branch</small></div>
+                <div class="mind" id="mind"></div>
+              </div>
+              <div class="vpanel" data-panel="slides" hidden>
+                <div class="vp-head"><b>That text is a trick</b><small>Slides · one idea per screen, read aloud</small></div>
+                <div class="deck" id="deck"></div>
+              </div>
+              <div class="vpanel" data-panel="quiz" hidden>
+                <div class="vp-head"><b>Two gentle questions</b><small>Quiz · her answers come back to Maya</small></div>
+                <div class="qz" id="qz"></div>
+              </div>
+              <div class="vpanel" data-panel="video" hidden>
+                <div class="vp-head"><b>Real prizes are free</b><small>Animated video · narrated, about 20 seconds</small></div>
+                <div class="player" id="player"></div>
+              </div>
+              <div class="vpanel" data-panel="picture" hidden>
+                <div class="vp-head"><b>A picture of the idea</b><small>Picture · drawn by Muse Image after the checks pass</small></div>
+                <figure class="pic">
+                  <svg viewBox="0 0 640 400" role="img" aria-label="An illustration: a phone with a prize text crossed out, a raised hand and a shield with a tick">
+                    <defs><linearGradient id="pg-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f4f5"/><stop offset="1" stop-color="#e4e4e7"/></linearGradient></defs>
+                    <rect width="640" height="400" fill="url(#pg-sky)"/>
+                    <circle cx="520" cy="86" r="46" fill="#fff" opacity=".9"/>
+                    <path d="M0 330 C140 300 260 350 400 318 S600 300 640 312 V400 H0Z" fill="#d4d4d8"/>
+                    <path d="M0 360 C160 340 300 380 460 352 S620 344 640 350 V400 H0Z" fill="#a1a1aa" opacity=".55"/>
+                    <g transform="translate(222 70)">
+                      <rect width="196" height="300" rx="30" fill="#0a0a0a"/><rect x="10" y="10" width="176" height="280" rx="22" fill="#fff"/>
+                      <rect x="70" y="20" width="56" height="12" rx="6" fill="#0a0a0a"/>
+                      <rect x="26" y="58" width="144" height="70" rx="14" fill="#f4f4f5"/>
+                      <rect x="40" y="74" width="96" height="9" rx="4" fill="#a1a1aa"/><rect x="40" y="91" width="112" height="9" rx="4" fill="#a1a1aa"/><rect x="40" y="108" width="70" height="9" rx="4" fill="#dc6803"/>
+                      <rect x="26" y="146" width="144" height="44" rx="12" fill="#fef3f2" stroke="#fda29b"/>
+                      <path d="M52 168 h20 M62 158 v20" stroke="#d92d20" stroke-width="4" stroke-linecap="round" transform="rotate(45 62 168)"/>
+                      <rect x="84" y="163" width="70" height="9" rx="4" fill="#fda29b"/>
+                      <rect x="26" y="206" width="144" height="58" rx="14" fill="#0a0a0a"/>
+                      <rect x="42" y="222" width="80" height="9" rx="4" fill="#fff"/><rect x="42" y="238" width="104" height="9" rx="4" fill="#a1a1aa"/>
+                    </g>
+                    <g transform="translate(440 190)">
+                      <path d="M56 0 L112 22 V70 C112 108 86 132 56 144 C26 132 0 108 0 70 V22Z" fill="#fff" stroke="#0a0a0a" stroke-width="6" stroke-linejoin="round"/>
+                      <path d="M32 72 L50 90 L82 54" fill="none" stroke="#079455" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                    <g transform="translate(96 200)" fill="#fff" stroke="#0a0a0a" stroke-width="5" stroke-linejoin="round">
+                      <path d="M20 120 V40 a14 14 0 0 1 28 0 V18 a14 14 0 0 1 28 0 v22 a14 14 0 0 1 28 0 v10 a14 14 0 0 1 28 0 V96 C132 126 108 146 78 146 H52 C34 146 20 136 20 120Z"/>
+                    </g>
+                  </svg>
+                  <figcaption><b>Stop. Don't tap. Call Maya.</b><span>One calm picture for the pack, with the words drawn by code on top. Example illustration.</span></figcaption>
+                </figure>
+              </div>
+              <div class="vpanel" data-panel="phone" hidden>
+                <div class="phone-split">
+                  <div class="iphone small" role="img" aria-label="Linda's phone: Maya's moments arrive, and she replies">
+                    <div class="ip-screen">
+                      <span class="ip-island" aria-hidden="true"></span>
+                      <div class="ip-status"><b>09:14</b><span class="ip-icons"><span class="ip-sig"><i></i><i></i><i></i><i></i></span><span class="ip-bat"><i></i></span></span></div>
+                      <div class="ip-head"><img src="/assets/avatars/maya/base.jpg" alt=""><div><b>Maya</b><small><i></i>Your daughter · online</small></div><span class="mark xs" data-mark></span></div>
+                      <div class="ip-feed">
+                        <div class="ip-card on">
+                          <div class="ip-from"><span class="ip-tag">Maya</span><span>09:14</span></div>
+                          <div class="ip-title">That text is a trick</div>
+                          <div class="ip-text">Mom, real prizes are always free. Please don't tap the link. Just delete it.</div>
+                          <div class="ip-moments"><span><i data-i="map"></i>Mind map</span><span><i data-i="checklist"></i>Slides</span><span><i data-i="question"></i>Quiz</span><span><i data-i="video"></i>Video</span></div>
+                        </div>
+                        <div class="ip-me">Thank you dear. I deleted it.</div>
+                      </div>
+                      <div class="ip-talk"><span class="ip-mic"><i data-i="mic"></i></span><span class="ip-field">Type or hold the mic</span></div>
+                      <span class="ip-home" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                  <div class="back">
+                    <small>What came back to Maya</small>
+                    <div class="back-row"><span>Video</span><span class="meterbar"><b style="--w:100%"></b></span><em>watched twice</em></div>
+                    <div class="back-row"><span>Slides</span><span class="meterbar"><b style="--w:100%"></b></span><em>4 of 4</em></div>
+                    <div class="back-row"><span>Quiz</span><span class="meterbar"><b style="--w:100%"></b></span><em>2 of 2 first time</em></div>
+                    <div class="back-q"><i data-i="chat"></i><div><small>She asked</small><b>"What if they call me instead?"</b><span>A good thing to talk about tonight.</span></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="models" data-reveal>
+          <span class="models-l">Built on Meta models</span>
+          <span class="mchip"><code>muse-spark-1.3</code>every agent</span>
+          <span class="mchip key"><code>muse-wonder-1.0</code>primary verifier</span>
+          <span class="mchip"><code>muse-voice-transcribe-1.0</code>her voice</span>
+          <span class="mchip"><code>muse-image-1.0</code>pictures</span>
+          <span class="mchip"><code>sam-3.1</code>avatars</span>
+          <span class="mchip"><code>llama-guard-3-1b + LoRA</code>child model, in training</span>
+          <span class="mchip code"><code>code</code>dates, gates, limits, trends</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ children: a dedicated model -->
+    <section class="sec dark" id="kids" data-theme="dark">
+      <div class="grain" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="sec-head" data-reveal>
+          <span class="eyebrow"><span class="ey-n">02</span>For children</span>
+          <h2>A model trained for children. <span class="soft">Not just a filter.</span></h2>
+          <p class="sub">We are fine-tuning a dedicated child-safety model on our own policy, so everything made for a grandchild is read line by line by a model that learned what a parent would not want them to see.</p>
+        </div>
+        <div class="kids">
+          <article class="kmodel spot" data-reveal>
+            <div class="km-top"><span class="km-label">Dedicated child model</span><span class="tag next">In training</span></div>
+            <code class="km-id">llama-guard-3-1b + LoRA</code>
+            <ul class="km-facts">
+              <li>Fine-tuned on RoleEdge's own child policy, in English and Japanese</li>
+              <li>Data, training and evaluation run on Modal, compared with the base model</li>
+              <li>Until it is deployed, Muse Spark reviews every line, and anything doubtful waits for the parent</li>
+            </ul>
+            <div class="km-cats"><span>Frightening or violent</span><span>Dating</span><span>Alcohol, drugs, gambling</span><span>Money, buying, sign-ups</span><span>Secrets or contact</span><span>Medical advice</span></div>
+            <div class="tester">
+              <div class="ts-head"><b>Try it</b><small>Tap a line to see what the child model does with it</small></div>
+              <div class="ts-picks" id="ts-picks">
+                <button type="button" data-line="つきは いつも まるいよ" data-en="The moon is always round." data-verdict="pass">The moon is always round</button>
+                <button type="button" data-line="アプリを ダウンロードして しらべよう" data-en="Download an app to find out more." data-verdict="Sign-ups">Download an app to find out</button>
+                <button type="button" data-line="ママには ないしょだよ" data-en="Don't tell your mom, it's a secret." data-verdict="Secrets or contact">Don't tell your mom</button>
+                <button type="button" data-line="おばあちゃんに きいてみよう" data-en="Let's ask Grandma." data-verdict="pass">Let's ask Grandma</button>
+                <button type="button" data-line="おこづかいで ゲームの カードを かおう" data-en="Buy game cards with your pocket money." data-verdict="Money, buying, sign-ups">Buy game cards</button>
+                <button type="button" data-line="よる ひとりで こうえんに いってみよう" data-en="Go to the park alone at night." data-verdict="Frightening or unsafe">Go out alone at night</button>
+              </div>
+              <div class="scan" id="scan" aria-live="polite">
+                <div class="sc-line" data-held=""><span class="dot"></span><span>えほん 1 · つきは いつも まるいよ</span><small></small></div>
+                <div class="sc-line" data-held=""><span class="dot"></span><span>えほん 2 · たいようの ひかりが あたる ところが みえるんだ</span><small></small></div>
+                <div class="sc-line" data-held="Sign-ups"><span class="dot"></span><span>えほん 3 · アプリを ダウンロードして しらべよう</span><small></small></div>
+              </div>
+              <p class="ts-note">Examples of what it checks. The live check runs on every child's pack in the Studio.</p>
+            </div>
+          </article>
+
+          <div class="kside">
+            <div class="kmoments" role="tablist" aria-label="Moments for a child">
+              <button type="button" class="km spot" role="tab" data-kid="story" aria-selected="false"><i data-i="book"></i><b>Picture story</b></button>
+              <button type="button" class="km spot" role="tab" data-kid="quiz" aria-selected="false"><i data-i="star"></i><b>Quiz game</b></button>
+              <button type="button" class="km spot" role="tab" data-kid="map" aria-selected="false"><i data-i="map"></i><b>Mind map</b></button>
+              <button type="button" class="km spot" role="tab" data-kid="video" aria-selected="false"><i data-i="video"></i><b>Animated video</b></button>
+              <button type="button" class="km spot" role="tab" data-kid="picture" aria-selected="false"><i data-i="eye"></i><b>Picture</b></button>
+              <button type="button" class="km spot" role="tab" data-kid="relay" aria-selected="true"><i data-i="family"></i><b>Ask Grandma</b></button>
+            </div>
+            <article class="kprev" id="kprev" aria-live="polite">
+              <div class="kp-bar"><span class="kp-who"><span class="kp-av">は</span><b>Hana's screen</b><small>8 · hiragana first</small></span><span class="kp-name" id="kp-name">Ask Grandma</span></div>
+              <div class="kp-body" id="kp-body"></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ the USP: trends -->
+    <section class="sec" id="trends" data-theme="light">
+      <div class="wrap trends">
+        <div class="trends-copy">
+          <div class="sec-head" data-reveal>
+            <span class="eyebrow"><span class="ey-n">03</span>The difference</span>
+            <h2>It notices the change. <span class="soft">You decide what to do.</span></h2>
+          </div>
+          <p class="sub" data-reveal>Every reply adds a few signals: meals, sleep, going out, who she talked to, how fast she speaks. Code compares the last two weeks with her own usual weeks. One bad day stays quiet; a change that lasts gets your attention.</p>
+          <div class="ladder" data-reveal>
+            <span><span class="dot ok"></span>Steady</span><span><span class="dot watch"></span>A small change</span><span><span class="dot watch"></span>A sustained change</span><span class="on"><span class="dot watch"></span>Worth a visit</span>
+          </div>
+          <div class="note" data-reveal><i data-i="info"></i>Observations only: what she said and how she sounded, with dates. RoleEdge never names a condition or recommends care. People do that.</div>
+        </div>
+
+        <div class="trend-card" data-reveal style="--d:.1s" id="trend-card">
+          <div class="tc-head">
+            <div><small>How she's doing · Maya and Mom</small><b>Worth a visit</b></div>
+            <span class="tc-badge"><span class="dot watch"></span>7 of 11 signals changed</span>
+          </div>
+          <div class="tc-chart">
+            <svg viewBox="0 0 520 150" aria-label="Speaking pace over six weeks, from about 150 to 129 words a minute">
+              <defs><linearGradient id="tc-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0a0a" stop-opacity=".1"/><stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/></linearGradient></defs>
+              <rect x="0" y="22" width="520" height="38" class="band"/>
+              <text x="6" y="15" class="lbl">Her usual range</text>
+              <path class="area" d="M0 42 L52 38 L104 44 L156 36 L208 42 L260 40 L312 50 L364 66 L416 80 L468 92 L520 100 L520 150 L0 150 Z"/>
+              <path class="line" pathLength="1" d="M0 42 L52 38 L104 44 L156 36 L208 42 L260 40 L312 50 L364 66 L416 80 L468 92 L520 100"/>
+              <line x1="312" y1="0" x2="312" y2="150" class="split"/>
+              <text x="318" y="142" class="lbl">last two weeks</text>
+              <circle cx="520" cy="100" r="5" class="end"/>
+            </svg>
+            <div class="tc-axis"><span>Speaking pace, words a minute</span><b><span data-count="150">150</span> → <span data-count="129">129</span></b></div>
+          </div>
+          <div class="tc-rows">
+            <div class="tc-row flag"><div><b>Skipped meals or not hungry</b><small>"Just tea this afternoon."</small></div><em>1 → 4 a week</em></div>
+            <div class="tc-row flag"><div><b>Days she stayed in</b><small>"I stayed home all day."</small></div><em>1.5 → 5 a week</em></div>
+            <div class="tc-row flag"><div><b>Repeated questions</b><small>"What day is the doctor? I forgot."</small></div><em>0.2 → 2.5 a week</em></div>
+          </div>
+          <div class="tc-foot">Demo circle, synthetic six-week history · computed by code from 11 signals</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ apps -->
+    <section class="sec tint" id="apps" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head center" data-reveal>
+          <span class="eyebrow"><span class="ey-n">04</span>Apps</span>
+          <h2>Your work apps, <span class="soft">working for <span class="rot" data-words="Mom.|Dad.|your kids.|Grandma.|Grandpa."><span class="rot-w">Mom.</span></span></span></h2>
+          <p class="sub">When you're in back-to-back meetings, RoleEdge reads the context you allowed (that you're busy until 4, a delivery on its way, a trip next week) and tells Mom what matters. Work details stay yours: what can be shared is your rule, not the model's.</p>
+        </div>
+        <div class="apps-track" id="apps-track">
+        <div class="browser" id="browser" data-reveal>
+          <div class="br-bar"><i></i><i></i><i></i><span>Studio · Apps</span></div>
+          <div class="br-body">
+            <div class="br-rail" role="tablist" aria-label="Apps"></div>
+            <div class="br-main" aria-live="polite">
+              <div class="br-head"><span class="br-mark" id="br-mark"></span><div><b id="br-name"></b><small id="br-line"></small></div><span class="tag" id="br-tag"></span></div>
+              <div class="br-list" id="br-list"></div>
+              <div class="br-foot"><span id="br-hint">Pick one to share it into the Studio.</span><span class="br-progress"><b id="br-bar"></b></span></div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <p class="fine center">Demo accounts hold synthetic mail, messages, photos and meetings until each sign-in is connected. Logos are trademarks of their owners.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ compare -->
+    <section class="sec dark" id="compare" data-theme="dark">
+      <div class="grain" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="sec-head" data-reveal>
+          <span class="eyebrow"><span class="ey-n">05</span>Compare</span>
+          <h2>Others watch. <span class="soft">RoleEdge keeps the family talking.</span></h2>
+        </div>
+        <div class="cmp-scroll" data-reveal>
+          <table class="cmp" id="cmp">
+            <thead><tr><th scope="col"><span class="sr">Capability</span></th><th scope="col" class="us"><span class="mark xs" data-mark></span>RoleEdge</th><th scope="col">Watch-over services</th><th scope="col">Fall alerts and wearables</th><th scope="col">Companion robots and AI callers</th><th scope="col">Senior tablets</th><th scope="col">Family chat apps</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="cmp-key" data-reveal><span><i class="y"></i>Does this</span><span><i class="p"></i>Partly</span><span><i class="n"></i>Doesn't</span><small>Categories, not companies: typical, publicly described features in 2025 and 2026. Individual products vary.</small></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ roadmap -->
+    <section class="sec" id="roadmap" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal>
+          <span class="eyebrow"><span class="ey-n">06</span>Roadmap</span>
+          <h2>Where RoleEdge goes next.</h2>
+        </div>
+        <div class="road" id="road">
+          <div class="road-line" aria-hidden="true"><b></b></div>
+          <div class="phase" data-reveal>
+            <div class="ph-h"><span class="dot live"></span><b>Live now</b><small>in the demo</small></div>
+            <ul>
+              <li>Studio: research, plan, Wonder verification</li>
+              <li>Mind maps, slides, quizzes, videos, pictures</li>
+              <li>The family relay, grandchild and grandparent</li>
+              <li>Voice replies, summaries and trends</li>
+              <li>Gmail, Slack, Photos and Zoom demo accounts</li>
+            </ul>
+          </div>
+          <div class="phase" data-reveal style="--d:.08s">
+            <div class="ph-h"><span class="dot next"></span><b>Next</b><small>in development</small></div>
+            <ul>
+              <li>Sign in with Google, Slack and Zoom</li>
+              <li>The tuned child model, deployed</li>
+              <li>Sharing from LINE, WhatsApp and Spotify</li>
+              <li>Your own voice, cloned with your consent</li>
+              <li>Real checkout with one-time cards</li>
+            </ul>
+          </div>
+          <div class="phase" data-reveal style="--d:.16s">
+            <div class="ph-h"><span class="dot later"></span><b>Later</b><small>planned</small></div>
+            <ul>
+              <li>Siblings sharing the care in one circle</li>
+              <li>Steps and sleep from wearables, with consent</li>
+              <li>Private signal extraction on her device</li>
+              <li>iOS and Android apps for every member</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ cta -->
+    <section class="sec dark cta" id="cta" data-theme="dark">
+      <canvas class="cta-canvas" id="cta-canvas" aria-hidden="true"></canvas>
+      <div class="wrap center">
+        <span class="mark xl" data-mark data-reveal></span>
+        <h2 data-reveal>See it working.</h2>
+        <p class="sub" data-reveal>Two live family circles, one in English and one in Japanese. No sign-in needed.</p>
+        <div class="cta-row center" data-reveal>
+          <a class="btn light lg" href="/studio" data-magnetic>Open the Studio<i data-i="send"></i></a>
+          <a class="btn ghost-dark lg" href="/phone/sato">Okaasan's phone</a>
+          <a class="btn ghost-dark lg" href="/phone/chen">Linda's phone</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot" data-theme="dark">
+    <div class="wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a class="logo" href="/" aria-label="RoleEdge home"><span class="mark" data-mark></span><span class="wordmark">Role<b>Edge</b></span></a>
+          <span class="powered">Powered by <b>Role Enterprise</b></span>
+          <div class="fp" id="products">
+            <span class="fp-title">Explore our other products.</span>
+            <a class="fp-link" href="https://rolespace.duckdns.org/" target="_blank" rel="noopener"><span class="fp-logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#111111"/><g fill="#fff"><rect x="6" y="19" width="3.6" height="7" rx="1"/><rect x="11.5" y="15" width="3.6" height="11" rx="1"/><rect x="17" y="11" width="3.6" height="15" rx="1"/><rect x="22.5" y="6" width="3.6" height="20" rx="1"/></g></svg></span><b>RoleSpace</b><span class="fp-visit">Visit<i data-i="send"></i></span></a>
+          </div>
+        </div>
+        <nav class="foot-cols" aria-label="Footer">
+          <div><b>Product</b><a href="/studio">Studio</a><a href="#demo">See it in action</a><a href="#roadmap">Roadmap</a></div>
+          <div><b>Company</b><a href="#products">About</a><a href="#top">Contact</a></div>
+          <div><b>Legal</b><a href="#top">Privacy</a><a href="#top">Terms</a></div>
+        </nav>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 Role Enterprise. All rights reserved.</span>
+        <p>Demo data is synthetic. RoleEdge never gives medical advice.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

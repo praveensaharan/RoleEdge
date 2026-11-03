@@ -1,0 +1,8 @@
+# Local machine: data, scoring and starting Modal jobs. Training itself runs on Modal (see modal_train.py).
+modal>=1.6
+# The notebook only:
+pandas>=2
+matplotlib>=3
+ipykernel>=6
+# Tests only:
+pytest>=8
