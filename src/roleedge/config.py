@@ -35,6 +35,9 @@ LEDGER_FILE = OUTPUT_DIR / "usage.jsonl"
 WEB_DIR = REPO_ROOT / "web" / "chat"
 DEMO_WEB_DIR = REPO_ROOT / "web" / "demo"  # the CareCircle product demo (roleedge chat -> /demo)
 APP_WEB_DIR = REPO_ROOT / "web" / "app"  # the roleEdge app (roleedge serve)
+# the Reel Lab's results in aggregate (no reel named), for the /lab page. `python -m roleedge.lab report` writes it.
+# It lives in data/, not output/, so the repository, the Cloud Run image and the zip all carry it.
+LAB_SUMMARY = REPO_ROOT / "data" / "lab" / "summary.json"
 
 DEFAULT_META_URL = "https://api.meta.ai/v1/responses"
 DEFAULT_META_MODEL = "muse-spark-1.3"

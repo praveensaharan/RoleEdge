@@ -1,7 +1,9 @@
 # Reel Lab: evaluate, improve and prove the agents, reel by reel
 
 *Started 2026-11-03. Owner: the RoleEdge agent team. This file is the working plan and the running log. The aggregate
-results are on the `/lab` page. `python -m roleedge.lab report` also writes per-reel reports (REPORT.md, REELS.md,
+results are on the `/lab` page, read from `data/lab/summary.json` (totals and averages, no reel named), which is
+committed so the repository, the Cloud Run image and the zip all show them. `python -m roleedge.lab report` rewrites
+that file; commit it with the code it measured. The same command writes per-reel reports (REPORT.md, REELS.md,
 OUTPUTS.md in docs/reel-lab/); they list each reel, which are other people's posts, so they stay on the machine that
 ran the lab and are not in the package.*
 

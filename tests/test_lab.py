@@ -86,7 +86,7 @@ def test_the_lab_page_shows_kinds_only_in_aggregate_and_uses_the_last_judged_rou
     by_round = {1: rows, 2: {"a": {"profile": {}}}}  # round 2 isn't judged on v4 yet
     assert _latest_with([1, 2], lambda n: by_round[n], "judgement_v4") is rows and _latest_with([], by_round.get, "x") == {}
 
-    monkeypatch.setattr(lab_routes, "SUMMARY", tmp_path / "summary.json")
+    monkeypatch.setattr(lab_routes, "SUMMARY", tmp_path / "summary.json")  # the shipped data/lab/summary.json, replaced
     app = FastAPI()
     lab_routes.add_lab_routes(app, tmp_path)
     client = TestClient(app)
@@ -94,3 +94,15 @@ def test_the_lab_page_shows_kinds_only_in_aggregate_and_uses_the_last_judged_rou
     (tmp_path / "summary.json").write_text('{"reels": 44}')
     assert client.get("/api/lab/summary").json() == {"reels": 44}
     assert client.get("/api/lab").status_code == 404 and client.get("/lab-media/abcdef/f01.jpg").status_code == 404
+
+
+def test_the_lab_results_ship_with_the_app():
+    """/lab reads data/lab/summary.json, which is committed and goes into the image and the zip (output/ goes in
+    neither). Without it a deployed /lab is empty, so the deploy's test step stops here."""
+    import json
+
+    from roleedge.config import LAB_SUMMARY
+
+    s = json.loads(LAB_SUMMARY.read_text(encoding="utf-8"))
+    assert s["usable"] and s["v4"] and s["kids_v2"] and s["robotic"] and s["change_log"] and s["spend"]
+    assert len(s["change_log"]) == s["changes"]

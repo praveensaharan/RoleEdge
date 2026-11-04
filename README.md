@@ -8,7 +8,7 @@ checks it before she sees it, and tells you how she is doing.</p>
 
 <p align="center">
   <img alt="Runs on Meta models" src="https://img.shields.io/badge/runs%20on-Meta%20models-0a0a0a">
-  <img alt="171 tests" src="https://img.shields.io/badge/tests-171%20passing-0a0a0a">
+  <img alt="175 tests" src="https://img.shields.io/badge/tests-175%20passing-0a0a0a">
   <img alt="Python 3.11+" src="https://img.shields.io/badge/python-3.11%2B-0a0a0a">
   <img alt="macOS, Ubuntu, Windows" src="https://img.shields.io/badge/runs%20on-macOS%20%C2%B7%20Ubuntu%20%C2%B7%20Windows-0a0a0a">
 </p>
@@ -40,7 +40,7 @@ Measured on 41 real reels, round after round, by a Muse Wonder judge (1 to 5) an
 | Model calls | **5,322** |
 | Measured changes to agents, tools and workflow | **43** |
 | Cost per reel per round, judge included | **about $0.11** |
-| Automated tests | **171** |
+| Automated tests | **175** |
 
 ## Contents
 
@@ -198,7 +198,7 @@ Put the Studio and her phone side by side; the phone updates live.
 - **Fine-tuning.**
   - 117 approved moments are kept as a training set in the family's voice (`python -m roleedge.lab dataset`).
   - The child-safety LoRA caught 99.6% of unsafe lines on held-out data, against 52% before training.
-- **Tests.** 171 automated tests: `.venv/bin/python -m pip install -e ".[dev]"`, then `.venv/bin/python -m pytest`.
+- **Tests.** 175 automated tests: `.venv/bin/python -m pip install -e ".[dev]"`, then `.venv/bin/python -m pytest`.
 
 ## Security and privacy
 
@@ -245,7 +245,8 @@ src/roleedge/
   trends/     the trend engine (code)
   lab/        the tuning lab: rounds, judges, reports, the dataset
 web/app/      the screens: home, Studio, her phone, the lab (no build step)
-tests/        171 automated tests
+data/lab/     the lab's results in aggregate, which /lab shows (python -m roleedge.lab report)
+tests/        175 automated tests
 docs/         design, findings, the tuning log, the architecture diagram
 ```
 

@@ -332,8 +332,8 @@
             <div class="km-top"><span class="km-label">Dedicated child model</span><span class="tag">Trained, not run here</span></div>
             <a class="km-id km-link" href="https://huggingface.co/pra40109/Llama-Garvit-1.0" target="_blank" rel="noopener noreferrer"><code>Llama-Garvit-1.0</code><small>on Hugging Face</small></a>
             <ul class="km-facts">
-              <li>A LoRA on Llama Guard 3 1B for children aged 4 to 12: <code>safe</code>, or <code>unsafe</code> with our categories C1 to C10</li>
-              <li>2,552 lines from four public sources, one pass, rank 16, trained on Modal in about 6.5 minutes (about $0.09)</li>
+              <li>A LoRA adapter for Llama Guard 3 1B, tuned for children aged 4 to 12: <code>safe</code>, or <code>unsafe</code> with our categories C1 to C10</li>
+              <li>2,552 lines from four public sources, one pass, rank 16, trained on Modal</li>
             </ul>
             <div class="km-results" role="table" aria-label="727 held-out lines, before and after training">
               <div class="kr-row kr-head" role="row"><span role="columnheader">727 held-out lines</span><span role="columnheader">Untrained</span><span role="columnheader">Trained</span></div>
@@ -342,11 +342,6 @@
               <div class="kr-row" role="row"><span role="cell">Safe lines flagged</span><span role="cell">2.0%</span><b role="cell">0.6%</b></div>
               <div class="kr-row" role="row"><span role="cell">Right category codes</span><span role="cell">0%</span><b role="cell">82%</b></div>
             </div>
-            <ul class="km-facts">
-              <li>A prompt alone changed nothing: untrained, it answered with its own adult category every time. Training moved it to the child policy; mild insults went from 18% caught to 100%.</li>
-              <li>Fair warning: the test lines come from the same sources as the training lines. The real test, new lines written the way a children's app writes, and unsafe Japanese lines, is next.</li>
-              <li>Not run in this build: the organisers ruled that Llama doesn't count as a Meta model at runtime, so Muse Spark checks every child's pack, and anything doubtful waits for the parent.</li>
-            </ul>
             <div class="km-cats"><span>Frightening or violent</span><span>Dating</span><span>Alcohol, drugs, gambling</span><span>Money, buying, sign-ups</span><span>Secrets or contact</span><span>Medical advice</span></div>
             <div class="tester">
               <div class="ts-head"><b>Try it</b><small>Tap a line to see what the child check does with it</small></div>

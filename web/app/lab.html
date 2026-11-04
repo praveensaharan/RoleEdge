@@ -10,13 +10,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap">
-  <script>document.documentElement.classList.add("js");</script>
+  <script>
+    document.documentElement.classList.add("js");
+    setTimeout(() => { if (!document.documentElement.classList.contains("ready")) document.documentElement.classList.remove("js"); }, 3000);
+  </script>
   <link rel="stylesheet" href="/assets/css/home.css">
   <link rel="stylesheet" href="/assets/css/lab.css">
 </head>
 <body>
-  <!-- The Lab: the tuning in aggregate, from /api/lab/summary (python -m roleedge.lab report). No reel is shown or
-       named here: the reels are other people's content. Same system as the home page; charts in ink, status colour
+  <!-- The Lab: the tuning in aggregate, from /api/lab/summary (data/lab/summary.json). No reel is shown or
+       named here: the reels are other people's content. The home page's system and motion (motion.js): the dot-matrix
+       hero, the numbers strip, dots behind every section, fades between dark and light. Charts in ink, status colour
        only for better or worse. -->
   <a class="skip" href="#main">Skip to content</a>
 
@@ -32,22 +36,30 @@
         <a href="#tuning">Fine-tuning</a>
         <a href="#cost">Cost</a>
       </nav>
-      <a class="btn nav-cta sm" href="/studio">Open the Studio<i data-i="send"></i></a>
+      <a class="btn nav-cta sm" href="/studio" data-magnetic>Open the Studio<i data-i="send"></i></a>
     </div>
     <div class="nav-progress" aria-hidden="true"><b id="progress"></b></div>
   </header>
 
   <main id="main">
+    <!-- ============================================================ hero -->
     <section class="hero dark lab-hero" id="top" data-theme="dark">
-      <div class="wrap">
-        <span class="eyebrow"><span class="ey-n">LAB</span>Evaluation and tuning</span>
-        <h1 class="display lab-display">We tested the agents on real reels, <span class="soft">then fixed what the judge found.</span></h1>
-        <p class="lead" id="hero-lead">Every reel went through the Studio's own agents, round after round. A Muse Wonder judge scored every moment, code checked the rest, and each weakness was traced to its cause, changed and measured again.</p>
-        <div class="lab-hero-grid">
-          <div class="hero-fig" id="hero-fig"></div>
-          <div class="kpis" id="kpis"></div>
+      <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="wrap hero-in">
+        <a class="pill" href="#quality" data-reveal><span class="ey-n">LAB</span>Evaluation and tuning<span class="pill-sep"></span><span class="pill-b" id="hero-pill">Built on Meta models</span><i data-i="arrow-right"></i></a>
+        <h1 class="display lab-display" data-split>Tested on real reels. <span class="soft">Then fixed what the judge found.</span></h1>
+        <p class="lead" id="hero-lead" data-reveal style="--d:.35s">Every reel went through the Studio's own agents, round after round. A Muse Wonder judge scored every moment, code checked the rest, and each weakness was traced to its cause, changed and measured again.</p>
+        <div class="cta-row" data-reveal style="--d:.5s">
+          <a class="btn light lg" href="#quality" data-magnetic>See the results<i data-i="arrow-right"></i></a>
+          <a class="btn ghost-dark lg" href="/studio"><i data-i="play"></i>Open the live Studio</a>
         </div>
       </div>
+    </section>
+
+    <!-- ============================================================ the numbers (drawn from the summary) -->
+    <section class="strip lab-strip" id="numbers" data-theme="light">
+      <div class="wrap stats" id="kpis"></div>
     </section>
 
     <section class="sec" id="quality" data-theme="light">
@@ -113,13 +125,42 @@
         <div class="grid two" id="cost-charts"></div>
       </div>
     </section>
+
+    <!-- ============================================================ cta -->
+    <section class="sec dark cta" id="cta" data-theme="dark">
+      <canvas class="cta-canvas" id="cta-canvas" aria-hidden="true"></canvas>
+      <div class="wrap center">
+        <span class="mark xl" data-mark data-reveal></span>
+        <h2 data-reveal>See the tuned agents at work.</h2>
+        <p class="sub" data-reveal>The same agents run the live Studio, in English and Japanese. No sign-in needed.</p>
+        <div class="cta-row center" data-reveal>
+          <a class="btn light lg" href="/studio" data-magnetic>Open the Studio<i data-i="send"></i></a>
+          <a class="btn ghost-dark lg" href="/#demo"><i data-i="play"></i>See it in action</a>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="foot" data-theme="dark">
     <div class="wrap">
+      <div class="foot-top">
+        <div class="foot-brand">
+          <a class="logo" href="/" aria-label="RoleEdge home"><span class="mark" data-mark></span><span class="wordmark">Role<b>Edge</b></span></a>
+          <span class="powered">Powered by <b>Role Enterprise</b></span>
+          <div class="fp" id="products">
+            <span class="fp-title">Explore our other products.</span>
+            <a class="fp-link" href="https://rolespace.duckdns.org/" target="_blank" rel="noopener"><span class="fp-logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#111111"/><g fill="#fff"><rect x="6" y="19" width="3.6" height="7" rx="1"/><rect x="11.5" y="15" width="3.6" height="11" rx="1"/><rect x="17" y="11" width="3.6" height="15" rx="1"/><rect x="22.5" y="6" width="3.6" height="20" rx="1"/></g></svg></span><b>RoleSpace</b><span class="fp-visit">Visit<i data-i="send"></i></span></a>
+          </div>
+        </div>
+        <nav class="foot-cols" aria-label="Footer">
+          <div><b>Product</b><a href="/studio">Studio</a><a href="/#demo">See it in action</a><a href="/#roadmap">Roadmap</a><a href="/lab">Lab</a></div>
+          <div><b>Company</b><a href="/#products">About</a><a href="/#top">Contact</a></div>
+          <div><b>Legal</b><a href="/#top">Privacy</a><a href="/#top">Terms</a></div>
+        </nav>
+      </div>
       <div class="foot-bottom">
         <span>© 2026 Role Enterprise. All rights reserved.</span>
-        <p>Scores come from the stored rounds (python -m roleedge.lab report); no model is called on this page. The reels themselves are other people's content and are not shown.</p>
+        <p>Scores come from the stored test rounds; no model is called on this page. The reels themselves are other people's content and are not shown.</p>
       </div>
     </div>
   </footer>
