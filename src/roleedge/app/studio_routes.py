@@ -36,6 +36,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from ..compose import read_intent
 from ..config import APP_WEB_DIR, LEDGER_FILE, OUTPUT_DIR
 from ..connectors import Connector
 from ..content.ingest import spread_frames
@@ -66,6 +67,7 @@ UPLOAD_TYPES = {  # what a phone or browser shares, and the extension it is stor
 }
 MAX_FILES, MAX_FILE_BYTES = 6, 50_000_000  # a 90-second reel can be 30-40 MB
 MAX_SOURCE_CHARS = 40_000  # kept whole for the date check: the agents saw all of it
+MAX_QUICK_CHARS = 600  # typed words up to this long are read for intent first; a longer text is something to explain
 IN_PROGRESS = ("researching", "making")
 REF = re.compile(r"([a-z]+):([A-Za-z0-9_-]{1,64})")  # "<app>:<item id>"
 DEMO_THUMB = re.compile(r"/assets/demo/photos/[a-z]+/[a-z0-9_-]+\.jpg")  # a demo album photo's preview, nothing else
@@ -192,7 +194,10 @@ class StudioRuns:
         for circle in self.store.circles():
             for item in self.store.items(circle.id):
                 if item.kind == "studio" and item.payload.get("stage") in IN_PROGRESS:
-                    item.payload.update(stage="failed", error="Interrupted by a restart. Share it again.")
+                    if item.payload.get("adding") and item.payload.get("outputs"):  # adding a moment: the pack stays
+                        item.payload.update(stage="ready", adding=[], error="Interrupted by a restart. Add the moment again.")
+                    else:
+                        item.payload.update(stage="failed", error="Interrupted by a restart. Share it again.")
                     self.store.save_item(item)
 
     # ---------------------------------------------------------------- research -> plan
@@ -291,7 +296,9 @@ class StudioRuns:
                                                       "pictures": bool(source.images),
                                                       "picture_urls": [picture_url(p) for p in source.images]},
                        "research": research.model_dump(), "plan": plan.model_dump(),
-                       "formats": [f.format for f in plan.formats if f.recommended]}
+                       # only the best moment is made unless more are picked: quicker and cheaper; more can be
+                       # added afterwards, one by one (``make`` on a ready pack)
+                       "formats": [f.format for f in plan.formats if f.recommended][:1]}
         except Exception as exc:
             payload = {"stage": "failed", "error": f"The agents couldn't finish: {str(exc)[:200]}"}
         await asyncio.sleep(0)  # let the last agent events land first
@@ -299,21 +306,26 @@ class StudioRuns:
 
     # ---------------------------------------------------------------- make -> check
 
-    async def make(self, circle: Circle, item: ThreadItem, formats: list[Format]) -> None:
+    async def make(self, circle: Circle, item: ThreadItem, formats: list[Format], earlier: dict[str, Any] | None = None) -> None:
+        """Make ``formats``, verify them and run the gate. ``earlier``: a ready pack's moments and review, when more
+        moments are added to it; only the new ones are made and verified, then the gate reads them all."""
         events = list(item.payload.get("agents", []))
         swarm = Swarm(self.llm, circle, item.id, emit=self.emitter(circle.id, events), recipient=recipient_of(circle, item))
+        back = earlier or {}
         try:
             research = Research.model_validate(item.payload["research"])
             plan = ExplainPlan.model_validate(item.payload["plan"])
             outputs = await run_in_threadpool(swarm.make, research, plan, formats)
         except Exception as exc:
-            await self.save(item.id, {"stage": "failed", "error": f"The formats couldn't be made: {str(exc)[:200]}", "agents": events},
-                            trace=swarm.trace)
+            await self.save(item.id, {**back, "adding": [], "agents": events, "error": "The new moment couldn't be made. Try again."}
+                            if earlier else {"stage": "failed", "error": f"The formats couldn't be made: {str(exc)[:200]}",
+                                             "agents": events}, trace=swarm.trace)
             return
         await asyncio.sleep(0)
         if not outputs:
-            await self.save(item.id, {"stage": "failed", "error": "None of the formats could be made. Try again.", "agents": events},
-                            trace=swarm.trace)
+            await self.save(item.id, {**back, "adding": [], "agents": events, "error": "The new moment couldn't be made. Try again."}
+                            if earlier else {"stage": "failed", "error": "None of the formats could be made. Try again.",
+                                             "agents": events}, trace=swarm.trace)
             return
         frames = (item.payload.get("source") or {}).get("picture_urls") or []
         if "video" in outputs and any(frames):  # the scenes can show the shared video's own pictures
@@ -327,13 +339,44 @@ class StudioRuns:
         review, _ = await asyncio.gather(run_in_threadpool(swarm.verify, research, plan, outputs),
                                          self.draw(swarm, item.id, outputs))
         extra["review"] = review.model_dump()
+        own = {"review": extra["review"], "guardian": extra.get("guardian")}  # the new moments' checks, before merging
+        if back.get("review"):  # the earlier moments' review still stands; the pack is approved only if both are
+            old = back["review"]
+            extra["review"] = {**extra["review"], "faithful": old["faithful"] and review.faithful,
+                               "right_for_reader": old["right_for_reader"] and review.right_for_reader,
+                               "safe": old["safe"] and review.safe, "issues": [*old["issues"], *extra["review"]["issues"]]}
+        if back.get("guardian") and extra.get("guardian"):  # the same for a child's pack: safe only if both parts are
+            extra["guardian"] = {"safe_for_child": back["guardian"]["safe_for_child"] and extra["guardian"]["safe_for_child"],
+                                 "concerns_en": [*back["guardian"]["concerns_en"], *extra["guardian"]["concerns_en"]]}
         await asyncio.sleep(0)
+        latest = self.store.item(item.id) or item  # she may have opened the pack meanwhile ("played")
+        made = list(dict.fromkeys([*(latest.payload.get("formats") or []), *formats])) if earlier else formats
+        if earlier and latest.status in ("sent", "played"):
+            # A pack she already has keeps what was approved (a "send anyway" included); the gate reads only the new
+            # moment, with its own review and child-safety check. If it passes, it waits for your approval like any
+            # share, unless you send without approval. The merged checks wait with it and are kept only on approval.
+            gate = self.gate(item, outputs, guardian=own["guardian"], review=own["review"])
+            check = TraceStep(step="Checked the new moment and ran the final send gate: "
+                              + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")
+            if not gate.passed:
+                await self.save(item.id, {**back, "adding": [], "agents": events,
+                                          "error": "The new moment was held, so it wasn't added: " + "; ".join(gate.reasons)},
+                                trace=[*swarm.trace, check])
+                return
+            if circle.send_immediately:
+                await self.save(item.id, {"stage": "ready", "outputs": {**back.get("outputs", {}), **outputs}, "agents": events,
+                                          "formats": made, "adding": [], "error": "", **extra}, trace=[*swarm.trace, check])
+            else:
+                await self.save(item.id, {**back, "adding": [], "agents": events, "error": "",
+                                          "pending": {"outputs": outputs, "formats": formats, **extra}}, trace=[*swarm.trace, check])
+            return
+        outputs = {**back.get("outputs", {}), **outputs}
         gate = self.gate(item, outputs, guardian=extra.get("guardian"), review=extra["review"])
-        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
         check = TraceStep(step="Checked dates against the source and ran the final send gate: "
                           + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")
-        await self.save(item.id, {"stage": "ready", "outputs": outputs, "agents": events, **extra},
-                        trace=[*swarm.trace, check], gate=gate, status=status)
+        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
+        await self.save(item.id, {"stage": "ready", "outputs": outputs, "agents": events, "formats": made, "adding": [],
+                                  "error": "", **extra}, trace=[*swarm.trace, check], gate=gate, status=status)
 
     async def draw(self, swarm: Swarm, item_id: str, outputs: dict[str, Any]) -> None:
         """The picture moment: Muse Image draws the maker's scene (about $0.01). Without Meta, or if it fails, the
@@ -419,6 +462,7 @@ def add_studio_routes(app: FastAPI, *, llm: LLM, store: Store, hub: Hub, media: 
     async def studio_start(circle_id: str, text: Annotated[str, Form()] = "", link: Annotated[str, Form()] = "",
                            to: Annotated[str, Form()] = "", ref: Annotated[str, Form()] = "",
                            ref_title: Annotated[str, Form()] = "", ref_thumb: Annotated[str, Form()] = "",
+                           voice: Annotated[str, Form()] = "",
                            files: Annotated[list[UploadFile] | None, File()] = None) -> dict:
         circle = circle_or_404(circle_id)
         recipient = circle.recipient(to.strip())
@@ -429,6 +473,16 @@ def add_studio_routes(app: FastAPI, *, llm: LLM, store: Store, hub: Hub, media: 
         if not (text or link or files or source_ref):
             raise HTTPException(400, "Share a message, a link, a photo or a video first.")
         types = runs.upload_types(files)
+        quick_message = getattr(app.state, "quick_message", None)
+        if quick_message and text and not (link or files or source_ref) and recipient.role != "child" and len(text) <= MAX_QUICK_CHARS:
+            # typed words only: first read what is meant. A message to pass on takes the fast way (one rewrite);
+            # something to explain goes on to the research below.
+            stamp = runs.starts.take()
+            intent, step = await run_in_threadpool(read_intent, llm, circle, text)
+            if intent.kind == "message":
+                said = voice if voice in ("mine", "assistant") else circle.voice
+                return (await quick_message(circle, text, said, first=[step])).model_dump()
+            runs.starts.give_back(stamp)  # the research below takes its own start
         item_id = new_id("it")
         with runs.start(circle_id):
             saved = await runs.save_uploads(item_id, files, types)
@@ -448,16 +502,32 @@ def add_studio_routes(app: FastAPI, *, llm: LLM, store: Store, hub: Hub, media: 
     @app.post("/api/items/{item_id}/studio/make")
     async def studio_make(item_id: str, req: MakeRequest) -> dict:
         item = item_or_404(item_id)
-        if item.kind != "studio" or item.payload.get("discarded") or item.payload.get("stage") != "planned":
-            raise HTTPException(409, "The plan isn't ready yet, or the formats are already made.")
+        stage = item.payload.get("stage")
+        if item.kind != "studio" or item.payload.get("discarded") or stage not in ("planned", "ready"):
+            raise HTTPException(409, "The plan isn't ready yet, or the moments are being made.")
         circle = circle_or_404(item.circle_id)
-        formats = [f for f in formats_for(recipient_of(circle, item)) if f in req.formats]
+        made = set(item.payload.get("outputs") or {}) if stage == "ready" else set()
+        formats = [f for f in formats_for(recipient_of(circle, item)) if f in req.formats and f not in made]
         if not formats:
-            raise HTTPException(400, "Pick at least one of the moments.")
-        item.payload.update(stage="making", formats=formats)
+            raise HTTPException(400, "Pick at least one moment that isn't made yet.")
+        # a ready pack keeps its moments (and her copy) while the new ones are made
+        earlier = ({k: item.payload.get(k) for k in ("outputs", "review", "guardian", "stage") if item.payload.get(k) is not None}
+                   if stage == "ready" else None)
+        if item.payload.get("pending"):
+            raise HTTPException(409, "Approve or discard the new moment first.")
+        item.payload.update(stage="making", adding=formats if earlier else [], error="", **({} if earlier else {"formats": formats}))
         await publish(item)
-        runs.background(runs.make(circle, item, formats))
+        runs.background(runs.make(circle, item, formats, earlier))
         return item.model_dump()
+
+    @app.post("/api/items/{item_id}/studio/pending/discard")
+    async def discard_pending(item_id: str) -> dict:
+        """Leave out a new moment waiting for approval; her pack stays as it is."""
+        item = item_or_404(item_id)
+        if item.kind != "studio" or not item.payload.pop("pending", None):
+            raise HTTPException(409, "There is no new moment waiting.")
+        item.trace.append(TraceStep(step="Left out the new moment", engine="you"))
+        return (await publish(item)).model_dump()
 
     @app.post("/api/items/{item_id}/engagement")
     async def engagement(item_id: str, event: StudioEngagement) -> dict:

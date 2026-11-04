@@ -1,7 +1,9 @@
 # Reel Lab: evaluate, improve and prove the agents, reel by reel
 
-*Started 2026-11-03. Owner: the RoleEdge agent team. This file is the working plan and the running log; the generated
-report with every table lives in [reel-lab/REPORT.md](reel-lab/REPORT.md) (re-created by `python -m roleedge.lab report`).*
+*Started 2026-11-03. Owner: the RoleEdge agent team. This file is the working plan and the running log. The aggregate
+results are on the `/lab` page. `python -m roleedge.lab report` also writes per-reel reports (REPORT.md, REELS.md,
+OUTPUTS.md in docs/reel-lab/); they list each reel, which are other people's posts, so they stay on the machine that
+ran the lab and are not in the package.*
 
 ## Why
 
@@ -93,7 +95,7 @@ The user asked for the whole task to be finished overnight without questions; wh
 default taken and why.
 
 - **Spending limit:** $50 for the whole lab, new calls stop at $45 (`lab/budget.py`); raised by the user to $55
-  for rounds 6-7 and Leo's round 4. Counted as the Meta spend in
+  for rounds 6-7 and Leo's round 4, then to $70 (2026-11-04). Counted as the Meta spend in
   `output/usage.jsonl` (every lab ledger is appended to it once, so nothing is counted twice) plus Muse Voice
   Transcribe at $0.18 an audio hour. The usage ledger also holds the app's own calls from before the lab, so the
   figure errs high.
@@ -202,10 +204,10 @@ default taken and why.
   step, SAM 3.1 marking what to watch and cutting products out of the reel; an item researcher; checked links for
   genuine things; product pictures with "I'd like one"; reel links downloaded with their caption; the demo apps you can
   add to; your own Gmail, Calendar or Notion, or the demo ones; a more natural device voice.
-- Reports: [reel-lab/REPORT.md](reel-lab/REPORT.md), [REELS.md](reel-lab/REELS.md), [OUTPUTS.md](reel-lab/OUTPUTS.md),
-  [INTEGRATIONS.md](reel-lab/INTEGRATIONS.md), and the `/lab` page (linked from the home page). 66 approved moments are
+- Reports: the `/lab` page (linked from the home page) and [INTEGRATIONS.md](reel-lab/INTEGRATIONS.md); the per-reel
+  reports (REPORT.md, REELS.md, OUTPUTS.md) stay local. 66 approved moments are
   exported as fine-tuning pairs (117: Linda's and Leo's; `output/reel-lab/style-dataset.jsonl`, `python -m roleedge.lab dataset`).
-- Spend: $54.14 of the $55 limit the user set (the lab's ledgers, Muse Voice Transcribe and Muse Image). Nothing
+- Spend: $54.43 of the $70 limit the user set (it was $55 until 2026-11-04) (the lab's ledgers, Muse Voice Transcribe and Muse Image). Nothing
   committed.
 
 **Not done, or not reached**

@@ -20,6 +20,7 @@ export const state = {
   ref: null, // a page from a connected app: { ref: "notion:<id>", title, app }
   picks: {}, files: [], viewers: {}, recorder: null,
   ownVoice: null, // { id, recorder } while you record your own voice for a quick message
+  scenes: { id: null, open: false, closed: false, pinned: false }, // behind the scenes: which share, open, closed or picked by you
 };
 
 export const $ = (id) => document.getElementById(id);

@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="790" viewBox="0 0 1240 790" font-family="Geist, Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3f3f46"/></marker></defs>
+<rect width="1240" height="790" fill="#ffffff"/>
+<rect x="20" y="20" width="380" height="86" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="32" y="43" font-size="14.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Caregiver&#x27;s Studio  (browser)</text>
+<text x="32" y="63" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Share a reel, link, photo, voice note or words</text>
+<text x="32" y="80" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">approve · watch every agent behind the scenes</text>
+<rect x="840" y="20" width="380" height="86" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="852" y="43" font-size="14.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Mom&#x27;s phone  (browser)</text>
+<text x="852" y="63" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Moments, talking avatar, device voice or your recording</text>
+<text x="852" y="80" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">tap or hold to reply · ask her assistant</text>
+<rect x="20" y="148" width="1200" height="486" rx="14" fill="#fafafa" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="40" y="176" font-size="16" font-weight="700" fill="#0a0a0a" text-anchor="start">RoleEdge server</text>
+<text x="200" y="176" font-size="13" font-weight="400" fill="#71717a" text-anchor="start">FastAPI · WebSocket live updates · SQLite · every model call logged with its price</text>
+<line x1="210" y1="106" x2="210" y2="146" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="220" y="132" font-size="12" font-weight="500" fill="#3f3f46" text-anchor="start">shares, approvals</text>
+<line x1="990" y1="146" x2="990" y2="108" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="982" y="132" font-size="12" font-weight="500" fill="#3f3f46" text-anchor="end">live: moments, messages</text>
+<line x1="1100" y1="108" x2="1100" y2="146" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)" stroke-dasharray="5 4"/>
+<text x="1108" y="132" font-size="12" font-weight="500" fill="#3f3f46" text-anchor="start">replies, taps</text>
+<text x="36" y="226" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">A reel or a link</text>
+<rect x="172" y="198" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="184" y="221" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Read</text>
+<text x="184" y="241" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">watcher, whole video</text>
+<text x="184" y="258" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">reader · web search</text>
+<rect x="348" y="198" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="360" y="221" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Understand</text>
+<text x="360" y="241" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">fact check · items</text>
+<text x="360" y="258" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">looked up · her week</text>
+<line x1="329" y1="231.0" x2="345" y2="231.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="524" y="198" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="536" y="221" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Plan</text>
+<text x="536" y="241" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">key message, the</text>
+<text x="536" y="258" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">best moment for her</text>
+<line x1="505" y1="231.0" x2="521" y2="231.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="700" y="198" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="712" y="221" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Make</text>
+<text x="712" y="241" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">only what you pick:</text>
+<text x="712" y="258" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">slides, map, quiz…</text>
+<line x1="681" y1="231.0" x2="697" y2="231.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="876" y="198" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="888" y="221" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Verify</text>
+<text x="888" y="241" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Muse Wonder reads</text>
+<text x="888" y="258" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">it all; child check</text>
+<line x1="857" y1="231.0" x2="873" y2="231.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="1052" y="198" width="156" height="66" rx="10" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="1064" y="221" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="start">Send gate</text>
+<text x="1064" y="241" font-size="12.5" font-weight="400" fill="#d4d4d8" text-anchor="start">code: dates, money,</text>
+<text x="1064" y="258" font-size="12.5" font-weight="400" fill="#d4d4d8" text-anchor="start">codes, links, secrecy</text>
+<line x1="1033" y1="231.0" x2="1049" y2="231.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="36" y="318" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Typed news</text>
+<rect x="172" y="290" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="184" y="313" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Intent</text>
+<text x="184" y="333" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">message to pass on,</text>
+<text x="184" y="350" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">or one to explain?</text>
+<rect x="348" y="290" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="360" y="313" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Composer</text>
+<text x="360" y="333" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">one rewrite in her</text>
+<text x="360" y="350" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">words and language</text>
+<line x1="329" y1="323.0" x2="345" y2="323.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="524" y="290" width="156" height="66" rx="10" fill="#f4f4f5" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="536" y="313" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Your voice</text>
+<text x="536" y="333" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">optional: recording</text>
+<text x="536" y="350" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">made clearer by code</text>
+<line x1="505" y1="323.0" x2="521" y2="323.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="700" y="290" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="712" y="313" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Captions</text>
+<text x="712" y="333" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Voice Transcribe</text>
+<text x="712" y="350" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">writes what you said</text>
+<line x1="681" y1="323.0" x2="697" y2="323.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="876" y="290" width="156" height="66" rx="10" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="888" y="313" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="start">Send gate</text>
+<text x="888" y="333" font-size="12.5" font-weight="400" fill="#d4d4d8" text-anchor="start">same checks, on what</text>
+<text x="888" y="350" font-size="12.5" font-weight="400" fill="#d4d4d8" text-anchor="start">she will hear</text>
+<line x1="857" y1="323.0" x2="873" y2="323.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="36" y="410" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Her replies</text>
+<rect x="172" y="382" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="184" y="405" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Transcribe</text>
+<text x="184" y="425" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">her voice reply</text>
+<text x="184" y="442" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Voice Transcribe</text>
+<rect x="348" y="382" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="360" y="405" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Reply reader</text>
+<text x="360" y="425" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">summary, needs,</text>
+<text x="360" y="442" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">signals; red flags</text>
+<line x1="329" y1="415.0" x2="345" y2="415.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="524" y="382" width="156" height="66" rx="10" fill="#f4f4f5" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="536" y="405" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Trend engine</text>
+<text x="536" y="425" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">code: last 2 weeks vs</text>
+<text x="536" y="442" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">her usual weeks</text>
+<line x1="505" y1="415.0" x2="521" y2="415.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="700" y="382" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="712" y="405" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">For you</text>
+<text x="712" y="425" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">two-line summary,</text>
+<text x="712" y="442" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">signals, alerts</text>
+<line x1="681" y1="415.0" x2="697" y2="415.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="36" y="502" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Her questions</text>
+<rect x="172" y="474" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="184" y="497" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Router</text>
+<text x="184" y="517" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">what she wants:</text>
+<text x="184" y="534" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">dates, mail, notes</text>
+<rect x="348" y="474" width="156" height="66" rx="10" fill="#f4f4f5" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="360" y="497" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Her accounts</text>
+<text x="360" y="517" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Gmail, Calendar,</text>
+<text x="360" y="534" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Notion (or demo)</text>
+<line x1="329" y1="507.0" x2="345" y2="507.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="524" y="474" width="156" height="66" rx="10" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.2"/>
+<text x="536" y="497" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">Answer</text>
+<text x="536" y="517" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">only from what it</text>
+<text x="536" y="534" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">read; quotes checked</text>
+<line x1="505" y1="507.0" x2="521" y2="507.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="700" y="474" width="156" height="66" rx="10" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="712" y="497" font-size="13.5" font-weight="600" fill="#ffffff" text-anchor="start">Send gate</text>
+<text x="712" y="517" font-size="12.5" font-weight="400" fill="#d4d4d8" text-anchor="start">nothing secret is</text>
+<text x="712" y="534" font-size="12.5" font-weight="400" fill="#d4d4d8" text-anchor="start">read out to her</text>
+<line x1="681" y1="507.0" x2="697" y2="507.0" stroke="#3f3f46" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="44" y="590" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Everything shown or said to her passes the send gate first. Your shares wait for your approval (unless you turn that off); answers to her own questions go to her directly.</text>
+<text x="44" y="610" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Shapes: white = a Meta model call · grey = plain code · black = the final code check.</text>
+<text x="20" y="668" font-size="14" font-weight="700" fill="#0a0a0a" text-anchor="start">Meta models (every model call at runtime)</text>
+<rect x="20" y="684" width="261.0" height="62" rx="10" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="32" y="707" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">muse-spark-1.3</text>
+<text x="32" y="727" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">every agent · video and photo input</text>
+<rect x="293.0" y="684" width="153.0" height="62" rx="10" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="305.0" y="707" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">muse-wonder-1.0</text>
+<text x="305.0" y="727" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">the verifier</text>
+<rect x="458.0" y="684" width="181.79999999999998" height="62" rx="10" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="470.0" y="707" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">muse-image-1.0</text>
+<text x="470.0" y="727" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">pictures, avatar frames</text>
+<rect x="651.8" y="684" width="327.0" height="62" rx="10" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="663.8" y="707" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">sam-3.1</text>
+<text x="663.8" y="727" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">what to watch, avatar mouth, product cut-outs</text>
+<rect x="990.8" y="684" width="234.99999999999997" height="62" rx="10" fill="#ffffff" stroke="#0a0a0a" stroke-width="1.2"/>
+<text x="1002.8" y="707" font-size="13.5" font-weight="600" fill="#0a0a0a" text-anchor="start">muse-voice-transcribe-1.0</text>
+<text x="1002.8" y="727" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">her voice, your captions</text>
+<text x="20" y="772" font-size="12.5" font-weight="400" fill="#71717a" text-anchor="start">Plus the device&#x27;s own voice (no model) and code for dates, gates, limits and trends. Modal is not used at runtime.</text>
+</svg>

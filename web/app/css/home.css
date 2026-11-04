@@ -502,6 +502,15 @@ h3 { font: 600 19px/1.3 var(--font); letter-spacing: -.015em; }
 .km-facts { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
 .km-facts li { position: relative; padding-left: 18px; font-size: 14.5px; line-height: 1.55; color: var(--dk-body); }
 .km-facts li::before { content: ""; position: absolute; left: 2px; top: .6em; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+.km-link { display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; }
+.km-link code { color: #fff; } .km-link small { font-size: 12.5px; font-weight: 400; letter-spacing: 0; color: var(--dk-body); text-decoration: underline; text-underline-offset: 3px; }
+.km-link:hover small { color: #fff; }
+.km-facts code { font-size: 13px; color: #fff; }
+.km-results { margin-top: 18px; border: 1px solid var(--dk-line); border-radius: 12px; overflow: hidden; }
+.kr-row { display: grid; grid-template-columns: 1fr 84px 84px; gap: 8px; align-items: center; padding: 9px 14px; font-size: 13.5px; color: var(--dk-body); font-variant-numeric: tabular-nums; }
+.kr-row + .kr-row { border-top: 1px solid var(--dk-line); }
+.kr-row span:not(:first-child), .kr-row b { text-align: right; } .kr-row b { color: #fff; font-weight: 600; }
+.kr-head { font-size: 12px; color: var(--dk-body); background: var(--dk-2); }
 .km-cats { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 6px; }
 .km-cats span { height: 26px; display: inline-flex; align-items: center; padding: 0 9px; border-radius: 6px; border: 1px solid var(--dk-line-2); font-size: 12px; color: var(--dk-ink); white-space: nowrap; }
 .scan { margin-top: auto; padding-top: 22px; display: grid; gap: 6px; }

@@ -13,9 +13,11 @@ Run:  roleedge serve      (or: uvicorn roleedge.app.server:create_app --factory)
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import shutil
 from datetime import datetime
+from pathlib import Path
 from typing import Literal
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
@@ -43,7 +45,7 @@ from .audio import to_wav
 from .connect_routes import ConnectedApps, add_connect_routes
 from .copy import CAREGIVER_ALERT, PARENT_TEXT
 from .errand_routes import add_errand_routes
-from .guards import Budget
+from .guards import Budget, LedgerBackup, SpendCap
 from .hub import Hub
 from .lab_routes import add_lab_routes
 from .relay_routes import add_relay_routes
@@ -75,14 +77,24 @@ class SettingsRequest(BaseModel):
 
 def create_app(llm: LLM | None = None, store: Store | None = None, insights: InsightsMode = "full",
                media: MetaMedia | None = None) -> FastAPI:
-    llm = llm or LLM(pipeline_provider())
+    llm = llm or LLM(pipeline_provider(), before_call=SpendCap(get_settings().studio_spend_cap_usd))
     if media is None and (meta := get_settings().meta):
         media = MetaMedia(meta)
     store = store or Store()
     if not store.circles():
         store.reset(CIRCLES.values(), history)
     hub = Hub()
-    app = FastAPI(title="RoleEdge")
+    backup = LedgerBackup(llm.ledger_file, Path(get_settings().ledger_backup)) if get_settings().ledger_backup else None
+
+    @contextlib.asynccontextmanager
+    async def lifespan(_: FastAPI):  # noqa: ANN202
+        if backup:  # before the first request, so the spend cap counts what earlier servers spent
+            backup.start()
+        yield
+        if backup:
+            backup.stop()
+
+    app = FastAPI(title="RoleEdge", lifespan=lifespan)
     quick = Budget(per_minute=QUICK_PER_MINUTE, spend_cap_usd=get_settings().studio_spend_cap_usd, what="messages",
                    ledger_file=llm.ledger_file)
 
@@ -150,27 +162,41 @@ def create_app(llm: LLM | None = None, store: Store | None = None, insights: Ins
         store.save_circle(circle)
         return circle.model_dump()
 
+    async def quick_message(circle: Circle, text: str, voice: VoiceChoice, first: list[TraceStep] | None = None) -> ThreadItem:
+        """One rewrite in her words, then the send gate: the fast way (also what a typed message to pass on takes
+        from the Studio, after ``read_intent``)."""
+        message, step = await run_in_threadpool(compose, llm, circle, text, voice)
+        gate = gate_message(message)
+        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
+        trace = [*(first or []), step,
+                 TraceStep(step="Final send gate: " + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")]
+        item = ThreadItem(id=new_id("it"), circle_id=circle.id, at=now_iso(), kind="message", to="parent",
+                          speaker="person" if voice == "mine" else "assistant", status=status, voice=voice,
+                          payload={"source_text": text, "message": message.model_dump(),
+                                   "language": circle.parent.language}, gate=gate, trace=trace)
+        return await publish(item)
+
+    app.state.quick_message = quick_message
+
     @app.post("/api/circles/{circle_id}/compose")
     async def compose_message(circle_id: str, req: ComposeRequest) -> dict:
         circle = circle_or_404(circle_id)
         if not req.text.strip():
             raise HTTPException(400, "Write something first.")
         quick.take()
-        voice = req.voice or circle.voice
-        message, step = await run_in_threadpool(compose, llm, circle, req.text, voice)
-        gate = gate_message(message)
-        status = "held" if not gate.passed else "sent" if circle.send_immediately else "draft"
-        trace = [step, TraceStep(step="Final send gate: " + ("passed" if gate.passed else "; ".join(gate.reasons)),
-                                 engine="code")]
-        item = ThreadItem(id=new_id("it"), circle_id=circle_id, at=now_iso(), kind="message", to="parent",
-                          speaker="person" if voice == "mine" else "assistant", status=status, voice=voice,
-                          payload={"source_text": req.text, "message": message.model_dump(),
-                                   "language": circle.parent.language}, gate=gate, trace=trace)
-        return (await publish(item)).model_dump()
+        return (await quick_message(circle, req.text, req.voice or circle.voice)).model_dump()
 
     @app.post("/api/items/{item_id}/approve")
     async def approve(item_id: str, req: ApproveRequest) -> dict:
         item = item_or_404(item_id)
+        if item.kind == "studio" and (pending := item.payload.get("pending")) and item.status in ("sent", "played"):
+            # a moment added to a pack she already has: it passed the gate on its own; now you approved it too
+            item.payload.pop("pending")
+            item.payload["outputs"] = {**(item.payload.get("outputs") or {}), **pending["outputs"]}
+            item.payload["formats"] = list(dict.fromkeys([*(item.payload.get("formats") or []), *pending["formats"]]))
+            item.payload.update({k: pending[k] for k in ("review", "guardian") if pending.get(k)})  # checks of the whole pack
+            item.trace.append(TraceStep(step="Approved by you: the new moment is added to her pack", engine="you"))
+            return (await publish(item)).model_dump()
         if item.status not in ("draft", "held"):
             raise HTTPException(409, f"This item is already {item.status}.")
         if item.kind == "studio":
@@ -191,6 +217,8 @@ def create_app(llm: LLM | None = None, store: Store | None = None, insights: Ins
             raise HTTPException(422, {"message": "This can't be sent from the app: " + "; ".join(gate.reasons),
                                       "item": (await publish(item)).model_dump()})
         item.status = "sent"
+        if item.kind == "studio":
+            item.payload["error"] = ""  # an earlier note (a restart, a moment that couldn't be made) is behind us
         item.trace.append(TraceStep(step="Approved by you" + (" (sent anyway)" if req.allow_soft else ""),
                                     engine="you"))
         return (await publish(item)).model_dump()

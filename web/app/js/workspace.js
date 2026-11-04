@@ -1,10 +1,10 @@
 // The caregiver's Studio. Share anything; agents research it, propose how to explain it, make the formats you pick,
 // and you approve before she sees it. Her screen is live on the right, and what she does comes back to each share.
 // This file wires the page together; the cards, the share box and the side tabs live in ./workspace/.
-import { api, esc, ICON, live } from "./common.js";
+import { api, esc, ICON, live, morph, morphElement } from "./common.js";
 import { icon, loadIcons, mountViewer } from "./studio-view.js";
 import { genderOf } from "./voice.js";
-import { card } from "./workspace/cards.js";
+import { card, scenesPanel } from "./workspace/cards.js";
 import { drawRecipients, initComposer, setMode, setVoice } from "./workspace/composer.js";
 import { refreshUsage, renderActivity, renderTrends } from "./workspace/insights.js";
 import { $, FORMATS, formatsFor, formatText, isChild, namesFor, notify, recipient, recipientOf, state } from "./workspace/shared.js";
@@ -29,7 +29,8 @@ async function start() {
 async function openCircle(circleId) {
   state.link?.stop();
   const data = await api(`/api/circles/${circleId}`);
-  Object.assign(state, { circle: data.circle, items: data.items, engine: data.engine, picks: {} });
+  Object.assign(state, { circle: data.circle, items: data.items, engine: data.engine, picks: {},
+                        scenes: { ...state.scenes, id: null } });
   history.replaceState(null, "", `?circle=${circleId}`);
   for (const b of $("circles").children) b.setAttribute("aria-pressed", String(b.dataset.circle === circleId));
   $("eyebrow").textContent = `Studio · ${state.circle.label}`;
@@ -67,7 +68,7 @@ function onLive(event) {
   if (event.type === "resync") { resync(); return; }
   if (event.type === "agent") {
     const item = state.items.find((i) => i.id === event.event.item_id);
-    if (item) { (item.payload.agents ||= []).push(event.event); patch(item); }
+    if (item) { (item.payload.agents ||= []).push(event.event); if (!state.scenes.pinned) state.scenes.id = item.id; patch(item); }
     return;
   }
   if (event.type !== "item") return;
@@ -94,8 +95,12 @@ async function resync() {
 }
 
 function onShared(item) {
+  // a new share opens behind the scenes where it has a column of its own; on a narrow screen it would cover the share
+  if (item.kind === "studio") state.scenes = { id: item.id, open: !state.scenes.closed && innerWidth >= 1280, closed: state.scenes.closed, pinned: false };
   upsert(item);
   showTab("stream");
+  // bring the new share into view, smoothly, without jumping if it is already on screen
+  requestAnimationFrame(() => document.querySelector(`[data-card="${item.id}"]`)?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" }));
 }
 
 /** Put a new or changed item into the stream, redrawing only its card when it's already shown. */
@@ -111,24 +116,64 @@ function upsert(item) {
 function render() {
   const visible = state.items.filter((i) => !i.payload.discarded).reverse();
   keepOpenPreviews(() => {
-    $("tab-stream").innerHTML = visible.length ? visible.map(card).join("")
-      : `<div class="empty">Nothing shared yet. Share something with ${esc(recipient().call_name)} above: the agents take it from there.</div>`;
+    morph($("tab-stream"), visible.length ? visible.map(card).join("")
+      : `<div class="empty">Nothing shared yet. Share something with ${esc(recipient().call_name)} above: the agents take it from there.</div>`);
   });
   $("tabs").querySelector('[data-tab="stream"]').innerHTML = `Shares<span class="count">${visible.length}</span>`;
+  renderScenes();
 }
 
+/** Redraw one card in place: only what changed is touched, so its pictures and videos don't flash. */
 function patch(item) {
   const el = document.querySelector(`[data-card="${item.id}"]`);
   if (!el || item.payload.discarded) { render(); return; }
-  keepOpenPreviews(() => { el.outerHTML = card(item); });
+  const html = card(item);
+  if (!html) { el.remove(); return; }
+  keepOpenPreviews(() => morphElement(el, html));
+  if (item.kind === "studio" && (state.scenes.id === item.id || !state.scenes.id)) renderScenes();
 }
+
+// ---------------------------------------------------------------- behind the scenes: the agents, in a panel of their own
+
+function renderScenes() {
+  const studio = state.items.filter((i) => i.kind === "studio" && !i.payload.discarded);
+  const dock = $("scenes");
+  if (!studio.length) { dock.hidden = true; document.body.classList.remove("scenes-open"); return; }
+  const chosen = itemById(state.scenes.id);
+  const item = chosen && chosen.kind === "studio" && !chosen.payload.discarded ? chosen : studio[studio.length - 1];
+  state.scenes.id = item.id;
+  const working = ["researching", "making"].includes(item.payload.stage);
+  const title = item.payload.plan?.key_message_en || item.payload.request || "Your share";
+  dock.hidden = false;
+  dock.classList.toggle("open", state.scenes.open);
+  document.body.classList.toggle("scenes-open", state.scenes.open);
+  dock.classList.toggle("working", working);
+  morph(dock, `<button type="button" class="sc-pill" data-scenes-toggle aria-expanded="${state.scenes.open}">
+      <span class="sc-dot"></span><b>Behind the scenes</b><small>${working ? "agents working" : "every agent's step"}</small></button>
+    <section class="sc-panel" aria-label="Behind the scenes"${state.scenes.open ? "" : " hidden"}>
+      <header class="sc-head"><div><small>Behind the scenes</small><b>${esc(title)}</b></div>
+        <button type="button" class="btn ghost sm" data-scenes-toggle aria-label="Close">${ICON.close}</button></header>
+      <div class="sc-body">${scenesPanel(item)}</div></section>`);
+}
+
+function openScenes(itemId) {
+  state.scenes = { id: itemId, open: true, closed: false, pinned: true }; // you picked this one: it stays until a new share
+  renderScenes();
+}
+
+$("scenes").onclick = (e) => {
+  if (!e.target.closest("[data-scenes-toggle]")) return;
+  state.scenes.open = !state.scenes.open;
+  state.scenes.closed = !state.scenes.open; // closed by you: a new share doesn't open it again
+  renderScenes();
+};
 
 /** Redraw, but move any open preview into the redrawn card so it keeps playing (her engagement updates the card
  *  while you watch); previews whose card is gone are stopped. */
 function keepOpenPreviews(redraw) {
   const open = [...document.querySelectorAll("#tab-stream .preview-slot:not([hidden])")];
   redraw();
-  for (const slot of open) document.getElementById(slot.id)?.replaceWith(slot);
+  for (const slot of open) { const now = document.getElementById(slot.id); if (now && now !== slot) now.replaceWith(slot); }
   for (const [itemId, viewer] of Object.entries(state.viewers)) {
     if (open.some((slot) => slot.isConnected && slot.id === `slot-${itemId}`)) continue;
     viewer.stop?.();
@@ -139,6 +184,8 @@ function keepOpenPreviews(redraw) {
 $("tab-stream").onclick = async (e) => {
   const pick = e.target.closest("[data-pick]");
   if (pick) { togglePick(pick.dataset.id, pick.dataset.pick); return; }
+  const scenes = e.target.closest("[data-scenes]");
+  if (scenes) { openScenes(scenes.dataset.scenes); return; }
   const view = e.target.closest("[data-view]");
   if (view) { togglePreview(view.dataset.view, view.dataset.format); return; }
   const allow = e.target.closest("[data-allow]");
@@ -148,7 +195,21 @@ $("tab-stream").onclick = async (e) => {
     return;
   }
   const make = e.target.closest("[data-make]");
-  if (make) { await run(make, () => api(`/api/items/${make.dataset.make}/studio/make`, { method: "POST", body: { formats: picksFor(make.dataset.make) } })); return; }
+  if (make) {
+    const id = make.dataset.make;
+    const item = await run(make, () => api(`/api/items/${id}/studio/make`, { method: "POST", body: { formats: picksFor(id) } }));
+    if (!item) return;
+    delete state.picks[id];
+    const now = itemById(id); // the live update may have come first, with the agents' first steps: keep that one
+    if (!now || now.payload.stage !== "making") upsert(item); else patch(now);
+    return;
+  }
+  const leaveOut = e.target.closest("[data-pending-discard]");
+  if (leaveOut) {
+    const item = await run(leaveOut, () => api(`/api/items/${leaveOut.dataset.pendingDiscard}/studio/pending/discard`, { method: "POST" }));
+    if (item) upsert(item);
+    return;
+  }
   const own = e.target.closest("button[data-own-voice]");
   if (own) { await ownVoice(own); return; }
   const act = e.target.closest("button[data-act]");
@@ -213,7 +274,9 @@ async function run(button, request) {
 }
 
 const itemById = (id) => state.items.find((i) => i.id === id);
-const picksFor = (id) => state.picks[id] || itemById(id).payload.formats || [];
+/** The moments picked on a share: before anything is made, the plan's best one unless you changed it; on a ready
+ *  pack, the ones you picked to add. */
+const picksFor = (id) => state.picks[id] || (itemById(id).payload.stage === "planned" ? itemById(id).payload.formats || [] : []);
 
 function togglePick(itemId, format) {
   const picks = new Set(picksFor(itemId));
@@ -232,7 +295,8 @@ function togglePreview(itemId, format) {
   slot.dataset.format = format;
   const item = itemById(itemId), person = recipientOf(item);
   slot.innerHTML = `<div class="label">Preview · ${esc(formatText(format, person)[0])} · as ${esc(person.call_name)} sees it</div><div class="pv" lang="${person.language}"></div>`;
-  state.viewers[itemId] = mountViewer(slot.querySelector(".pv"), format, item.payload.outputs[format], {
+  const output = item.payload.outputs?.[format] || item.payload.pending?.outputs?.[format];
+  state.viewers[itemId] = mountViewer(slot.querySelector(".pv"), format, output, {
     lang: person.language, names: namesFor(person), printable: true, picture: item.payload.outputs.picture?.image || "",
     gender: genderOf(state.circle.caregiver.relation),
   });

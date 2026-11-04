@@ -12,6 +12,8 @@ Environment variables (put them in ``.env``; see ``.env.example``):
     MODAL_TOKEN_ID, MODAL_TOKEN_SECRET                       Modal (GPU services); ModalTokenID / ModalTokenSecret also read
     ROLEEDGE_RULES                                           "strict" (only Meta models at runtime) or "open"
     ROLEEDGE_GUARD_URL, ROLEEDGE_GUARD_KEY                   the tuned child guard on Modal (docs/GUARD.md)
+    ROLEEDGE_STUDIO_SPEND_CAP_USD                            no new model call once the app has spent this much
+    ROLEEDGE_LEDGER_BACKUP                                   a file on lasting storage that keeps the spend across restarts
 
 The older Meta names API_KEY / URL / MODEL / MODEL_API_KEY are still read as fallbacks.
 """
@@ -71,7 +73,8 @@ class Settings:
     allow_contributor_models: bool = False
     modal: ModalConfig | None = None
     rules: str = "strict"  # strict: every model called at runtime is a Meta model (hackathon rule)
-    studio_spend_cap_usd: float = 25.0  # new Studio shares are refused once the ledger shows this much Meta spend
+    studio_spend_cap_usd: float = 25.0  # no new model call once the ledger shows this much Meta spend (app/guards.py)
+    ledger_backup: str = ""  # a copy of the usage ledger on lasting storage, so the cap survives a restart (Cloud Run)
     notion_token: str = ""  # a Notion internal integration's secret: the share box can then share Notion pages
     guard_url: str = ""  # the tuned child guard on Modal (docs/GUARD.md); empty = Muse Spark reviews children's packs
     guard_key: str = ""  # the shared key the guard endpoint checks (the GUARD_KEY in its Modal secret)
@@ -125,6 +128,7 @@ def get_settings() -> Settings:
         modal=modal,
         rules=_first_env("ROLEEDGE_RULES", default="strict"),
         studio_spend_cap_usd=float(_first_env("ROLEEDGE_STUDIO_SPEND_CAP_USD", default="25") or 25),
+        ledger_backup=_first_env("ROLEEDGE_LEDGER_BACKUP"),
         notion_token=_first_env("NOTION_TOKEN"),
         guard_url=_first_env("ROLEEDGE_GUARD_URL"),
         guard_key=_first_env("ROLEEDGE_GUARD_KEY"),

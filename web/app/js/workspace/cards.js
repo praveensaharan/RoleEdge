@@ -1,6 +1,7 @@
-// The stream's cards, as HTML. A Studio share shows its whole pipeline the way RoleSpace shows a decision: agent
-// checks that tick off, the plan with its sources, the formats to pick, the outputs, the code checks, your decision
-// and what she did with it. Everything from a model or a person goes through esc() (rule S9).
+// The stream's cards, as HTML. A Studio share shows only what you need: what you shared, a progress line while the
+// agents work, the plan's verdict, the moments to pick (the best one first), the outputs, the checks, your decision
+// and what she did with it. Every agent's step, the outline and the verifier's detail are behind the scenes
+// (scenesPanel, a panel of its own). Everything from a model or a person goes through esc() (rule S9).
 import { esc } from "../common.js";
 import { FORMAT_INFO, icon } from "../studio-view.js";
 import { clock, FORMAT_TEXT, formatsFor, formatText, her, herLang, isChild, parent, recipientOf, recipients, state } from "./shared.js";
@@ -73,13 +74,63 @@ function studioCard(item) {
   const meta = `for ${person.call_name}${isChild(person) ? ` (${person.age})` : ""} · ${kind}${files.length ? ` · ${plural(files.length, "file")}` : ""} · ${clock(item.at)}`;
   let html = `<article class="card" data-card="${item.id}">${head(kindIcon, title, meta, badge(status))}${sharedMedia(p, files)}`;
   if (p.request) html += `<div class="said${p.request.length < 260 ? " short" : ""}">${esc(p.request)}</div>`;
-  html += `<div class="pipeline"><section>${researchChecks(item)}</section><section>${planBlock(item)}</section></div>`;
+  if (["researching", "making"].includes(p.stage)) html += progressBlock(item);
+  if (p.plan) html += planBlock(item);
   if (p.error) html += `<div class="error">${esc(p.error)}</div>`;
-  if (p.plan) html += formatsBlock(item);
-  if (p.outputs && p.stage === "ready") html += outputsBlock(item) + reviewBlock(item) + gateBlock(item) + decideBlock(item) + engagementBlock(item);
+  if (p.plan && p.stage === "planned") html += formatsBlock(item); // pick, then make
+  const made = p.outputs && (p.stage === "ready" || p.adding?.length);
+  if (made) html += outputsBlock(item) + pendingBlock(item) + reviewBlock(item) + gateBlock(item) + (p.adding?.length ? "" : decideBlock(item))
+    + engagementBlock(item) + (p.pending ? "" : formatsBlock(item));
   if (p.outputs && !Object.keys(p.outputs).some((f) => f in FORMAT_TEXT)) html += `<div class="note-box">Made with the earlier formats. Share it again for the new moments.</div>`;
   return `${html}${footer(item)}</article>`;
 }
+
+const PREPARING = "We're preparing something special for you and {name}. This may take a little time.";
+
+/** While the agents work: one calm line instead of every agent's step (those are behind the scenes). */
+function progressBlock(item) {
+  const { done, total, now } = agentProgress(item);
+  const pct = Math.max(6, Math.round((done / Math.max(total, 1)) * 100));
+  const adding = item.payload.adding?.length ? `Adding ${item.payload.adding.map((f) => THE_MOMENT[f] || f).join(" and ")}. ` : "";
+  return `<div class="progress-box"><div class="pg-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${done}"><b style="width:${pct}%"></b></div>
+    <p class="pg-msg">${esc(adding)}${esc(PREPARING.replace("{name}", who(item)))}</p>
+    <div class="pg-row"><span class="pg-now">${esc(now)}</span><span class="grow"></span>
+      <button type="button" class="btn ghost sm" data-scenes="${item.id}">${icon("activity", 14)}Behind the scenes · ${done} of ${total}</button>
+      ${item.payload.adding?.length ? "" : `<button type="button" class="btn ghost sm stop" data-act="discard" data-id="${item.id}">Stop</button>`}</div></div>`;
+}
+
+/** How far the agents are, and what one of them is doing now. */
+function agentProgress(item) {
+  const states = agentStates(item);
+  const p = item.payload;
+  const expected = STAGES.flatMap(([, rows]) => rows).filter(([agent, , , optional]) => !optional || states.has(agent)).length
+    + (["making", "ready"].includes(p.stage) ? (p.adding?.length || p.formats?.length || 0) + 1 : 0);
+  const done = [...states.values()].filter((e) => settled(e)).length;
+  const working = [...states.values()].reverse().find((e) => e.state === "working");
+  const now = working ? `${working.label}…` : p.stage === "making" ? "Making it…" : "Reading what you shared…";
+  if (p.adding?.length) { // adding to a ready pack: only the new moment's makers, then the verifier (earlier runs don't count)
+    const makers = p.adding.map((f) => `maker_${f}`);
+    const after = [...(p.adding.includes("picture") ? ["illustrator"] : []), "verifier"];
+    const made = makers.every((a) => settled(states.get(a)));
+    const finished = makers.filter((a) => settled(states.get(a))).length + (made ? after.filter((a) => settled(states.get(a))).length : 0);
+    return { done: finished, total: makers.length + after.length, now };
+  }
+  return { done: Math.min(done, Math.max(expected, done)), total: Math.max(expected, done), now };
+}
+
+/** Behind the scenes: every agent's step, the plan's outline, the claims checked and the verifier's detail. */
+export function scenesPanel(item) {
+  const p = item.payload;
+  const fc = p.research?.fact_check;
+  const outline = p.plan ? `<div class="sc-sec"><div class="label">The plan</div><ol class="plan-outline">${p.plan.outline_en.map((o) => `<li>${esc(o.replace(/^\s*\d+[.)]\s*/, ""))}</li>`).join("")}</ol></div>` : "";
+  const claims = fc?.checked?.length ? `<div class="sc-sec"><div class="label">Claims checked on the web</div><ul class="sc-claims">${fc.checked.map((c) => `<li><b>${esc(c.claim)}</b><span>${esc(c.finding)}</span>${c.source_url ? `<a href="${esc(c.source_url)}" target="_blank" rel="noopener noreferrer">${esc(hostOf(c.source_url))}</a>` : ""}</li>`).join("")}</ul></div>` : "";
+  const r = p.review;
+  const review = r ? `<div class="sc-sec"><div class="label">The verifier</div><div class="review-checks">${[["Faithful to the source", r.faithful], [`Right for ${who(item)}`, r.right_for_reader], ["Safe", r.safe]].map(([t, ok]) => `<span class="${ok ? "ok" : "no"}">${icon(ok ? "tick" : "cross", 12)}${esc(t)}</span>`).join("")}</div>
+    ${r.issues.length ? `<ul class="sc-issues">${r.issues.map((i) => `<li class="${i.severity}"><b>${esc(i.severity === "fix" ? "Look at" : "Note")}</b> ${esc(i.problem_en)}</li>`).join("")}</ul>` : ""}</div>` : "";
+  return `<div class="sc-sec">${researchChecks(item)}</div>${outline}${claims}${review}<div class="sc-foot">${footerStats(item)}</div>`;
+}
+
+const hostOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; } };
 
 function sharedMedia(p, files) {
   if (!files.length && !p.link && !p.ref) return "";
@@ -128,7 +179,7 @@ function researchChecks(item) {
   const researchSteps = shown.flatMap(([, rows]) => rows);
   const blocks = shown.map(([stage, rows]) => stageBlock(stage, rows.map(([a, t, s]) => row(a, t, s))));
   // Make: one maker per moment (and the picture drawn), once she has picked them
-  const picked = p.formats && ["making", "ready"].includes(p.stage) ? p.formats : [];
+  const picked = ["making", "ready"].includes(p.stage) ? [...new Set([...(p.formats || []), ...(p.adding || []), ...Object.keys(p.pending?.outputs || {})])] : [];
   const makeRows = picked.map((f) => row(`maker_${f}`, formatText(f, recipientOf(item))[0], `Its own maker · ${formatText(f, recipientOf(item))[1]}`));
   if (states.has("illustrator")) makeRows.push(row("illustrator", "Drew the picture", "Muse Image"));
   if (makeRows.length) blocks.push(stageBlock("Make", makeRows));
@@ -153,47 +204,53 @@ function sourceHosts(checked) {
 }
 
 function planBlock(item) {
-  const { plan, research, stage } = item.payload;
-  if (!plan) {
-    if (stage === "failed") return `<div class="label">The plan</div><p class="lead plan-wait">No plan: the agents couldn't finish.</p>`;
-    return `<div class="label">The plan</div><p class="lead plan-wait">Working: the agents are reading it and checking the claims. The plan for ${esc(who(item))} appears here in about a minute.</p>
-      <button class="btn ghost sm stop" data-act="discard" data-id="${item.id}">Stop and discard</button>`;
-  }
+  const { plan, research } = item.payload;
   const fc = research.fact_check;
   const [tone, verdict] = VERDICT[fc.verdict] || ["", fc.verdict];
   const hosts = sourceHosts(fc.checked);
   const verifyIcon = tone === "ok" ? "shield" : tone === "danger" ? "shield-alert" : "info";
   const translated = plan.conversation_starter_en !== plan.conversation_starter;
-  return `<div class="label">The plan</div>
-    <div class="key">${esc(plan.key_message_en)}</div>
-    <ol class="plan-outline">${plan.outline_en.map((o) => `<li>${esc(o.replace(/^\s*\d+[.)]\s*/, ""))}</li>`).join("")}</ol>
+  return `<div class="plan-line">
     <div class="verify ${tone}">${icon(verifyIcon, 18)}<div><b>${esc(verdict)}.</b> ${esc(fc.note_en)}
       ${hosts.length ? `<div class="chips">${hosts.map((h) => `<span class="chip">${icon("tick", 12)}${esc(h)}</span>`).join("")}</div>` : ""}</div></div>
-    <div class="starter" lang="${langOf(item)}">${esc(plan.conversation_starter)}${translated ? `<small lang="en">${esc(plan.conversation_starter_en)}</small>` : ""}</div>`;
+    <div class="starter" lang="${langOf(item)}"><small class="st-l">To talk about</small>${esc(plan.conversation_starter)}${translated ? `<small lang="en">${esc(plan.conversation_starter_en)}</small>` : ""}</div></div>`;
 }
 
+// A moment's name on a button ("Make the slides", "Add the quiz"): the format names read wrong after "the"
+const THE_MOMENT = { note: "the note", steps: "the slides", card: "the fridge card", askme: "the quiz", map: "the mind map",
+  video: "the video", picture: "the picture", story: "the picture story", quiz: "the quiz game", relay: "the questions" };
+
 function formatsBlock(item) {
-  const { plan, stage } = item.payload;
-  const editable = stage === "planned";
-  const picks = state.picks[item.id] || item.payload.formats || [];
+  const { plan, stage, outputs } = item.payload;
   const person = recipientOf(item);
-  const rows = formatsFor(person).map((f) => {
+  const made = new Set(stage === "ready" || item.payload.adding?.length ? Object.keys(outputs || {}) : []);
+  const adding = new Set(item.payload.adding || []);
+  const editable = stage === "planned" || stage === "ready";
+  const picks = state.picks[item.id] || (stage === "planned" ? item.payload.formats || [] : []);
+  const lead = plan.formats.find((x) => x.recommended)?.format;
+  const open = formatsFor(person).filter((f) => !made.has(f));
+  if (!open.length) return "";
+  const rows = open.map((f) => {
     const choice = plan.formats.find((x) => x.format === f) || {};
     const [name, sub] = formatText(f, person);
     const reason = (choice.reason_en || sub).replace(/^(not )?recommended[:.\s-]*/i, "");
-    return `<button type="button" class="pick" data-pick="${f}" data-id="${item.id}" aria-pressed="${picks.includes(f)}" ${editable ? "" : "disabled"}>
+    const tag = adding.has(f) ? "making" : f === lead ? "best fit" : "";
+    return `<button type="button" class="pick" data-pick="${f}" data-id="${item.id}" aria-pressed="${picks.includes(f) || adding.has(f)}" ${editable ? "" : "disabled"}>
       <span class="fi ${f}">${icon(FORMAT_INFO[f].icon, 17)}</span><span><b>${esc(name)}</b><small>${esc(reason)}</small></span>
-      <span class="hint${choice.recommended ? " best" : ""}">${choice.recommended ? "best fit" : ""}</span></button>`;
+      <span class="hint${f === lead ? " best" : ""}">${tag}</span></button>`;
   }).join("");
+  const one = picks.length === 1 ? THE_MOMENT[picks[0]] || "it" : "";
+  const label = one ? `Make ${one}` : `Make ${plural(picks.length, "moment")}`;
   let action = "";
-  if (editable) {
-    action = `<div class="decide inline"><button class="btn primary" data-make="${item.id}" ${picks.length ? "" : "disabled"}>${icon("activity", 16)}Make ${plural(picks.length, "moment")}</button>
-      <button class="btn outline" data-act="discard" data-id="${item.id}">Discard</button><span class="note">The best fits are picked for you. Change them if you like.</span></div>`;
-  } else if (stage === "making") {
-    action = `<div class="decide inline"><span class="note making">Working: one agent per moment, in parallel.</span>
-      <button class="btn ghost sm" data-act="discard" data-id="${item.id}">Stop and discard</button></div>`;
+  if (stage === "planned") {
+    action = `<div class="decide inline"><button class="btn primary" data-make="${item.id}" ${picks.length ? "" : "disabled"}>${icon("activity", 16)}${esc(label)}</button>
+      <button class="btn outline" data-act="discard" data-id="${item.id}">Discard</button><span class="note">The best fit is picked. Only what you pick is made; you can add more afterwards.</span></div>`;
+  } else if (stage === "ready" && picks.length) {
+    action = `<div class="decide inline"><button class="btn outline" data-make="${item.id}">${icon("activity", 16)}${esc(one ? `Add ${one}` : `Add ${plural(picks.length, "moment")}`)}</button>
+      <span class="note">Made on its own, checked, then added to this pack.</span></div>`;
   }
-  return `<section class="formats"><div class="label">Moments for ${esc(who(item))}</div><div class="picks">${rows}</div>${action}</section>`;
+  const heading = stage === "planned" ? `Best for ${esc(who(item))}` : `Add another moment for ${esc(who(item))}`;
+  return `<section class="formats${stage === "planned" ? "" : " more"}"><div class="label">${heading}</div><div class="picks">${rows}</div>${action}</section>`;
 }
 
 function describe(f, o) {
@@ -220,7 +277,21 @@ function outputsBlock(item) {
   const research = item.payload.research || {};
   const extras = [...(research.products || []).map((p) => `<span class="x-chip">${p.image ? `<img src="${esc(p.image)}" alt="">` : icon("cart", 14)}${esc(p.name)}</span>`),
     ...(research.links || []).map((l) => `<span class="x-chip">${icon("link", 14)}${esc(l.host)}</span>`)].join("");
-  return outs ? `<div class="label pad">What ${esc(who(item))} gets</div><div class="outs">${outs}</div>${extras ? `<div class="x-chips"><small>Added by the app, from the research:</small>${extras}</div>` : ""}<div class="preview-slot" id="slot-${item.id}" hidden></div>` : "";
+  return outs ? `<div class="label pad">What ${esc(who(item))} gets</div><div class="outs">${outs}</div>${extras ? `<div class="x-chips"><small>Added by the app, from the research:</small>${extras}</div>` : ""}<div class="preview-slot" id="slot-${item.id}" data-keep hidden></div>` : "";
+}
+
+/** A moment added to a pack she already has: it passed the checks on its own and waits for you. */
+function pendingBlock(item) {
+  const pending = item.payload.pending;
+  if (!pending) return "";
+  const person = recipientOf(item);
+  const outs = Object.entries(pending.outputs).filter(([f]) => f in FORMAT_TEXT).map(([f, o]) => `
+    <button type="button" class="out ${f}" data-view="${item.id}" data-format="${f}">
+      <span class="out-kind">${icon(FORMAT_INFO[f].icon, 14)}${esc(formatText(f, person)[0])}</span>${outThumb(f, o, item)}
+      <b lang="${langOf(item)}">${esc(o.title || o.root || "")}</b><p>${esc(o.summary_en || "")}</p><span class="of">${esc(describe(f, o))} · preview</span></button>`).join("");
+  return `<div class="pending"><div class="label pad">New for ${esc(who(item))}, waiting for you</div><div class="outs">${outs}</div>
+    <div class="decide"><button class="btn primary" data-act="approve" data-id="${item.id}">${icon("send", 16)}Approve and add it to ${esc(who(item))}'s pack</button>
+      <button class="btn outline" data-pending-discard="${item.id}">Leave it out</button><span class="note">It passed the checks on its own. ${esc(who(item))}'s pack stays as it is either way.</span></div></div>`;
 }
 
 /** A glance at the moment itself: the picture, the mind map's parts, the video's first scene. */
@@ -231,16 +302,15 @@ function outThumb(f, o, item) {
   return "";
 }
 
-/** What the verifier (Muse Wonder) made of the whole pack. */
+/** What the verifier (Muse Wonder) made of the whole pack: one line, and what to look at if anything. */
 function reviewBlock(item) {
   const r = item.payload.review;
   if (!r) return "";
   const approved = r.faithful && r.safe && !r.issues.some((i) => i.severity === "fix");
-  const checks = [["Faithful to the source", r.faithful], ["Right for " + who(item), r.right_for_reader], ["Safe", r.safe]];
   const engine = (agentStates(item).get("verifier")?.engine || "").includes("wonder") ? "Muse Wonder" : "Muse Spark";
+  const fixes = r.issues.filter((i) => i.severity === "fix");
   return `<div class="review ${approved ? "ok" : "watch"}"><div class="review-h">${icon("shield", 18)}<b>Verified by ${engine}</b><span>${esc(r.verdict_en)}</span></div>
-    <div class="review-checks">${checks.map(([t, ok]) => `<span class="${ok ? "ok" : "no"}">${icon(ok ? "tick" : "cross", 12)}${esc(t)}</span>`).join("")}</div>
-    ${r.issues.length ? `<ul>${r.issues.map((i) => `<li class="${i.severity}"><b>${esc(i.severity === "fix" ? "Look at" : "Note")}</b> ${esc(i.problem_en)}</li>`).join("")}</ul>` : ""}</div>`;
+    ${fixes.length ? `<ul>${fixes.map((i) => `<li class="fix"><b>Look at</b> ${esc(i.problem_en)}</li>`).join("")}</ul>` : ""}</div>`;
 }
 
 function gateBlock(item) {
@@ -315,14 +385,23 @@ function relayCard(item) {
 }
 
 function footer(item) {
+  if (item.kind !== "studio") return "";
   const done = [...agentStates(item).values()].filter((e) => e.state === "done");
-  const secs = done.reduce((s, e) => s + (e.latency_s || 0), 0);
+  const secs = done.reduce((t, e) => t + (e.latency_s || 0), 0);
+  return `<footer class="card-foot"><span><b>${done.length}</b> agent runs · <b>${secs.toFixed(0)}s</b> model time</span><span class="grow"></span>
+    <button type="button" class="btn ghost sm" data-scenes="${item.id}">${icon("activity", 14)}Behind the scenes</button></footer>`;
+}
+
+/** The numbers behind a share: the model, agent runs, model time, web search and the code checks. */
+function footerStats(item) {
+  const done = [...agentStates(item).values()].filter((e) => e.state === "done");
+  const secs = done.reduce((t, e) => t + (e.latency_s || 0), 0);
   const engines = [...new Set(item.trace.map((t) => t.engine))].filter((e) => e !== "code" && e !== "you");
   const model = (engines.find((e) => !e.includes("web_search")) || state.engine || "").replace(/^meta\//, "");
   const checks = item.gate ? (item.gate.passed ? "passed" : "held") : "pending";
-  return `<footer class="card-foot"><span>model <b>${esc(model)}</b></span><span class="sep">·</span>
-    <span><b>${done.length}</b> agent runs</span><span class="sep">·</span><span><b>${secs.toFixed(0)}s</b> model time</span>
-    ${engines.some((e) => e.includes("web_search")) ? `<span class="sep">·</span><span>web search</span>` : ""}<span class="sep">·</span><span>code checks <b>${checks}</b></span></footer>`;
+  return `<span>model <b>${esc(model)}</b></span><span class="sep">·</span><span><b>${done.length}</b> agent runs</span><span class="sep">·</span>
+    <span><b>${secs.toFixed(0)}s</b> model time</span>${engines.some((e) => e.includes("web_search")) ? `<span class="sep">·</span><span>web search</span>` : ""}
+    <span class="sep">·</span><span>code checks <b>${checks}</b></span>`;
 }
 
 // ---------------------------------------------------------------- errands: she asks, the assistant finds out or orders

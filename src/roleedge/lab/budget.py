@@ -1,4 +1,4 @@
-"""The lab's spending limit: $55 for the whole Reel Lab (raised by the user from $50), new runs stop at $54.50.
+"""The lab's spending limit: $70 for the whole Reel Lab (raised by the user from $50, then $55), new runs stop at $69.50.
 
 Spent = the Meta spend in the app's usage ledger (every lab ledger is appended to it when its run ends, so it is
 counted once) + Muse Voice Transcribe at $0.18 an audio hour (it is billed per audio time, not per token) + Muse Image
@@ -14,8 +14,8 @@ from pathlib import Path
 from ..costs import spend
 from . import LAB
 
-LIMIT_USD = 55.0  # raised from $50 by the user (2026-11-03)
-STOP_AT_USD = 54.5  # $45, then $49.70 for round 7, then the user raised the limit to $55 (2026-11-03)
+LIMIT_USD = 70.0  # $50, then $55 (2026-11-03), then raised to $70 by the user (2026-11-04)
+STOP_AT_USD = 69.5  # stop half a dollar short of the limit
 TRANSCRIBE_USD_PER_HOUR = 0.18
 
 

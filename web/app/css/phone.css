@@ -172,3 +172,18 @@ body.mirror .screen { width: 100%; height: 100%; }
 .x-links { display: grid; gap: 8px; }
 .x-link { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid var(--hairline); border-radius: var(--r-lg); color: var(--ink); text-decoration: none; background: var(--canvas); }
 .x-link b { display: block; font-size: 15px; } .x-link small { display: block; font-size: 13px; color: var(--muted); }
+
+/* compact: the avatar is a strip, not half the screen, so her messages, choices and the reply box have the room */
+.stage { padding: 10px 14px 12px; }
+.portrait { aspect-ratio: 2 / 1; border-radius: var(--r-2xl); }
+.stage.idle .portrait { aspect-ratio: 3 / 1; }
+.portrait img { object-position: 50% 40%; } /* a strip of the face: keep the mouth in view, it moves with the words */
+.caption { margin-top: 10px; font-size: 18px; line-height: 1.4; min-height: 0; max-height: 5.7em; scroll-behavior: smooth; }
+.stage.idle .caption { margin-top: 8px; font-size: 15px; max-height: 2.8em; }
+.stage-step { margin-top: 4px; font-size: 13px; min-height: 0; }
+.stage-controls { margin-top: 8px; gap: 10px; }
+.stage-controls .soft { min-height: 46px; padding: 8px 10px; font-size: 16px; }
+.stage-controls .round { width: 54px; height: 54px; }
+.stage-badge { left: 10px; bottom: 10px; padding: 4px 10px; font-size: 13px; }
+.stage-close { width: 32px; height: 32px; right: 8px; top: 8px; }
+@media (max-height: 700px) { .portrait { aspect-ratio: 5 / 2; } .stage.idle .portrait { aspect-ratio: 4 / 1; } }

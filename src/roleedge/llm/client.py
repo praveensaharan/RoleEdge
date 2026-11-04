@@ -25,10 +25,14 @@ from .types import LLMResult, Message, ToolTurn, Usage
 
 
 class LLM:
-    def __init__(self, provider: Provider, cache_dir: Path = CACHE_DIR, ledger_file: Path = LEDGER_FILE) -> None:
+    def __init__(self, provider: Provider, cache_dir: Path = CACHE_DIR, ledger_file: Path = LEDGER_FILE,
+                 before_call: Callable[[], None] | None = None) -> None:
         self.provider = provider
         self.cache_dir = cache_dir
         self.ledger_file = ledger_file
+        # runs before every call that isn't replayed from the cache, and may refuse it by raising ProviderError: the
+        # server's spend cap (app/guards.py SpendCap) stops a run in the middle. None (the lab, the CLI): no check.
+        self.before_call = before_call
 
     @property
     def engine(self) -> str:
@@ -73,6 +77,8 @@ class LLM:
             self._log(task, usage, cached=True, latency=entry["latency_s"], model=model)
             return LLMResult(decode(entry["data"]), usage, True, entry["latency_s"])
 
+        if self.before_call is not None:
+            self.before_call()
         started = time.time()
         data, usage = call()
         latency = round(time.time() - started, 2)
