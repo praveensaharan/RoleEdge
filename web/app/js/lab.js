@@ -1,8 +1,11 @@
-// The Lab page: how the agents were tested and tuned, in aggregate (GET /api/lab/summary, written by
-// `python -m roleedge.lab report`). No reel is shown or named: they are other people's content. Charts follow one
+// The Lab page: how the agents were tested and tuned, in aggregate (GET /api/lab/summary: data/lab/summary.json,
+// written by `python -m roleedge.lab report` and shipped with the app). Visitors can't run anything, so no text here
+// names a command or a file path. No reel is shown or named: they are other people's content. Charts follow one
 // system: marks in ink, an earlier round in grey (with labels and a table view, as it is light), status colour
-// only on a change for better or worse, a tooltip on every mark and the same values in a table.
+// only on a change for better or worse, a tooltip on every mark and the same values in a table. The page's motion is
+// the home page's (motion.js), and each chart draws its marks in as it scrolls into view.
 import { ICON, esc } from "./common.js";
+import { fades, field, fields, nav, pointer, reveals, splitHeadline } from "./motion.js";
 
 const $ = (s, root = document) => root.querySelector(s);
 const $$ = (s, root = document) => [...root.querySelectorAll(s)];
@@ -35,7 +38,7 @@ const headline = (el, claim, soft = "") => { if (el) el.innerHTML = `${esc(claim
 const tipAttrs = (text) => `tabindex="0" role="img" data-tip="${esc(text)}" aria-label="${esc(text)}"`;
 
 function chart(title, sub, body, table = "", extra = "") {
-  return `<article class="chart" data-reveal><header><h3>${esc(title)}</h3>${sub ? `<p>${esc(sub)}</p>` : ""}</header>${body}${extra}${table}</article>`;
+  return `<article class="chart spot" data-reveal><header><h3>${esc(title)}</h3>${sub ? `<p>${esc(sub)}</p>` : ""}</header>${body}${extra}${table}</article>`;
 }
 
 function tableView(caption, head, rows) {
@@ -57,7 +60,7 @@ function dumbbell(rows, { lo, hi, step, digits = 2, from, to }) {
   const x = (v) => `${Math.min(100, Math.max(0, ((v - lo) / (hi - lo)) * 100)).toFixed(2)}%`;  // a value off the scale sits at its end
   const ticks = [];
   for (let v = lo; v <= hi + 1e-9; v += step) ticks.push(`<span style="left:${x(v)}">${v.toFixed(1)}</span>`);
-  const body = rows.map((r) => `<div class="db-row"><span class="db-label">${esc(r.label)}</span>
+  const body = rows.map((r, k) => `<div class="db-row" style="--i:${k}"><span class="db-label">${esc(r.label)}</span>
       <div class="db-track"><i class="db-line" style="left:${x(Math.min(r.from, r.to))};width:calc(${x(Math.max(r.from, r.to))} - ${x(Math.min(r.from, r.to))})"></i>
         <b class="db-dot before" style="left:${x(r.from)}" ${tipAttrs(`${r.label}, ${from}: ${r.from.toFixed(digits)}`)}></b>
         <b class="db-dot after" style="left:${x(r.to)}" ${tipAttrs(`${r.label}, ${to}: ${r.to.toFixed(digits)}`)}></b></div>
@@ -68,7 +71,7 @@ function dumbbell(rows, { lo, hi, step, digits = 2, from, to }) {
 /** Ranked horizontal bars, one hue, the value at the tip. */
 function bars(rows, { max, digits = 2, unit = "", dark = false }) {
   const share = (v) => (max > 0 ? Math.min(1, Math.max(0, v / max)) : 0);
-  return `<div class="hb${dark ? " on-dark" : ""}">${rows.map((r) => `<div class="hb-row"><span class="hb-label">${esc(r.label)}${r.note ? `<small>${esc(r.note)}</small>` : ""}</span>
+  return `<div class="hb${dark ? " on-dark" : ""}">${rows.map((r, k) => `<div class="hb-row" style="--i:${k}"><span class="hb-label">${esc(r.label)}${r.note ? `<small>${esc(r.note)}</small>` : ""}</span>
       <div class="hb-track"><b class="hb-bar" style="width:calc((100% - 56px) * ${share(r.v).toFixed(4)})" ${tipAttrs(`${r.label}: ${r.v.toFixed(digits)}${unit}${r.note ? ` · ${r.note}` : ""}`)}></b>
       <span class="hb-val">${r.v.toFixed(digits)}${esc(unit)}</span></div></div>`).join("")}</div>`;
 }
@@ -80,27 +83,35 @@ function columns(points, { max, format, label = ROUND }) {
   const height = (v) => Math.max(1.5, max > 0 ? Math.min(1, v / max) * 86 : 0);
   return `<div class="cols" style="--n:${n}">${points.map((p, k) => {
     const shown = k === 0 || k === n - 1;
-    return `<div class="col"><div class="col-plot">${shown ? `<span class="col-val">${esc(format(p.v))}</span>` : ""}
+    return `<div class="col" style="--i:${k}"><div class="col-plot">${shown ? `<span class="col-val">${esc(format(p.v))}</span>` : ""}
         <b class="col-bar${k === n - 1 ? " last" : ""}" style="height:${height(p.v).toFixed(2)}%" ${tipAttrs(`${label(p.round)}: ${format(p.v)}${p.note ? ` · ${p.note}` : ""}`)}></b></div>
       <span class="col-x">${esc(`R${p.round}`)}</span></div>`;
   }).join("")}</div>`;
 }
 
-const tile = ({ value, label, from = "", note = "", tone = "" }) => `<div class="tile ${tone}" data-reveal>
+const tile = ({ value, label, from = "", note = "", tone = "" }) => `<div class="tile spot ${tone}" data-reveal>
     <b>${esc(value)}</b><span>${esc(label)}</span>${from ? `<em>${esc(from)}</em>` : ""}${note ? `<small>${esc(note)}</small>` : ""}</div>`;
 
 // ------------------------------------------------------------------ the sections
 
+/** A number in the strip, in the home page's dot-matrix type; it counts up when it scrolls into view. */
+const stat = (n, label, note, unit = "") => `<div class="stat" data-reveal>
+    <b><span data-count="${n}">${esc(fmtN(n))}</span>${esc(unit)}</b><span>${esc(label)}</span>${note ? `<small>${esc(note)}</small>` : ""}</div>`;
+
 function hero(s) {
+  const rounds = Math.max(s.rounds_linda || 0, s.rounds_leo || 0);
+  $("#hero-pill").textContent = `${fmtN(s.usable)} real reels${rounds ? ` · ${rounds} rounds` : ""}`;
   const linda = s.robotic.filter((r) => r.who === "Linda");
+  const stats = [];
   if (linda.length) {
     const last = lastOf(linda);
     const worst = linda.reduce((a, b) => (b.rate > a.rate ? b : a));
-    $("#hero-fig").innerHTML = `<b>${pct(last.rate)}</b><span>of moments still sound robotic,<br>down from ${pct(worst.rate)} in round ${worst.round}</span>`;
+    stats.push(stat(Math.round(last.rate * 100), "of moments still sound robotic", `down from ${pct(worst.rate)} in round ${worst.round}`, "%"));
   }
-  const kpis = [[fmtN(s.usable), `real reels (of ${s.reels})`], [fmtN(s.reel_runs), "runs through the agents"], [fmtN(s.moments), "moments made and scored"],
-    [fmtN(s.model_calls), "model calls"], [fmtN(s.changes), "changes, each traced to a cause"], [fmtN(s.code_tests), "automated tests"]];
-  $("#kpis").innerHTML = kpis.map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${esc(l)}</span></div>`).join("");
+  stats.push(stat(s.usable, `real reels, of ${fmtN(s.reels)} shared`, `${fmtN(s.reel_runs)} runs through the agents`),
+    stat(s.moments, "moments made and scored", `${fmtN(s.model_calls)} model calls, each logged and priced`),
+    stat(s.changes, "changes, each traced to a cause", `${fmtN(s.code_tests)} automated tests guard them`));
+  $("#kpis").innerHTML = stats.join("");
 }
 
 function quality(s) {
@@ -221,7 +232,7 @@ function changes(s) {
   }
   $("#change-charts").innerHTML = (rows.length ? chart("Where the fixes were", `${s.changes} changes, by what was changed.`, bars(rows, { max: maxOf(rows, (r) => r.v), digits: 0 }),
     tableView("Changes by cause", ["Cause", "Changes"], rows.map((r) => [r.label, r.v]))) : "")
-    + `<article class="chart" data-reveal><header><h3>Every change</h3><p>What changed, and where in the code. The full log, with the weakness behind each change and the round it was measured in, is in docs/REEL_LAB.md.</p></header>
+    + `<article class="chart" data-reveal><header><h3>Every change</h3><p>What changed, and where in the code. The full log, with the weakness behind each change and the round it was measured in, is in the <a href="https://github.com/praveensaharan/RoleEdge/blob/main/docs/REEL_LAB.md#log" target="_blank" rel="noopener noreferrer">Reel Lab notes</a>.</p></header>
       <ol class="clog">${list}</ol></article>`;
 }
 
@@ -232,12 +243,11 @@ function tuning(s) {
   $("#tuning-cards").innerHTML = `<article class="chart dark-card" data-reveal><header><span class="tag">Dataset</span><h3>${fmtN(ds.examples)} moments in the family's voice</h3>
       <p>Every moment the judge scored ${esc(String(ds.min_score ?? 4.3))} or more, with "sounds like family" at ${esc(String(ds.min_natural ?? 4))} or more, no robotic habit, and past the send gate. Each is a training pair: the maker's instructions, its brief and the approved moment. ${fmtN(ds.for_child || 0)} are for a child.</p></header>
       ${bars(rows, { max: Math.max(1, ...rows.map((r) => r.v)), digits: 0, dark: true })}
-      <p class="fine">Ready for a LoRA on an open Meta model (python -m roleedge.lab dataset). Nothing is trained on it yet.</p></article>
+      <p class="fine">Ready for a LoRA on an open Meta model. Nothing is trained on it yet.</p></article>
     <article class="chart dark-card" data-reveal><header><span class="tag">Trained · research</span><h3><a href="https://huggingface.co/pra40109/Llama-Garvit-1.0" target="_blank" rel="noopener noreferrer">Llama-Garvit-1.0</a></h3>
-      <p>A LoRA on Llama Guard 3 1B that checks one line for children aged 4 to 12, on our own categories. 2,552 training lines, one pass, about 6.5 minutes on Modal (about $0.09).</p></header>
+      <p>A LoRA adapter for Llama Guard 3 1B that checks one line for children aged 4 to 12, on our own categories. 2,552 training lines, one pass, trained on Modal.</p></header>
       <div class="gtable" role="table" aria-label="727 held-out lines, before and after training"><div class="gr gh" role="row"><span role="columnheader">727 held-out lines</span><span role="columnheader">Untrained</span><span role="columnheader">Trained</span></div>
-        ${garvit.map(([l, x, y]) => `<div class="gr" role="row"><span role="cell">${esc(l)}</span><span role="cell">${x}</span><b role="cell">${y}</b></div>`).join("")}</div>
-      <p class="fine">The test lines come from the same sources as the training lines; new kinds of lines are the next test. Not run in this build: the organisers ruled that Llama doesn't count as a Meta model at runtime, so Muse Spark checks every child's set.</p></article>`;
+        ${garvit.map(([l, x, y]) => `<div class="gr" role="row"><span role="cell">${esc(l)}</span><span role="cell">${x}</span><b role="cell">${y}</b></div>`).join("")}</div></article>`;
 }
 
 function cost(s) {
@@ -267,39 +277,6 @@ async function hydrate() {
   $$("[data-mark]").forEach((el) => { el.innerHTML = ICON.mark; });
 }
 
-function nav() {
-  const bar = $("#nav"), prog = $("#progress");
-  const themed = $$("[data-theme]");
-  const links = new Map($$(".nav-links a").map((a) => [a.getAttribute("href").slice(1), a]));
-  let ticking = false;
-  const onScroll = () => {
-    ticking = false;
-    const max = document.documentElement.scrollHeight - innerHeight;
-    prog.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
-    const probe = bar.offsetHeight / 2;
-    const under = themed.find((el) => { const r = el.getBoundingClientRect(); return r.top <= probe && r.bottom > probe; });
-    const light = under?.dataset.theme === "light";
-    bar.classList.toggle("light", light);
-    bar.classList.toggle("scrolled", !light && scrollY > 40);
-  };
-  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
-  addEventListener("resize", onScroll);
-  onScroll();
-  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-    if (e.isIntersecting) links.forEach((a, id) => a.classList.toggle("on", id === e.target.id));
-  }), { rootMargin: "-45% 0px -50% 0px" });
-  $$("main > section").forEach((el) => io.observe(el));
-}
-
-function reveals() {
-  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-    if (!e.isIntersecting) return;
-    e.target.classList.add("in");
-    io.unobserve(e.target);
-  }), { rootMargin: "0px 0px -8% 0px" });
-  $$("[data-reveal]").forEach((el) => io.observe(el));
-}
-
 /** One tooltip for every mark, on hover and on keyboard focus (the table view has the same values). */
 function tooltips() {
   const tip = $("#tip");
@@ -318,19 +295,24 @@ function tooltips() {
 }
 
 async function start() {
+  splitHeadline();
   await hydrate();
-  nav();
   tooltips();
   const s = await fetch("/api/lab/summary").then((r) => (r.ok ? r.json() : null)).catch(() => null);
   if (!s) {
-    $("#hero-lead").textContent = "No lab results yet. Run python -m roleedge.lab report to write them.";
-    $$("main > section.sec").forEach((el) => { el.hidden = true; });
+    // no results: the hero says so and goes straight to the closing call (removed, not hidden, so the fades and the
+    // header see only what is on the page)
+    $("#hero-lead").textContent = "The lab results can't be shown right now. Please try again later.";
+    $$('main > section:not(.hero):not(.cta), .nav-links, a[href="#quality"]').forEach((el) => el.remove());
   } else {
     for (const draw of [hero, quality, voice, moments, safety, changes, tuning, cost]) {
       try { draw(s); } catch (err) { console.error(`lab: ${draw.name}`, err); } // one section's gap never blanks the page
     }
   }
   reveals();
+  fades(); fields(); nav(); pointer();
+  field($("#hero-canvas"));
+  field($("#cta-canvas"), { gap: 20, line: false });
   document.documentElement.classList.add("ready");
 }
 start();

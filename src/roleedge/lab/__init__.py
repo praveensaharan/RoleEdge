@@ -4,7 +4,7 @@
 * ``probe``: the technical check, by code (ffmpeg): audio and video quality, in bands;
 * ``understand``: transcript, visual reading, content type and the formats it suits;
 * ``rounds``: one round makes the moments for every usable reel and scores them, so rounds can be compared;
-* ``report``: the markdown report from everything stored.
+* ``report``: the markdown report from everything stored, and the aggregate for the /lab page (``data/lab/summary.json``).
 
 The source folder is read only. What the lab makes goes to ``output/reel-lab/<reel id>/``; costs are logged per
 reel and per round in their own usage ledgers.

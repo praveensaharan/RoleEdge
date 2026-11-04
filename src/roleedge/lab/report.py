@@ -4,7 +4,9 @@
   and the costs;
 * ``docs/reel-lab/REELS.md``: the structured evaluation of every reel (technical, transcription, visual reading,
   content, formats chosen, scores per round, what still falls short);
-* ``docs/reel-lab/OUTPUTS.md``: the moments made for every reel in the latest round, as text.
+* ``docs/reel-lab/OUTPUTS.md``: the moments made for every reel in the latest round, as text;
+* ``data/lab/summary.json``: totals and averages only, no reel named, for the ``/lab`` page. It is the one file that
+  ships (repository, image, zip); the three reports above stay on the machine that ran the lab.
 
 Creators' handles are left out; reels are named by id and title. No token or page id is written.
 """
@@ -19,6 +21,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from ..config import LAB_SUMMARY
 from ..costs import PRICE_BY_MODEL, UNKNOWN_PRICE, dollars
 from ..llm.types import Usage
 from . import LAB, REPORT_DIR
@@ -251,8 +254,10 @@ def write_report() -> str:
     if kids:
         text += "\n" + _outputs(inv, load(kids[-1], "kids"), kids[-1], who="Leo (9)")
     (REPORT_DIR / "OUTPUTS.md").write_text(text, encoding="utf-8")
-    (LAB / "summary.json").write_text(json.dumps(summary_data(inv, ns, data), ensure_ascii=False, indent=1), encoding="utf-8")
-    return f"wrote {REPORT_DIR}/REPORT.md, REELS.md, OUTPUTS.md and {LAB}/summary.json (rounds {ns})"
+    # the aggregate the /lab page shows; in data/ so it ships with the app (the per-reel reports above stay local)
+    LAB_SUMMARY.parent.mkdir(parents=True, exist_ok=True)
+    LAB_SUMMARY.write_text(json.dumps(summary_data(inv, ns, data), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    return f"wrote {REPORT_DIR}/REPORT.md, REELS.md, OUTPUTS.md and {LAB_SUMMARY} (rounds {ns})"
 
 
 def _criteria(rows: dict[str, dict[str, Any]]) -> dict[str, float]:
