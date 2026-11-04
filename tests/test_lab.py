@@ -68,3 +68,29 @@ def test_notion_answer_checks_catch_an_invented_quote():
     missing = {"found": False, "terms": [], "pages": []}
     assert check(missing, NotionAnswer(found=False, answer_en="It isn't in the pages.", citations=[], missing_en=["the password"]),
                  pages)["passed"]
+
+
+def test_the_lab_page_shows_kinds_only_in_aggregate_and_uses_the_last_judged_round(tmp_path, monkeypatch):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from roleedge.app import lab_routes
+    from roleedge.lab.report import _by_kind, _latest_with
+
+    moment = {"format": "note", "faithful": 4, "clear": 4, "engaging": 4, "useful": 4, "format_fit": 4, "natural": 4}
+    reel = lambda kind: {"profile": {"content_type": kind}, "judgement_v4": {"moments": [moment]}}  # noqa: E731
+    rows = {"a": reel("news"), "b": reel("news"), "c": reel("product"), "d": reel("recipe"), "e": reel("scam_or_warning")}
+    kinds = _by_kind(rows, "judgement_v4")
+    assert {k: v["reels"] for k, v in kinds.items()} == {"news": 2, "other": 3}  # no kind shows one reel's own score
+    assert _by_kind({"a": reel("news")}, "judgement_v4") == {}  # "Other" with one reel is left out too
+    by_round = {1: rows, 2: {"a": {"profile": {}}}}  # round 2 isn't judged on v4 yet
+    assert _latest_with([1, 2], lambda n: by_round[n], "judgement_v4") is rows and _latest_with([], by_round.get, "x") == {}
+
+    monkeypatch.setattr(lab_routes, "SUMMARY", tmp_path / "summary.json")
+    app = FastAPI()
+    lab_routes.add_lab_routes(app, tmp_path)
+    client = TestClient(app)
+    assert client.get("/api/lab/summary").status_code == 404
+    (tmp_path / "summary.json").write_text('{"reels": 44}')
+    assert client.get("/api/lab/summary").json() == {"reels": 44}
+    assert client.get("/api/lab").status_code == 404 and client.get("/lab-media/abcdef/f01.jpg").status_code == 404

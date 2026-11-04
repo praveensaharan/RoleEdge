@@ -22,7 +22,7 @@ CHANGES: list[dict[str, str]] = [
                "unverified, not a scam, unless a main claim is false or it asks for money, details or a risky download."},
     {"id": "C4", "round": "2", "cause": "prompt", "where": "studio/agents.py card maker",
      "weakness": "Fridge cards left \"remember\" empty for lists (4 cards), the one line meant to be kept.",
-     "change": "remember holds the date, time, name or thing to keep; for a list, its name (\"4 calming films\")."},
+     "change": "remember holds the date, time, name or thing to keep; for a list, what the list is (\"films to watch together\")."},
     {"id": "C5", "round": "2", "cause": "tool", "where": "models/studio.py, studio/agents.py, studio-view.js, studio_routes.py",
      "weakness": "Videos for exercises and demonstrations showed generic icons instead of the movement (17 major "
                  "\"tool\" findings: \"cannot show the mouth shape\", \"no visual model of the exercises\").",
@@ -103,8 +103,8 @@ CHANGES: list[dict[str, str]] = [
     {"id": "C22", "round": "5", "cause": "model", "where": "studio/agents.py WATCHER, studio/swarm.py watch, content/ingest.py video_part",
      "weakness": "The reader saw 8 evenly spread frames, so it merged movements and lost their order (\"links one move "
                  "to two benefits\"; \"cannot show the timing or mouth shape\").",
-     "change": "Muse Spark watches the whole video with its sound (input_video; tested: it gave each of the 5 voice "
-               "exercises with its time and purpose) and returns a timeline the reader uses."},
+     "change": "Muse Spark watches the whole video with its sound (input_video; tested: it gave each step of an exercise "
+               "video with its time and purpose) and returns a timeline the reader uses."},
     {"id": "C23", "round": "5", "cause": "tool", "where": "content/ingest.py frames_at, studio/swarm.py watch",
      "weakness": "Stills were spread evenly, so a video scene often showed the wrong moment for its words.",
      "change": "The stills are taken in the middle of each step the watcher found (up to 8), so scene N shows step N."},
@@ -145,7 +145,7 @@ CHANGES: list[dict[str, str]] = [
      "weakness": "Every kind of reel got the same treatment: ten films listed, a song quote with no hook, tech jargon, "
                  "stunts explained as a lecture.",
      "change": "A playbook by kind: films that suit her with an offer to watch together; products; recipes; tips as steps; a "
-               "quote or song with the hook she knows (\"Remember Rafi's song?\"); tech told lightly; stunts to watch; scams "
+               "quote or song with the hook she knows (\"Remember this song?\"); tech told lightly; stunts to watch; scams "
                "as news; the question always about her own life. Safety notes only for a real risk."},
     {"id": "C32", "round": "6", "cause": "prompt", "where": "studio/agents.py FACT_SEARCH, FACT_CHECK; studio/swarm.py useful_links",
      "weakness": "Clickbait (\"comment RSA for the link\", \"$850,000 course\") was listed as a scam sign, so a real free "

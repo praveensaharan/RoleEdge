@@ -15,6 +15,7 @@ import json
 import subprocess
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -313,7 +314,56 @@ def summary_data(inv: list[dict[str, Any]], ns: list[int], data: dict[int, dict[
         "apps": {"answered": sum(1 for a in apps[-1]["answers"] if a.get("kind") in ("schedule", "delivery", "none")),
                  "total": len(apps[-1]["answers"])} if apps else None,
         "change_log": CHANGES, "spend": spent(),
+        "by_kind": {"linda": _by_kind(_latest_with(ns, lambda n: data[n], "judgement_v4"), "judgement_v4"),
+                    "leo": _by_kind(_latest_with(kid_ns, lambda n: load(n, "kids"), "judgement_child_v2"), "judgement_child_v2")},
+        "dataset": _dataset(),
     }
+
+
+KIND_NAMES = {"website_or_tool": "Websites and tools", "motivation_or_opinion": "Motivation and opinion",
+              "educational": "Explainers", "entertainment_list": "Lists (films, songs, places)",
+              "exercise_or_howto": "Exercises and how-tos", "story_or_steps": "Stories and recipes",
+              "scam_or_warning": "Scams and warnings", "news": "News", "product": "Products",
+              "unsuitable_or_too_little": "Thin content"}
+
+
+def _latest_with(ns: list[int], rows_of: Callable[[int], dict[str, dict[str, Any]]], key: str) -> dict[str, dict[str, Any]]:
+    """The last round that has ``key`` scores (a later round may not have been judged that way yet), or none."""
+    for n in reversed(ns):
+        rows = rows_of(n)
+        if any(out.get(key) for out in rows.values()):
+            return rows
+    return {}
+
+
+def _by_kind(rows: dict[str, dict[str, Any]], key: str) -> dict[str, dict[str, Any]]:
+    """The latest round in aggregate, by the kind of reel the profiler saw (no reel is named): how many, the mean
+    best moment, the mean of every moment, and how natural they sounded. A kind with one reel would show that reel's
+    own scores, so it joins "Other", and "Other" is left out if it still holds only one."""
+    groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for out in rows.values():
+        judged = (out.get(key) or {}).get("moments") or []
+        if judged:
+            groups[(out.get("profile") or {}).get("content_type", "other")].append({
+                "best": max(moment_score(m) for m in judged), "all": mean([moment_score(m) for m in judged]),
+                "natural": mean([m.get("natural", 0) for m in judged])})
+    for kind in [k for k, g in groups.items() if len(g) < 2 and k != "other"]:
+        groups["other"].extend(groups.pop(kind))
+    groups = {kind: g for kind, g in groups.items() if len(g) >= 2}
+    return {kind: {"name": KIND_NAMES.get(kind, kind.replace("_", " ").capitalize()), "reels": len(g),
+                   "mean_best": mean([x["best"] for x in g]), "mean_all": mean([x["all"] for x in g]),
+                   "natural": mean([x["natural"] for x in g])}
+            for kind, g in sorted(groups.items(), key=lambda kv: -len(kv[1]))}
+
+
+def _dataset() -> dict[str, Any]:
+    """The style dataset (``lab dataset``): approved moments, by format, ready for a fine-tune."""
+    path = LAB / "style-dataset.jsonl"
+    if not path.exists():
+        return {"examples": 0, "by_format": {}}
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return {"examples": len(rows), "by_format": dict(Counter(r["format"] for r in rows).most_common()),
+            "for_child": sum(1 for r in rows if r["round"].startswith("kids")), "min_score": 4.3, "min_natural": 4}
 
 
 def _report(inv: list[dict[str, Any]], ns: list[int], data: dict[int, dict[str, dict[str, Any]]], sums: list[dict[str, Any]],

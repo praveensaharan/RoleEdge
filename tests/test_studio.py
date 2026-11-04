@@ -342,6 +342,21 @@ def test_a_share_for_a_child_is_written_for_the_child_and_reviewed(tmp_path, mon
         sent = client.post(f"/api/items/{started['id']}/approve", json={"allow_soft": True}).json()
         assert sent["status"] == "sent"  # the parent read it and chose to send
 
+        # a new moment for the pack she has is checked on its own, not held again on the concerns already sent over
+        monkeypatch.setitem(ANSWERS, "child_guardian", {"safe_for_child": True, "concerns_en": []})
+        monkeypatch.setitem(ANSWERS, "maker_quiz", ASKME)
+        client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["quiz"]})
+        waiting = stage_of("ready")
+        assert set(waiting["payload"]["pending"]["outputs"]) == {"quiz"} and not waiting["payload"]["error"]
+        assert waiting["payload"]["guardian"] == sent["payload"]["guardian"]  # nothing about her pack changes yet
+        left = client.post(f"/api/items/{started['id']}/studio/pending/discard").json()
+        assert "pending" not in left["payload"] and left["payload"]["review"] == sent["payload"]["review"]
+        client.post(f"/api/items/{started['id']}/studio/make", json={"formats": ["quiz"]})
+        stage_of("ready")
+        added = client.post(f"/api/items/{started['id']}/approve", json={}).json()
+        assert set(added["payload"]["outputs"]) == {"story", "quiz"}
+        assert added["payload"]["guardian"]["concerns_en"] == ["Mentions scary details."]  # the whole pack's record
+
 
 # ---------------------------------------------------------------- apps: demo accounts, Notion, and the ones not connected yet
 

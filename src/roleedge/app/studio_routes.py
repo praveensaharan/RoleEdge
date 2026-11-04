@@ -339,6 +339,7 @@ class StudioRuns:
         review, _ = await asyncio.gather(run_in_threadpool(swarm.verify, research, plan, outputs),
                                          self.draw(swarm, item.id, outputs))
         extra["review"] = review.model_dump()
+        own = {"review": extra["review"], "guardian": extra.get("guardian")}  # the new moments' checks, before merging
         if back.get("review"):  # the earlier moments' review still stands; the pack is approved only if both are
             old = back["review"]
             extra["review"] = {**extra["review"], "faithful": old["faithful"] and review.faithful,
@@ -352,9 +353,9 @@ class StudioRuns:
         made = list(dict.fromkeys([*(latest.payload.get("formats") or []), *formats])) if earlier else formats
         if earlier and latest.status in ("sent", "played"):
             # A pack she already has keeps what was approved (a "send anyway" included); the gate reads only the new
-            # moment, with its own review. If it passes, it waits for your approval like any share, unless you send
-            # without approval.
-            gate = self.gate(item, outputs, guardian=extra.get("guardian"), review=review.model_dump())
+            # moment, with its own review and child-safety check. If it passes, it waits for your approval like any
+            # share, unless you send without approval. The merged checks wait with it and are kept only on approval.
+            gate = self.gate(item, outputs, guardian=own["guardian"], review=own["review"])
             check = TraceStep(step="Checked the new moment and ran the final send gate: "
                               + ("passed" if gate.passed else "; ".join(gate.reasons)), engine="code")
             if not gate.passed:
@@ -366,8 +367,8 @@ class StudioRuns:
                 await self.save(item.id, {"stage": "ready", "outputs": {**back.get("outputs", {}), **outputs}, "agents": events,
                                           "formats": made, "adding": [], "error": "", **extra}, trace=[*swarm.trace, check])
             else:
-                await self.save(item.id, {**back, "adding": [], "agents": events, "error": "", "review": extra["review"],
-                                          "pending": {"outputs": outputs, "formats": formats}}, trace=[*swarm.trace, check])
+                await self.save(item.id, {**back, "adding": [], "agents": events, "error": "",
+                                          "pending": {"outputs": outputs, "formats": formats, **extra}}, trace=[*swarm.trace, check])
             return
         outputs = {**back.get("outputs", {}), **outputs}
         gate = self.gate(item, outputs, guardian=extra.get("guardian"), review=extra["review"])

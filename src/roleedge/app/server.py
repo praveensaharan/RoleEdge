@@ -182,6 +182,7 @@ def create_app(llm: LLM | None = None, store: Store | None = None, insights: Ins
             item.payload.pop("pending")
             item.payload["outputs"] = {**(item.payload.get("outputs") or {}), **pending["outputs"]}
             item.payload["formats"] = list(dict.fromkeys([*(item.payload.get("formats") or []), *pending["formats"]]))
+            item.payload.update({k: pending[k] for k in ("review", "guardian") if pending.get(k)})  # checks of the whole pack
             item.trace.append(TraceStep(step="Approved by you: the new moment is added to her pack", engine="you"))
             return (await publish(item)).model_dump()
         if item.status not in ("draft", "held"):

@@ -99,6 +99,8 @@ function onShared(item) {
   if (item.kind === "studio") state.scenes = { id: item.id, open: !state.scenes.closed && innerWidth >= 1280, closed: state.scenes.closed, pinned: false };
   upsert(item);
   showTab("stream");
+  // bring the new share into view, smoothly, without jumping if it is already on screen
+  requestAnimationFrame(() => document.querySelector(`[data-card="${item.id}"]`)?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" }));
 }
 
 /** Put a new or changed item into the stream, redrawing only its card when it's already shown. */

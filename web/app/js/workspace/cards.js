@@ -291,7 +291,7 @@ function pendingBlock(item) {
       <b lang="${langOf(item)}">${esc(o.title || o.root || "")}</b><p>${esc(o.summary_en || "")}</p><span class="of">${esc(describe(f, o))} · preview</span></button>`).join("");
   return `<div class="pending"><div class="label pad">New for ${esc(who(item))}, waiting for you</div><div class="outs">${outs}</div>
     <div class="decide"><button class="btn primary" data-act="approve" data-id="${item.id}">${icon("send", 16)}Approve and add it to ${esc(who(item))}'s pack</button>
-      <button class="btn outline" data-pending-discard="${item.id}">Leave it out</button><span class="note">It passed the checks on its own. ${esc(who(item))} keeps what she has either way.</span></div></div>`;
+      <button class="btn outline" data-pending-discard="${item.id}">Leave it out</button><span class="note">It passed the checks on its own. ${esc(who(item))}'s pack stays as it is either way.</span></div></div>`;
 }
 
 /** A glance at the moment itself: the picture, the mind map's parts, the video's first scene. */

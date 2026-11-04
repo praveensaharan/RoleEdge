@@ -3,37 +3,127 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RoleEdge · Reel Lab</title>
+  <title>RoleEdge · Lab: how we tuned the agents</title>
+  <meta name="description" content="How RoleEdge's agents were tested and tuned on real reels: quality round by round, the family's voice, every moment format, safety, every change and its cost.">
+  <meta name="theme-color" content="#0a0a0a">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="/assets/css/app.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@700;800&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="stylesheet" href="/assets/css/home.css">
   <link rel="stylesheet" href="/assets/css/lab.css">
 </head>
 <body>
-  <!-- The Reel Lab: every reel the lab ran (docs/REEL_LAB.md), its rounds, and the moments made, in the phone's viewers. -->
-  <header class="topbar">
-    <a class="logo" href="/" aria-label="RoleEdge"><span id="mark"></span><span class="wordmark">Role<b>Edge</b></span></a>
-    <span class="lab-crumb">Reel Lab</span>
-    <div class="grow"></div>
-    <a class="btn ghost sm" href="/studio">Studio</a>
-  </header>
-  <main class="lab">
-    <section class="lab-intro">
-      <div class="eyebrow">Evaluation · real Instagram reels</div>
-      <h1>Every reel is a test case.</h1>
-      <p class="lead">The Studio's own agents turned each reel into a full set of moments for Linda (79), and a children's set for Leo (9), round after round. A Muse Wonder judge scored every moment on five criteria; every weakness was traced to its cause, fixed, and run again.</p>
-      <div class="lab-stats" id="stats"></div>
-      <nav class="lab-jump" aria-label="On this page"><a href="#tune">How we tuned the agents</a><a href="#changes">Every change</a><a href="#reels">Every reel</a></nav>
-    </section>
-    <section class="tune" id="tune" aria-labelledby="tune-h"></section>
-    <h2 class="lab-h2" id="reels">Every reel, every round</h2>
-    <div class="lab-body">
-      <aside class="lab-list" aria-label="Reels"><div class="lab-filter" id="filter"></div><ol id="reels"></ol></aside>
-      <section class="lab-detail" id="detail" aria-live="polite"><p class="app-note">Pick a reel.</p></section>
+  <!-- The Lab: the tuning in aggregate, from /api/lab/summary (python -m roleedge.lab report). No reel is shown or
+       named here: the reels are other people's content. Same system as the home page; charts in ink, status colour
+       only for better or worse. -->
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav" id="nav">
+    <div class="wrap nav-in">
+      <a class="logo" href="/" aria-label="RoleEdge home"><span class="mark" data-mark></span><span class="wordmark">Role<b>Edge</b></span></a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#quality">Quality</a>
+        <a href="#voice">Voice</a>
+        <a href="#moments">Moments</a>
+        <a href="#safety">Safety</a>
+        <a href="#changes">Changes</a>
+        <a href="#tuning">Fine-tuning</a>
+        <a href="#cost">Cost</a>
+      </nav>
+      <a class="btn nav-cta sm" href="/studio">Open the Studio<i data-i="send"></i></a>
     </div>
+    <div class="nav-progress" aria-hidden="true"><b id="progress"></b></div>
+  </header>
+
+  <main id="main">
+    <section class="hero dark lab-hero" id="top" data-theme="dark">
+      <div class="wrap">
+        <span class="eyebrow"><span class="ey-n">LAB</span>Evaluation and tuning</span>
+        <h1 class="display lab-display">We tested the agents on real reels, <span class="soft">then fixed what the judge found.</span></h1>
+        <p class="lead" id="hero-lead">Every reel went through the Studio's own agents, round after round. A Muse Wonder judge scored every moment, code checked the rest, and each weakness was traced to its cause, changed and measured again.</p>
+        <div class="lab-hero-grid">
+          <div class="hero-fig" id="hero-fig"></div>
+          <div class="kpis" id="kpis"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="quality" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">01</span>Quality</span>
+          <h2 id="quality-h">Every moment, scored. <span class="soft">On the strictest judge.</span></h2>
+          <p class="sub" id="quality-sub"></p></div>
+        <div class="grid two" id="quality-charts"></div>
+      </div>
+    </section>
+
+    <section class="sec tint" id="voice" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">02</span>The family's voice</span>
+          <h2 id="voice-h">From a report to a daughter talking.</h2>
+          <p class="sub">Code counts the habits that make a message sound like a machine: "this reel shows", a self-introduction, a disclaimer, describing the person on screen. The share of moments with at least one, per round:</p></div>
+        <div class="grid two" id="voice-charts"></div>
+      </div>
+    </section>
+
+    <section class="sec" id="moments" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">03</span>Moments and content</span>
+          <h2 id="moments-h">Every format, on the same reels.</h2>
+          <p class="sub">The same reels, the same judge: each moment format before and after the voice changes, and how well each kind of reel comes across, in aggregate.</p></div>
+        <div class="grid two" id="moment-charts"></div>
+        <div class="grid two" id="kind-charts"></div>
+      </div>
+    </section>
+
+    <section class="sec tint" id="safety" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">04</span>Safety and integrations</span>
+          <h2 id="safety-h">Checked before anyone sees it. <span class="soft">And every connection was tested.</span></h2>
+          <p class="sub">The send gate is code, the verifier is Muse Wonder, and a grandchild's set gets its own child-safety review. Held packs are the checks working: a person reads them first.</p></div>
+        <div class="tiles" id="safety-tiles"></div>
+      </div>
+    </section>
+
+    <section class="sec" id="changes" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">05</span>What we changed</span>
+          <h2 id="changes-h">Each weakness traced to its cause.</h2>
+          <p class="sub" id="changes-sub">Every change is logged with the weakness behind it and the round it was made in.</p></div>
+        <div class="grid changes-grid" id="change-charts"></div>
+      </div>
+    </section>
+
+    <section class="sec dark" id="tuning" data-theme="dark">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">06</span>Fine-tuning</span>
+          <h2>The data for a tuned model. <span class="soft">And a child model, trained.</span></h2>
+          <p class="sub">The approved moments became a dataset in the family's voice. A small child-safety model was fine-tuned and published.</p></div>
+        <div class="grid two" id="tuning-cards"></div>
+      </div>
+    </section>
+
+    <section class="sec" id="cost" data-theme="light">
+      <div class="wrap">
+        <div class="sec-head" data-reveal><span class="eyebrow"><span class="ey-n">07</span>Cost</span>
+          <h2 id="cost-h">The whole lab, priced call by call.</h2>
+          <p class="sub">Every model call is logged with its price. A round is all usable reels through the agents, with the judge.</p></div>
+        <div class="grid two" id="cost-charts"></div>
+      </div>
+    </section>
   </main>
+
+  <footer class="foot" data-theme="dark">
+    <div class="wrap">
+      <div class="foot-bottom">
+        <span>© 2026 Role Enterprise. All rights reserved.</span>
+        <p>Scores come from the stored rounds (python -m roleedge.lab report); no model is called on this page. The reels themselves are other people's content and are not shown.</p>
+      </div>
+    </div>
+  </footer>
+  <div class="tip" id="tip" role="tooltip" hidden></div>
   <script type="module" src="/assets/js/lab.js"></script>
 </body>
 </html>
