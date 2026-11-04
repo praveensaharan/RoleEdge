@@ -13,9 +13,11 @@ Run:  roleedge serve      (or: uvicorn roleedge.app.server:create_app --factory)
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import shutil
 from datetime import datetime
+from pathlib import Path
 from typing import Literal
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
@@ -43,7 +45,7 @@ from .audio import to_wav
 from .connect_routes import ConnectedApps, add_connect_routes
 from .copy import CAREGIVER_ALERT, PARENT_TEXT
 from .errand_routes import add_errand_routes
-from .guards import Budget
+from .guards import Budget, LedgerBackup, SpendCap
 from .hub import Hub
 from .lab_routes import add_lab_routes
 from .relay_routes import add_relay_routes
@@ -75,14 +77,24 @@ class SettingsRequest(BaseModel):
 
 def create_app(llm: LLM | None = None, store: Store | None = None, insights: InsightsMode = "full",
                media: MetaMedia | None = None) -> FastAPI:
-    llm = llm or LLM(pipeline_provider())
+    llm = llm or LLM(pipeline_provider(), before_call=SpendCap(get_settings().studio_spend_cap_usd))
     if media is None and (meta := get_settings().meta):
         media = MetaMedia(meta)
     store = store or Store()
     if not store.circles():
         store.reset(CIRCLES.values(), history)
     hub = Hub()
-    app = FastAPI(title="RoleEdge")
+    backup = LedgerBackup(llm.ledger_file, Path(get_settings().ledger_backup)) if get_settings().ledger_backup else None
+
+    @contextlib.asynccontextmanager
+    async def lifespan(_: FastAPI):  # noqa: ANN202
+        if backup:  # before the first request, so the spend cap counts what earlier servers spent
+            backup.start()
+        yield
+        if backup:
+            backup.stop()
+
+    app = FastAPI(title="RoleEdge", lifespan=lifespan)
     quick = Budget(per_minute=QUICK_PER_MINUTE, spend_cap_usd=get_settings().studio_spend_cap_usd, what="messages",
                    ledger_file=llm.ledger_file)
 

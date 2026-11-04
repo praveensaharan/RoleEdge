@@ -1,0 +1,39 @@
+# Continuous deployment: a Cloud Build trigger on pushes to main runs this file.
+# Build the image -> run the tests inside it -> push -> deploy the new image to Cloud Run.
+# A failing test stops the deploy, so the live app keeps the last good version.
+# Only the image changes on each deploy; the service's secrets, scaling and other settings stay as they were set.
+
+substitutions:
+  _REGION: us-central1
+  _SERVICE: roleedge
+  _IMAGE: us-central1-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/roleedge
+
+steps:
+  # the last image's layers make a code-only build quick (the first build has nothing to pull)
+  - id: pull-cache
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args: ["-c", "docker pull ${_IMAGE}:latest || true"]
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    args: ["build", "--cache-from", "${_IMAGE}:latest", "--build-arg", "BUILDKIT_INLINE_CACHE=1",
+           "-t", "${_IMAGE}:${COMMIT_SHA}", "-t", "${_IMAGE}:latest", "."]
+
+  - id: test
+    name: gcr.io/cloud-builders/docker
+    args: ["run", "--rm", "--network=cloudbuild", "--entrypoint", "bash", "${_IMAGE}:${COMMIT_SHA}",
+           "-c", "pip install --user -q pytest && python -m pytest -q -p no:cacheprovider"]
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    args: ["push", "--all-tags", "${_IMAGE}"]
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: gcloud
+    args: ["run", "deploy", "${_SERVICE}", "--image", "${_IMAGE}:${COMMIT_SHA}", "--region", "${_REGION}", "--quiet"]
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  dynamicSubstitutions: true  # so ${PROJECT_ID} inside _IMAGE is filled in

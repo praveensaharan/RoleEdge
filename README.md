@@ -154,7 +154,8 @@ Everything goes in `.env`. Only the key is required.
 | `META_API_KEY` | (required) | Your Meta Model API key |
 | `ROLEEDGE_PROVIDER` | `meta` | The provider for every agent |
 | `META_MODEL` | `muse-spark-1.3` | The agents' model. `muse-spark-1.3-contributor` costs about a tenth as much, but Meta trains on what is sent; it also needs `ALLOW_CONTRIBUTOR_MODELS="1"`. Use it only with the made-up demo families |
-| `ROLEEDGE_STUDIO_SPEND_CAP_USD` | `10` in `.env.example` | New shares are refused past this spend |
+| `ROLEEDGE_STUDIO_SPEND_CAP_USD` | `10` in `.env.example` | No new model call past this spend (estimated from the usage ledger), even in the middle of a run |
+| `ROLEEDGE_LEDGER_BACKUP` | (empty) | A file on lasting storage (on Cloud Run, a mounted Cloud Storage bucket) that keeps the spend across restarts and deploys |
 | `NOTION_TOKEN` | (empty) | A Notion internal integration's secret, for real notes |
 | `ROLEEDGE_GOOGLE_CLIENT_ID`, `ROLEEDGE_GOOGLE_CLIENT_SECRET` | (empty) | A Google OAuth client, for real Gmail and Calendar (read-only) |
 | `ROLEEDGE_VAULT_KEY` | generated | The key that encrypts connected accounts' tokens |

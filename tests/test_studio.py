@@ -654,3 +654,43 @@ def test_a_typed_message_to_pass_on_takes_the_fast_way(tmp_path):
         assert item["trace"][0]["step"].startswith("Read what you meant: a message to pass on")
         # a photo, a link or a long text never asks; a child's share never takes the fast way
         assert client.post("/api/circles/chen/studio", data={"text": "x", "to": "leo"}).json()["kind"] == "studio"
+
+
+def test_ledger_backup_carries_the_spend_across_a_restart(tmp_path):
+    from roleedge.app.guards import LedgerBackup
+
+    backup = tmp_path / "bucket" / "usage.jsonl"
+    backup.parent.mkdir()
+    (tmp_path / "one").mkdir()
+    first = LedgerBackup(tmp_path / "one" / "usage.jsonl", backup, every_s=3600)
+    first.start()
+    assert backup.read_bytes() == b""  # written at once, so a storage problem shows at startup
+    first.ledger_file.write_text('{"a": 1}\n{"b": 2')  # the second line is still being appended
+    first.save()
+    assert backup.read_text() == '{"a": 1}\n'  # only complete lines
+    with first.ledger_file.open("a") as fh:
+        fh.write("}\n")
+    first.stop()
+    assert backup.read_text() == '{"a": 1}\n{"b": 2}\n'
+    second = LedgerBackup(tmp_path / "two" / "usage.jsonl", backup)  # a new server, with no ledger of its own
+    second.restore()
+    assert second.ledger_file.read_text() == '{"a": 1}\n{"b": 2}\n'
+
+
+def test_spend_cap_stops_new_model_calls_but_not_cached_replays(tmp_path):
+    import pytest
+
+    from roleedge.app.guards import SpendCap
+    from roleedge.llm import ProviderError
+    from roleedge.models import ParentReply
+
+    provider, ledger = FakeProvider(json_answer={"reply": "x"}), tmp_path / "usage.jsonl"
+    llm = LLM(provider, cache_dir=tmp_path / "c", ledger_file=ledger, before_call=SpendCap(5.0, ledger))
+    messages = [{"role": "user", "content": "a"}]
+    assert not llm.complete_json("t", messages, ParentReply, "reply").cached  # under the cap: the call is made
+    with ledger.open("a") as fh:  # 4M fresh input tokens on muse-spark-1.3 = $5.00
+        fh.write(json.dumps({"provider": "meta", "model": "muse-spark-1.3", "input": 4_000_000}) + "\n")
+    with pytest.raises(ProviderError, match="budget is used up"):
+        llm.complete_json("t", [{"role": "user", "content": "b"}], ParentReply, "reply")
+    assert len(provider.calls) == 1
+    assert llm.complete_json("t", messages, ParentReply, "reply").cached  # a replay costs nothing, so it still works
